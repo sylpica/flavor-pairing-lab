@@ -101,11 +101,16 @@ export function FlavorWheel({ entries, onSelectNote, selectedNoteId, compoundMat
     return out
   }, [segs, compoundMaterialIds?.join(',')])
 
-  // 凡例に、その文脈素材でこのノートにリンクする化合物の種数を併記する（輪に描く上限とは別に全数を数える）
-  const legendCompoundCounts = useMemo(() => {
-    const map = new Map<string, number>()
+  // 凡例には「化合物○種」と数だけ書かず、その文脈素材でこのノートにリンクする化合物の
+  // 実際の名前を小さく併記する（初心者用 pairing でのユーザー指示「化合物1種とかは具体性がない」を適用）。
+  // 輪に描く上限とは別に全件を対象とし、表示は先頭3件＋残数に抑える（全件はノート詳細で見られる）。
+  const legendCompoundNames = useMemo(() => {
+    const map = new Map<string, string[]>()
     if (!compoundMaterialIds || compoundMaterialIds.length === 0) return map
-    for (const s of segs) map.set(s.noteId, compoundsForNoteInContext(s.noteId, compoundMaterialIds).length)
+    for (const s of segs) {
+      map.set(s.noteId, compoundsForNoteInContext(s.noteId, compoundMaterialIds)
+        .map((c) => compoundById(c.compoundId)?.nameJa ?? c.compoundId))
+    }
     return map
   }, [segs, compoundMaterialIds?.join(',')])
 
@@ -192,7 +197,9 @@ export function FlavorWheel({ entries, onSelectNote, selectedNoteId, compoundMat
                         <span className="swatch" style={{ background: s.color }} />
                         {cat.name}：{note?.name} {s.pct}%
                         {s.tier === 'inferred' ? '（推測）' : s.tier === 'measured' ? '（実測）' : '（一般的知見）'}
-                        {(legendCompoundCounts.get(s.noteId) ?? 0) > 0 && <span className="legend-compounds">・化合物 {legendCompoundCounts.get(s.noteId)} 種</span>}
+                        {(() => { const names = legendCompoundNames.get(s.noteId) ?? []; return names.length > 0 && (
+                          <span className="legend-compounds">・化合物：{names.slice(0, 3).join('、')}{names.length > 3 ? ` ほか${names.length - 3}種` : ''}</span>
+                        ) })()}
                       </button>
                     </li>
                   )

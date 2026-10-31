@@ -130,7 +130,7 @@ const LINK_KIND_LABEL = { contribution: '寄与の根拠あり', composition: '�
 /**
  * ノート詳細パネル（ペアリング／香味化学／素材詳細の3文脈で共通）。
  * 第1部は文脈素材からそのノートに実際にリンクする化合物だけを素材名・根拠区分つきで列挙し、
- * 凡例の「化合物 n 種」（文脈内リンク数）と件数・中身が一致するようにする。
+ * 凡例の化合物名一覧（文脈内リンク）と件数・中身が一致するようにする。
  * 第2部は辞典として全化合物を畳んで置き、文脈の情報と混同しないようにする。
  */
 export function NoteDetailPanel({ noteId, contextMaterialIds, contextLabel, onClose }: {
@@ -237,7 +237,7 @@ function PairingView() {
   const [mode, setMode] = usePersistentState<PairingMode>('pairing:mode', 'harmony')
   const [ratios, setRatios] = usePersistentState<Record<string, number>>('pairing:ratios', {})
   const [noteId, setNoteId] = useState<string | null>(null)
-  const [wheelMode, setWheelMode] = useState<'aroma' | 'taste'>('aroma')
+  const [wheelMode, setWheelMode] = useState<'aroma' | 'taste'>('taste')
   const [ratioNotice, setRatioNotice] = useState<string | null>(null)
   const [pairingNotice, setPairingNotice] = useState<string | null>(null)
   const [canUndo, setCanUndo] = useState(false)
@@ -464,7 +464,7 @@ function PairingView() {
             <div>
               <h3>組み合わせのホイール</h3>
               <div className="mode-tabs" role="tablist" aria-label="ホイールの表示モード">
-                {([['aroma', '香り'], ['taste', '味わい']] as const).map(([wm, label]) => (
+                {([['taste', '味わい'], ['aroma', '香り']] as const).map(([wm, label]) => (
                   <button key={wm} role="tab" aria-selected={wheelMode === wm} className={wheelMode === wm ? 'tab active' : 'tab'} onClick={() => setWheelMode(wm)}>{label}</button>
                 ))}
               </div>
@@ -652,7 +652,7 @@ function SearchView() {
 function MaterialDetail({ id }: { id: string }) {
   const m = materialById(id)
   const [noteId, setNoteId] = useState<string | null>(null)
-  const [wheelMode, setWheelMode] = useState<'aroma' | 'taste'>('aroma')
+  const [wheelMode, setWheelMode] = useState<'aroma' | 'taste'>('taste')
   if (!m) return <p>素材が見つかりません。</p>
   const links = linksForMaterial(m.id)
   // 素材全体の根拠区分は、仕様表の下に単独バッジで置かず、ホイール図の凡例エリアの
@@ -683,7 +683,7 @@ function MaterialDetail({ id }: { id: string }) {
       <div id="mat-wheel" className="anchor-block">
       <h3>ホイール（香り／味わい）</h3>
       <div className="mode-tabs" role="tablist" aria-label="ホイールの表示モード">
-        {([['aroma', '香り'], ['taste', '味わい']] as const).map(([wm, label]) => (
+        {([['taste', '味わい'], ['aroma', '香り']] as const).map(([wm, label]) => (
           <button key={wm} role="tab" aria-selected={wheelMode === wm} className={wheelMode === wm ? 'tab active' : 'tab'} onClick={() => setWheelMode(wm)}>{label}</button>
         ))}
       </div>
