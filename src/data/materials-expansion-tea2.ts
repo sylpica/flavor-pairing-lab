@@ -21,6 +21,7 @@ const si = (intensity: SensationEntry['intensity'], sourceIds: string[], note?: 
 
 const KINOSHITA = 'kinoshita-2015-kagoshima-cultivar-aroma'
 const SHIRATORI = 'shiratori-2022-aroma-green-tea-cultivars'
+const SAITAMA = 'saitama-pref-tea-cultivars'
 const SASAKI18 = 'sasaki-2018-cultivar-blend-preference'
 const YOSHIDA18 = 'yoshida-2018-seimei-breeding'
 const OYANAGIZU = 'oyanagizu-2003-tsuyuhikari-breeding'
@@ -93,10 +94,10 @@ export const expansionTea2Materials: Material[] = [
     variety: 'さやまかおり（茶農林31号）', varietyId: 'sayamakaori',
     processing: '蒸青・不発酵', description: 'やぶきたの自然交雑実生から選抜された煎茶用品種（埼玉県育成）。香気発揚処理を施した「香り緑茶」では、ジャスミンラクトンとシス-ジャスモンの含量が やぶきた より有意に高かった。',
     profile: [pi('jasmine', 'weak', [SHIRATORI]), pi('floral-general', 'weak', [SHIRATORI])],
-    sensations: {},
+    sensations: { astringent: si('moderate', [SAITAMA], '埼玉県（茶業研究所）の品種解説「濃厚な色と味」と、複数の茶商・専門解説が「渋味を伴う力強い味わい」で一致することに基づく推測') },
     evidenceTier: 'inferred',
-    scopeNote: '白鳥ら 2022 の知見は香気発揚処理（萎凋様の処理）を施した緑茶での品種間差であり、処理を施さない通常煎茶でも同じ差があるとは限らない。その条件の範囲での推測として表示する。',
-    sourceIds: [SHIRATORI], roastable: false, extractable: true,
+    scopeNote: '白鳥ら 2022 の知見は香気発揚処理（萎凋様の処理）を施した緑茶での品種間差であり、処理を施さない通常煎茶でも同じ差があるとは限らない。その条件の範囲での推測として表示する。渋味の感覚は第14ラウンドで追加したもので、育成地である埼玉県の公的品種解説（「濃厚な色と味」）と、茶商・専門解説の一致した記述（渋味を伴う力強い味わい）を足がかりとする推測であり、品種自体の官能評価の実測ではない（根拠は参考情報格）。',
+    sourceIds: [SHIRATORI, SAITAMA], roastable: false, extractable: true,
   },
   {
     id: 'tea-fukumidori', domain: 'tea', nameJa: 'ふくみどり', nameEn: 'Fukumidori', scientificName: 'Camellia sinensis',

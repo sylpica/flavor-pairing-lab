@@ -111,4 +111,13 @@ export const expansionTea2Sources: Source[] = [
     limits: '生葉の時点でミルク香成分を持つことや、他品種との優劣・順位の根拠には使えない。香気の多くは製程で形成されることを示す研究であり、官能パネルによる評価ではない。',
     verified: 'abstract',
   },
+  {
+    id: 'saitama-pref-tea-cultivars', kind: 'article',
+    title: '埼玉県で栽培されている茶の品種',
+    authors: '埼玉県（茶業研究所）', year: 2026,
+    url: 'https://www.pref.saitama.lg.jp/b0914/chahinsyu.html',
+    scope: '埼玉県（茶業研究所）が公表する県内栽培品種の公式解説。さやまかおり（茶農林31号、埼玉県茶業研究所が昭和46年に育成）について「全国で5番目に多い品種で、濃厚な色と味が特徴」と記述する。第14ラウンドで県公式ページの本文を直接確認した。',
+    limits: '自治体の品種解説ページ（発行年の明記がないため、year は本文を確認した2026年を記録）。評価レベルの記述であり、呈味成分の定量データや品種自体の官能実測ではない。感覚の根拠としては参考情報格・推測（inferred）として扱う。',
+    verified: 'bibliographic',
+  },
 ]

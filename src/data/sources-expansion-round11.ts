@@ -147,9 +147,9 @@ export const round11Sources: Source[] = [
     authors: 'European Commission', year: 2022,
     journal: 'EUR-Lex（欧州連合官報）',
     url: 'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32022R0144',
-    scope: 'EU の地理的表示（PGI）「Ceylon Cinnamon」の登録規則 (EU) 2022/144 と、登録申請時の Single Document。クイル油のシンナムアルデヒド 50–70%、クマリン上限 0.004% 未満（カシアとの区別点）等の規格値は、規則本体ではなく Single Document 由来である。樹皮油のオイゲノール 5–10% という数値は未確認（原典の該当箇所に到達できていないため、根拠として使わない）。',
+    scope: 'EU の地理的表示（PGI）「Ceylon Cinnamon」の登録規則 (EU) 2022/144 と、登録申請時の Single Document（官報 2020/C 208/08 で公表）。クイル油のシンナムアルデヒド 50–70%、クマリン上限 0.004% 未満（カシアとの区別点）等の規格値は、規則本体ではなく Single Document 由来である。樹皮油のオイゲノール 5–10% という数値については、第14ラウンドで Single Document 本文を通読して確定した：樹皮油の規格はシンナムアルデヒド（30–70%、うち質量比 30–50% の併記あり）・屈折率・相対密度のみで、オイゲノール値の記載は文書のどこにもない。したがって同数値は PGI 文書由来ではなく、根拠として使わない。',
     limits: '公的規格文書であり、個別試料の実測データではない。組成の根拠としては参考情報格として扱う。',
-    verified: 'bibliographic',
+    verified: 'abstract',
   },
   {
     id: 'suriyagoda-2021-ceylon-cinnamon-review', kind: 'review',

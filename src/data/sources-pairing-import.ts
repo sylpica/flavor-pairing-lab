@@ -112,7 +112,7 @@ export const pairingImportedSources: Source[] = [
     id: 'pairing-panda-2022-cocoa-origin-nutrition', kind: 'original',
     title: 'Influence of cocoa origin on the nutritional characterization of chocolate',
     authors: 'A. Panda, N. Alvarenga, J. Lita da Silva, A. Partidário, M. Lageiro, C. Roseiro, J. Dias', year: 2022,
-    journal: 'European Food Research and Technology',
+    journal: 'European Food Research and Technology 248(10):2569–2577',
     doi: '10.1007/s00217-022-04070-3',
     url: 'https://doi.org/10.1007/s00217-022-04070-3',
     scope: '7産地のカカオから作られた市販ダークチョコレートについて、栄養プロファイル、生物活性化合物、ミネラル、有機酸、メチルキサンチンを比較した実測。地理的産地が化学プロファイルに有意に影響した。ブラジル産は PUFA とリボフラビンが、ブラジルとマダガスカル産はトコフェロールと抗酸化活性とクエン酸が、ベネズエラ産はナイアシン、鉄、カフェインが、メキシコ産はフルクトースが、サントメ産は硫黄とリンが最も高かった。',

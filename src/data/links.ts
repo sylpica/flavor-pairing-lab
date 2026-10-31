@@ -14,7 +14,7 @@ const Z = 'zeng-2025-tea-vocs'
 export const materialCompoundLinks: MaterialCompoundLink[] = [
   // 煎茶
   { materialId: 'tea-sencha', compoundId: 'linalool', kind: 'contribution', tier: 'general', conditions: '総説で茶類レベルで OAV>1 の重要香気成分として掲載。煎茶個別試料の寄与実証ではない', sourceIds: [Z] },
-  { materialId: 'tea-sencha', compoundId: 'dimethyl-sulfide', kind: 'contribution', tier: 'measured', conditions: '煎茶試料の GC-O で重要香気成分として同定されたことに基づく（Kumazawa 1999）。FD の定量値は未確定：AEDA 36 成分への DMS の含有・FD 値は全文照合中で、要旨レベルでは最高 FD 群・新規同定群のいずれにも含まれないため、本リンクは FD 値を根拠としない', sourceIds: ['kumazawa-1999-sencha-odorants'] },
+  { materialId: 'tea-sencha', compoundId: 'dimethyl-sulfide', kind: 'contribution', tier: 'measured', conditions: '煎茶試料の AEDA で同定された香気成分であることに基づく（Kumazawa & Masuda 1999）。要旨（PubMed PMID 10606589）で確認できるのは36成分の同定と FD 値の範囲（10–5000）までで、DMS は最高 FD 群・新規同定群のいずれにも含まれず、個別の FD 値は要旨・書誌情報からは確定できないため、本リンクは FD 値を根拠としない（第14ラウンドで要旨レベルまでの確定として決着）', sourceIds: ['kumazawa-1999-sencha-odorants'] },
   { materialId: 'tea-sencha', compoundId: 'cis-3-hexen-1-ol', kind: 'detection', tier: 'general', conditions: '総説での茶の揮発性成分としての報告', sourceIds: [Z] },
   { materialId: 'tea-sencha', compoundId: 'catechins', kind: 'composition', tier: 'general', sourceIds: ['ye-2022-bitterness-astringency'] },
   { materialId: 'tea-sencha', compoundId: 'caffeine', kind: 'composition', tier: 'general', sourceIds: ['zhang-2020-tea-chemistry-taste'] },

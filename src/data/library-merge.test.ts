@@ -28,18 +28,18 @@ describe('文献画面の出典マージ（台帳と再確認済みの重複除�
     expect(m.ledgerKept.map((s) => s.id)).toEqual(['l2'])
   })
 
-  it('実データ：台帳と重複する14件が除去され、総数は792件になる', () => {
+  it('実データ：台帳と重複する14件が除去され、総数は793件になる', () => {
     const m = mergeLibrarySources(sources, pairingImportedSources)
-    // 第13ラウンド監査修正後の実測値（2026-11-01）：再確認済み334件（第11ラウンド後の
-    // 332件に、監査 A-03 の price-spitzer-1993 と A-02 の acimovic-2022 を新規登録）。
-    // 台帳472件（件数不変。Ding 2025・Zhang 2022 の記録差し替えと takimoto の年次修正、
-    // うち2件の verified 格上げ bibliographic→abstract を含む）。重複除去は14件のまま
-    // （差し替えた題名はいずれも再確認済み側と一致しない）。
-    // 総数 = 334 + 472 − 14 = 792。
-    expect(sources.length).toBe(334)
+    // 第14ラウンド後の実測値（2026-11-01）：再確認済み335件（第13ラウンド後の334件に、
+    // 文献取り込みラウンドで saitama-pref-tea-cultivars を新規登録。あわせて eu-2022 の
+    // verified 格上げ bibliographic→abstract を含むが件数は不変）。
+    // 台帳472件（件数不変。Panda 2022 の誌名への巻号・ページ補完を含む）。重複除去は14件のまま
+    // （新規登録した題名は台帳側と一致しない）。
+    // 総数 = 335 + 472 − 14 = 793。
+    expect(sources.length).toBe(335)
     expect(pairingImportedSources.length).toBe(472)
     expect(m.removedCount).toBe(14)
-    expect(m.sources.length).toBe(792)
+    expect(m.sources.length).toBe(793)
     // 除去後は、台帳側に残った出典が再確認済みとタイトル＋年で重複していない
     const verifiedKeys = new Set(sources.map((s) => sourceMatchKey(s.title, s.year)))
     for (const s of m.ledgerKept) expect(verifiedKeys.has(sourceMatchKey(s.title, s.year))).toBe(false)
