@@ -450,9 +450,9 @@ function PairingView() {
           {ratioTotal !== 100 && (
             <p className="warning" role="alert">配合比率の合計が100%ではありません（現在 {ratioTotal}%）。ホイールと分析は組み合わせの知見の統合表示で、比率は配合計画の目安として扱っています。</p>
           )}
-          <p className="analysis-caption">この分析は官能評価の結果ではありません。第1層（素材・成分の知見）に基づく探索的な見立てです。
+          <div className="analysis-caption">この分析は官能評価の結果ではありません。第1層（素材・成分の知見）に基づく探索的な見立てです。
             <details className="notice-details"><summary>前提と限界の詳細</summary><p>{analysis.inferenceNotice}</p></details>
-          </p>
+          </div>
           <div className="summary-strip" role="navigation" aria-label="分析の要点">
             <span className="summary-strip-label">要点</span>
             <button type="button" className="strip-item" onClick={() => scrollToId('pair-mode')}>共通ノート {analysis.sharedNotes.length}件</button>
@@ -471,12 +471,22 @@ function PairingView() {
               {wheelMode === 'taste' ? (
                 <>
                   {(() => { const mg = mergeSensations(activeMaterials); return (
-                    <WheelFigure caption="図．味わいホイール（味覚・口腔感覚のみ）。各素材の知見を表示用に重ねたもので、混合物そのものの実測ではありません。香りは含みません。"
+                    <>
+                    <WheelFigure caption="図．味わいホイール：第1階層＝味覚・口腔感覚（各素材の知見を表示用に重ねたもので、混合物そのものの実測ではありません）、第2階層＝その味に対応づけられた香味の具体名、第3階層＝化合物。第2階層は表示構造の対応づけであり、香りのデータと味のデータは別々に保持しています。感覚データに無い味が対応ノートから導出される場合は、推測として破線で示します。"
                       statusLines={comboStatusLine ? [comboStatusLine] : undefined}>
-                      <TasteWheel sensations={mg.sensations} contributors={mg.contributors} />
+                      <TasteWheel sensations={mg.sensations} contributors={mg.contributors}
+                        profileEntries={mergedProfile}
+                        compoundMaterialIds={activeIds}
+                        onSelectNote={setNoteId}
+                        selectedNoteId={noteId}
+                        onSelectCompound={(id) => { window.location.hash = `#/compound/${id}` }} />
                     </WheelFigure>
+                    {noteId && (
+                      <NoteDetailPanel noteId={noteId} contextMaterialIds={activeIds} contextLabel="この組み合わせ" onClose={() => setNoteId(null)} />
+                    )}
+                    </>
                   ) })()}
-                  <p className="muted">各素材の味覚・口腔感覚の知見を表示用に重ねたものです。混合物そのものの実測ではありません。相互作用による変化は「味覚・口腔感覚の関係」と下層の分析を参照してください。</p>
+                  <p className="muted">各素材の味覚・口腔感覚の知見を表示用に重ねたものです。混合物そのものの実測ではありません。相互作用による変化は「味覚・口腔感覚の関係」と下層の分析を参照してください。第2階層の具体名は、素材の香味ノートを表示用に味へ対応づけたもので、素材の知見の範囲を示します。</p>
                 </>
               ) : (
               <>
@@ -689,11 +699,19 @@ function MaterialDetail({ id }: { id: string }) {
       </div>
       {wheelMode === 'taste' ? (
         <>
-          <WheelFigure caption="図．味わいホイール（味覚・口腔感覚のみ）。香りは含みません。出典つきの詳細は下の「味覚・口腔感覚」も参照してください。"
+          <WheelFigure caption="図．味わいホイール：第1階層＝味覚・口腔感覚（感覚データ）、第2階層＝その味に対応づけられた香味の具体名、第3階層＝化合物。第2階層は表示構造の対応づけであり、香りのデータと味のデータは別々に保持しています。感覚データに無い味が対応ノートから導出される場合は、推測として破線で示します。出典つきの詳細は下の「味覚・口腔感覚」も参照してください。"
             statusLines={[tierStatusLine]}>
-            <TasteWheel sensations={m.sensations} />
+            <TasteWheel sensations={m.sensations}
+              profileEntries={m.profile}
+              compoundMaterialIds={[m.id]}
+              onSelectNote={setNoteId}
+              selectedNoteId={noteId}
+              onSelectCompound={(id) => { window.location.hash = `#/compound/${id}` }} />
           </WheelFigure>
-          <p className="muted">味覚・口腔感覚だけのホイールです（香りとは混ぜていません）。出典つきの詳細は下の「味覚・口腔感覚」も参照してください。</p>
+          {noteId && (
+            <NoteDetailPanel noteId={noteId} contextMaterialIds={[m.id]} contextLabel="この素材" onClose={() => setNoteId(null)} />
+          )}
+          <p className="muted">第1階層は味覚・口腔感覚の感覚データです。第2階層の具体名は、この素材の香味ノートを表示用に味へ対応づけたもので、香りのデータそのものは下の「香味プロファイル」に分離して保持しています。出典つきの詳細は下の「味覚・口腔感覚」も参照してください。</p>
         </>
       ) : (
       <>

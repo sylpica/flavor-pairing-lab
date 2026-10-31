@@ -404,6 +404,37 @@ describe('画面レンダリング', () => {
     expect(pTaste.compareDocumentPosition(pAroma) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   })
 
+  it('素材詳細の味わいホイールが3階層になる（R12-3：第2階層の具体名が図と凡例に出る）', () => {
+    window.location.hash = '#/material/tea-sencha'
+    const { container } = render(<App />)
+    const figure = container.querySelector('figure.wheel-figure')!
+    const svg = figure.querySelector('svg.wheel')!
+    // 第1階層：味＋％
+    expect(svg.textContent).toContain('うま味')
+    expect(svg.textContent).toMatch(/%/)
+    // 第2階層：うま味に対応づけられた具体名（海藻・磯）が図のラベルと凡例の両方に出る
+    expect(svg.textContent).toContain('海藻・磯')
+    expect(figure.querySelector('.wheel-legend')!.textContent).toContain('海藻・磯')
+    // 第2階層の具体名はボタンとして選べ、ノート詳細が開く
+    const noteBtn = [...figure.querySelectorAll('.wheel-legend button')].find((b) => b.textContent?.includes('海藻・磯'))!
+    fireEvent.click(noteBtn)
+    expect(container.querySelector('.note-detail')).toBeTruthy()
+  })
+
+  it('組み合わせの味わいホイールも3階層になる（R12-4：具体名が出る）', () => {
+    window.location.hash = '#/pairing'
+    const { container } = render(<App />)
+    const figure = container.querySelector('figure.wheel-figure')!
+    const tasteTab = [...figure.parentElement!.querySelectorAll('button')].find((b) => b.textContent === '味わい')!
+    fireEvent.click(tasteTab)
+    const svg = figure.querySelector('svg.wheel')!
+    expect(svg.textContent).toMatch(/%/)
+    // 既定の組み合わせ（焙煎ダークチョコ＋煎茶）：カカオ（苦味）・海藻・磯（うま味）が具体名として出る
+    const legendText = figure.querySelector('.wheel-legend')!.textContent ?? ''
+    expect(legendText).toContain('カカオ')
+    expect(legendText).toContain('海藻・磯')
+  })
+
   it('香りホイールの凡例は「化合物○種」ではなく実際の化合物名を併記する（R12-2）', () => {
     window.location.hash = '#/material/tea-sencha'
     const { container } = render(<App />)

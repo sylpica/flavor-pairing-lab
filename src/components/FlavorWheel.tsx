@@ -30,10 +30,10 @@ export function weightPercents(weights: number[]): number[] {
 }
 interface CSeg { compoundId: string; name: string; kind: string; start: number; end: number }
 
-function polar(cx: number, cy: number, r: number, rad: number) {
+export function polar(cx: number, cy: number, r: number, rad: number) {
   return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)] as const
 }
-function arcPath(cx: number, cy: number, rOuter: number, rInner: number, a0: number, a1: number) {
+export function arcPath(cx: number, cy: number, rOuter: number, rInner: number, a0: number, a1: number) {
   const [x0, y0] = polar(cx, cy, rOuter, a0)
   const [x1, y1] = polar(cx, cy, rOuter, a1)
   const [x2, y2] = polar(cx, cy, rInner, a1)
@@ -42,8 +42,9 @@ function arcPath(cx: number, cy: number, rOuter: number, rInner: number, a0: num
   return `M ${x0} ${y0} A ${rOuter} ${rOuter} 0 ${large} 1 ${x1} ${y1} L ${x2} ${y2} A ${rInner} ${rInner} 0 ${large} 0 ${x3} ${y3} Z`
 }
 
-/** ノート×文脈素材に実際にリンクがある化合物（寄与→組成→検出の順） */
-function compoundsForNoteInContext(noteId: string, materialIds: string[]): { compoundId: string; kind: string }[] {
+/** ノート×文脈素材に実際にリンクがある化合物（寄与→組成→検出の順）。
+ *  味わいホイールの第3階層（化学物質）でも同じ機構を使うため export する（第12ラウンド）。 */
+export function compoundsForNoteInContext(noteId: string, materialIds: string[]): { compoundId: string; kind: string }[] {
   const best = new Map<string, string>()
   for (const l of allLinks) {
     if (!materialIds.includes(l.materialId)) continue
