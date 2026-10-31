@@ -30,12 +30,10 @@ html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); line-height: 1.75; font-size: 15.5px; -webkit-font-smoothing: antialiased; }
 .app { max-width: 1160px; margin: 0 auto; padding: 0 20px 56px; }
 
-/* ===== ヘッダー ===== */
-.app-header { padding: 34px 0 0; border-bottom: 1px solid var(--ink); margin-bottom: 8px; }
-.kicker { font-size: 0.72rem; letter-spacing: 0.32em; color: var(--accent); font-weight: 700; margin: 0 0 10px; text-transform: uppercase; }
-.app-header h1 { font-family: var(--serif); font-size: clamp(1.7rem, 4.5vw, 2.4rem); font-weight: 600; letter-spacing: 0.04em; margin: 0 0 8px; line-height: 1.3; }
-.tagline { color: var(--ink-soft); margin: 0 0 20px; font-size: 0.95rem; max-width: 46em; }
-.main-nav { display: flex; flex-wrap: wrap; gap: 2px 26px; }
+/* ===== ヘッダー（初心者用 pairing と同じ作法：1行にブランド＋ナビだけ） ===== */
+.app-header { display: flex; flex-wrap: wrap; gap: 4px 28px; align-items: center; justify-content: space-between; padding: 14px 0 0; border-bottom: 1px solid var(--ink); margin-bottom: 8px; }
+.app-header h1 { font-family: var(--serif); font-size: 1.28rem; font-weight: 600; letter-spacing: 0.04em; margin: 0; line-height: 1.3; white-space: nowrap; }
+.main-nav { display: flex; flex-wrap: wrap; gap: 2px 22px; }
 .main-nav a { padding: 10px 2px 12px; text-decoration: none; color: var(--muted); font-size: 0.95rem; border-bottom: 2px solid transparent; margin-bottom: -1px; min-height: 44px; display: inline-flex; align-items: center; transition: color .15s ease, border-color .15s ease; }
 .main-nav a:hover { color: var(--ink); }
 .main-nav a.active { color: var(--ink); border-bottom-color: var(--accent); font-weight: 700; }
@@ -75,7 +73,10 @@ a:hover { color: var(--accent-deep); }
 .pair-controls-foot .mode-tabs { margin: 0; }
 .slot-add { min-height: 40px; padding: 8px 14px; border-radius: 999px; border: 1px dashed var(--accent); background: transparent; color: var(--accent); cursor: pointer; font-size: 0.92rem; font-weight: 700; }
 .slot-add:hover { background: var(--warn-bg); }
-.slot-note { margin: 8px 0 0; font-size: 0.82rem; }
+.analysis-caption { color: var(--ink-soft); font-size: 0.9rem; margin: 4px 0 10px; }
+.notice-details { display: inline; margin-left: 8px; }
+.notice-details summary { display: inline; cursor: pointer; color: var(--accent); font-size: 0.88rem; }
+.notice-details p { background: var(--warn-bg); border-radius: 8px; padding: 10px 14px; margin: 8px 0 0; }
 
 /* ===== 素材ピッカー（旧チェックボックス式は廃止。互換のため残置） ===== */
 .picker-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); gap: 14px; }
@@ -99,7 +100,9 @@ a:hover { color: var(--accent-deep); }
 
 /* ===== ホイール ===== */
 .wheel-wrap { display: flex; flex-direction: column; gap: 10px; }
-.wheel { width: 100%; max-width: 330px; height: auto; align-self: center; }
+.wheel { width: 100%; max-width: 370px; height: auto; align-self: center; }
+.wheel-compound-label { font-size: 6.8px; fill: var(--ink); font-weight: 600; pointer-events: none; }
+.wheel-compound-note { font-size: 0.8rem; margin: 0; }
 .wheel-center { font-size: 13px; fill: var(--ink); font-weight: 700; font-family: var(--serif); }
 .wheel-center-sub { font-size: 9px; fill: var(--muted); }
 .wheel-legend { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px; }

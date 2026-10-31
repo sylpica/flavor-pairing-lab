@@ -42,9 +42,7 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <p className="kicker">Flavor Pairing Lab — Research Edition</p>
         <h1>科学ペアリング研究ラボ</h1>
-        <p className="tagline">お茶・スパイス・ハーブ・チョコレートを横断する香味化学の探究アプリ。実測・一般的知見・推測を区別し、相性スコアは作りません。</p>
         <nav className="main-nav" aria-label="主要画面">
           <a href="#/pairing" className={page === 'pairing' ? 'active' : ''}>ペアリング</a>
           <a href="#/search" className={page === 'search' || page === 'material' ? 'active' : ''}>素材検索</a>
@@ -142,23 +140,26 @@ function PairingView() {
         </div>
         <div className="pair-controls-foot">
           {selectedIds.length < 4 && <button type="button" className="slot-add" onClick={addSlot}>＋ 素材を追加（最大4）</button>}
+          <span className="muted">比率＝質量比（合計100%）</span>
           <div className="mode-tabs" role="tablist" aria-label="分析モード">
             {([['harmony', '調和'], ['contrast', '対比'], ['complement', '補完']] as [PairingMode, string][]).map(([mm, label]) => (
               <button key={mm} role="tab" aria-selected={mode === mm} className={mode === mm ? 'tab active' : 'tab'} onClick={() => setMode(mm)}>{label}</button>
             ))}
           </div>
         </div>
-        <p className="muted slot-note">比率はブレンド（混合）時の質量比です（合計100%）。食べ合わせでは各素材をそのまま味わいます。</p>
         {ratioError && <p className="warning" role="alert">{ratioError}</p>}
       </div>
 
       {analysis && (
         <div className="analysis">
-          <p className="notice">{analysis.inferenceNotice}</p>
+          <p className="analysis-caption">この分析は官能評価の結果ではありません。第1層（素材・成分の知見）に基づく探索的な見立てです。
+            <details className="notice-details"><summary>前提と限界の詳細</summary><p>{analysis.inferenceNotice}</p></details>
+          </p>
           <div className="analysis-cols">
             <div>
               <h3>組み合わせの香りホイール</h3>
-              <FlavorWheel entries={mergedProfile} onSelectNote={setNoteId} selectedNoteId={noteId} />
+              <FlavorWheel entries={mergedProfile} onSelectNote={setNoteId} selectedNoteId={noteId}
+                compoundMaterialIds={selectedIds} onSelectCompound={(id) => { window.location.hash = `#/compound/${id}` }} />
               {noteId && (
                 <div className="note-detail">
                   <h4>{categoryById(noteById(noteId)?.categoryId ?? '')?.name}：{noteById(noteId)?.name}</h4>
@@ -310,7 +311,8 @@ function MaterialDetail({ id }: { id: string }) {
       <p className="scope-note">{m.scopeNote}</p>
       {m.safetyNote && <p className="warning" role="note">安全性：{m.safetyNote}</p>}
       <h3>香りホイール（香りのみ）</h3>
-      <FlavorWheel entries={m.profile} onSelectNote={setNoteId} selectedNoteId={noteId} />
+      <FlavorWheel entries={m.profile} onSelectNote={setNoteId} selectedNoteId={noteId}
+        compoundMaterialIds={[m.id]} onSelectCompound={(id) => { window.location.hash = `#/compound/${id}` }} />
       {noteId && (
         <div className="note-detail">
           <h4>{noteById(noteId)?.name}</h4>
@@ -441,7 +443,8 @@ function ChemistryView() {
           {materials.map((x) => <option key={x.id} value={x.id}>{DOMAIN_LABEL[x.domain]}：{x.nameJa}</option>)}
         </select>
       </label>
-      {m && <FlavorWheel entries={m.profile} onSelectNote={setNoteId} selectedNoteId={noteId} />}
+      {m && <FlavorWheel entries={m.profile} onSelectNote={setNoteId} selectedNoteId={noteId}
+        compoundMaterialIds={[m.id]} onSelectCompound={(id) => { window.location.hash = `#/compound/${id}` }} />}
       {noteId && (
         <div className="note-detail">
           <h3>{noteById(noteId)?.name} に関連する化合物</h3>

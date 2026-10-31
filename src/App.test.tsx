@@ -11,7 +11,7 @@ describe('画面レンダリング', () => {
   it('ペアリング画面が表示され、初期選択で分析が出る', () => {
     render(<App />)
     expect(screen.getByRole('heading', { name: /ペアリング（2〜4素材）/ })).toBeTruthy()
-    expect(screen.getByText(/官能評価の結果ではありません/)).toBeTruthy()
+    expect(screen.getAllByText(/官能評価の結果ではありません/).length).toBeGreaterThan(0)
     expect(screen.getByText(/直接研究あり/)).toBeTruthy()
   })
 
@@ -43,6 +43,14 @@ describe('画面レンダリング', () => {
     render(<App />)
     expect(screen.getByText(/収録状況/)).toBeTruthy()
     expect(screen.getByText(/網羅率/)).toBeTruthy()
+  })
+
+  it('素材詳細のホイール外側の輪に、その素材で報告された化合物名が描かれる', () => {
+    window.location.hash = '#/material/tea-sencha'
+    const { container } = render(<App />)
+    const svgText = container.querySelector('svg')?.textContent ?? ''
+    // 煎茶で寄与が報告されたリナロールが、ホイール（SVG）の中に化合物として現れる
+    expect(svgText).toContain('リナロール')
   })
 
   it('ほうじ茶詳細では焙煎対象外の理由が表示される', () => {

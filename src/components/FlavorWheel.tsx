@@ -1,12 +1,21 @@
 import { useMemo, useState } from 'react'
 import type { ProfileEntry } from '../types'
 import { flavorCategories, noteById, categoryById } from '../data/flavors'
+import { allLinks } from '../data/links'
+import { compoundById } from '../data/compounds'
 
 // 香り専用ホイール。味覚・口腔感覚は含まない。
-// セグメントの大きさは強さ区分（弱い=1/中程度=2/強い=3）の視覚化であり、精密な数値ではない。
+// 内側の輪：香りノート（大きさは強さ区分 弱い=1/中程度=2/強い=3 の視覚化であり、精密な数値ではない）。
+// 外側の輪：その文脈（表示中の素材）で実際に報告された化合物だけを、親ノートの角度範囲に並べる。
+//   初心者用 pairing の作法を研究用に適応したもの：化合物は「その素材でリンクがあるもの」に限定し、
+//   寄与（contribution）の根拠があるものを濃く、組成・検出のみのものを薄く表示する。
+//   名前が入りきらない化合物は輪に描かず、ノート詳細（凡例クリック後）に全件表示する。
 const WEIGHT = { weak: 1, moderate: 2, strong: 3, unknown: 0 } as const
+const KIND_ORDER = { contribution: 0, composition: 1, detection: 2 } as const
+const MAX_COMPOUNDS_PER_NOTE = 3
 
 interface Seg { noteId: string; start: number; end: number; color: string; tier: string }
+interface CSeg { compoundId: string; name: string; kind: string; start: number; end: number }
 
 function polar(cx: number, cy: number, r: number, rad: number) {
   return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)] as const
@@ -20,10 +29,28 @@ function arcPath(cx: number, cy: number, rOuter: number, rInner: number, a0: num
   return `M ${x0} ${y0} A ${rOuter} ${rOuter} 0 ${large} 1 ${x1} ${y1} L ${x2} ${y2} A ${rInner} ${rInner} 0 ${large} 0 ${x3} ${y3} Z`
 }
 
-export function FlavorWheel({ entries, onSelectNote, selectedNoteId }: {
+/** ノート×文脈素材に実際にリンクがある化合物（寄与→組成→検出の順） */
+function compoundsForNoteInContext(noteId: string, materialIds: string[]): { compoundId: string; kind: string }[] {
+  const best = new Map<string, string>()
+  for (const l of allLinks) {
+    if (!materialIds.includes(l.materialId)) continue
+    const c = compoundById(l.compoundId)
+    if (!c || !c.noteIds.includes(noteId)) continue
+    const cur = best.get(l.compoundId)
+    if (!cur || KIND_ORDER[l.kind] < KIND_ORDER[cur as keyof typeof KIND_ORDER]) best.set(l.compoundId, l.kind)
+  }
+  return [...best.entries()]
+    .map(([compoundId, kind]) => ({ compoundId, kind }))
+    .sort((a, b) => KIND_ORDER[a.kind as keyof typeof KIND_ORDER] - KIND_ORDER[b.kind as keyof typeof KIND_ORDER])
+}
+
+export function FlavorWheel({ entries, onSelectNote, selectedNoteId, compoundMaterialIds, onSelectCompound }: {
   entries: ProfileEntry[]
   onSelectNote?: (noteId: string) => void
   selectedNoteId?: string | null
+  /** 外側の輪に化合物を出す文脈（素材ID）。未指定なら化合物の輪は出さない */
+  compoundMaterialIds?: string[]
+  onSelectCompound?: (compoundId: string) => void
 }) {
   const [hover, setHover] = useState<string | null>(null)
   const segs = useMemo<Seg[]>(() => {
@@ -42,13 +69,32 @@ export function FlavorWheel({ entries, onSelectNote, selectedNoteId }: {
     })
   }, [entries])
 
+  const csegs = useMemo<CSeg[]>(() => {
+    if (!compoundMaterialIds || compoundMaterialIds.length === 0) return []
+    const out: CSeg[] = []
+    for (const s of segs) {
+      const list = compoundsForNoteInContext(s.noteId, compoundMaterialIds).slice(0, MAX_COMPOUNDS_PER_NOTE)
+      if (list.length === 0) continue
+      const span = (s.end - s.start) / list.length
+      list.forEach((c, i) => {
+        out.push({
+          compoundId: c.compoundId, kind: c.kind,
+          name: compoundById(c.compoundId)?.nameJa ?? c.compoundId,
+          start: s.start + span * i, end: s.start + span * (i + 1) - 0.015,
+        })
+      })
+    }
+    return out
+  }, [segs, compoundMaterialIds?.join(',')])
+
   if (segs.length === 0) return <p className="muted">香りプロファイルのデータが不足しています。</p>
   const active = hover ?? selectedNoteId
+  const C = 120
   return (
     <div className="wheel-wrap">
-      <svg viewBox="0 0 200 200" className="wheel" role="img" aria-label="香りホイール（香りのみ。味覚は別のグラフで表示）">
+      <svg viewBox="0 0 240 240" className="wheel" role="img" aria-label="香りホイール（香りのみ。外側の輪は化合物。味覚は別のグラフで表示）">
         {segs.map((s) => (
-          <path key={s.noteId} d={arcPath(100, 100, 92, 52, s.start, s.end)}
+          <path key={s.noteId} d={arcPath(C, C, 100, 60, s.start, s.end)}
             fill={s.color} opacity={active && active !== s.noteId ? 0.35 : 0.92}
             stroke={s.tier === 'inferred' ? '#333' : '#fff'} strokeWidth={s.tier === 'inferred' ? 1.6 : 1}
             strokeDasharray={s.tier === 'inferred' ? '4 2' : undefined}
@@ -57,9 +103,31 @@ export function FlavorWheel({ entries, onSelectNote, selectedNoteId }: {
             <title>{noteById(s.noteId)?.name}</title>
           </path>
         ))}
-        <text x="100" y="97" textAnchor="middle" className="wheel-center">香り</text>
-        <text x="100" y="112" textAnchor="middle" className="wheel-center-sub">ホイール</text>
+        {csegs.map((c) => {
+          const mid = (c.start + c.end) / 2
+          const span = c.end - c.start
+          const [lx, ly] = polar(C, C, 114, mid)
+          // 名前が弧の長さに収まる場合だけ描く（収まらないものはノート詳細に全件表示）
+          const arcLen = span * 114
+          const label = arcLen >= c.name.length * 7.2 ? c.name : null
+          return (
+            <g key={c.compoundId + c.start} onClick={() => onSelectCompound?.(c.compoundId)} style={{ cursor: onSelectCompound ? 'pointer' : undefined }}>
+              <path d={arcPath(C, C, 128, 103, c.start, c.end)}
+                fill={c.kind === 'contribution' ? '#7c4a21' : '#b49b78'}
+                opacity={c.kind === 'contribution' ? 0.95 : 0.55}
+                stroke="#fff" strokeWidth={0.8}>
+                <title>{c.name}（{c.kind === 'contribution' ? '寄与の根拠あり' : c.kind === 'composition' ? '組成として報告' : '検出の報告'}）</title>
+              </path>
+              {label && <text x={lx} y={ly + 2.2} textAnchor="middle" className="wheel-compound-label">{label}</text>}
+            </g>
+          )
+        })}
+        <text x={C} y={C - 3} textAnchor="middle" className="wheel-center">香り</text>
+        <text x={C} y={C + 12} textAnchor="middle" className="wheel-center-sub">ホイール</text>
       </svg>
+      {csegs.length > 0 && (
+        <p className="muted wheel-compound-note">外側の輪：表示中の素材で報告された化合物（濃い＝寄与の根拠あり／薄い＝組成・検出のみ）。クリックで化合物の詳細へ。名前が入りきらない化合物は、凡例でノートを選ぶと詳細に全件表示されます。</p>
+      )}
       <ul className="wheel-legend">
         {segs.map((s) => {
           const note = noteById(s.noteId)
