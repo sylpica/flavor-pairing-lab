@@ -5,6 +5,7 @@ import { allLinks as materialCompoundLinks } from './links'
 import { flavorNotes, flavorCategories } from './flavors'
 import { interactionRules } from './interactions'
 import { simulationTendencies } from './simulations'
+import { CLASSIFICATION_LABELS, ORIGIN_LABELS, VARIETY_LABELS } from './axis-labels'
 
 const sourceIds = new Set(sources.map((s) => s.id))
 const materialIds = new Set(materials.map((m) => m.id))
@@ -62,6 +63,13 @@ describe('データ整合性（全件検証）', () => {
       if (m.classificationId === 'ruby') {
         expect(m.varietyId).toBe('not-a-lineage')
       }
+    }
+  })
+  it('三軸の全IDに正規ラベルがある（プルダウンとカードの表記不一致を防ぐ）', () => {
+    for (const m of materials) {
+      expect(CLASSIFICATION_LABELS[m.classificationId], `${m.id} の分類 ${m.classificationId}`).toBeTruthy()
+      expect(ORIGIN_LABELS[m.originId], `${m.id} の産地 ${m.originId}`).toBeTruthy()
+      expect(VARIETY_LABELS[m.varietyId], `${m.id} の品種 ${m.varietyId}`).toBeTruthy()
     }
   })
   it('出典には DOI か URL があり、主張範囲が書かれている', () => {

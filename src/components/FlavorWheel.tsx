@@ -107,9 +107,10 @@ export function FlavorWheel({ entries, onSelectNote, selectedNoteId, compoundMat
           const mid = (c.start + c.end) / 2
           const span = c.end - c.start
           const [lx, ly] = polar(C, C, 114, mid)
-          // 名前が弧の長さに収まる場合だけ描く（収まらないものはノート詳細に全件表示）
+          // 名前が弧の長さに十分収まる場合だけ描く（ラベルは水平置きで輪の端ではみ出しやすいため余裕を持たせる。
+          // 収まらないものはノート詳細に全件表示）
           const arcLen = span * 114
-          const label = arcLen >= c.name.length * 7.2 ? c.name : null
+          const label = arcLen >= c.name.length * 9.0 ? c.name : null
           return (
             <g key={c.compoundId + c.start} onClick={() => onSelectCompound?.(c.compoundId)} style={{ cursor: onSelectCompound ? 'pointer' : undefined }}>
               <path d={arcPath(C, C, 128, 103, c.start, c.end)}

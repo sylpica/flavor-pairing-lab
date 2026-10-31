@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
-import type { Material, Domain } from './types'
+import type { Material, Domain, SimulationTendency } from './types'
 import { DOMAIN_LABEL, TIER_LABEL, SENSATION_LABEL } from './types'
 import { materials, materialById, sourceById, sources } from './data'
+import { axisLabel } from './data/axis-labels'
 import { allCompounds as compounds, compoundById } from './data/compounds'
 import { allLinks as materialCompoundLinks, linksForMaterial, linksForCompound } from './data/links'
-import { noteById, categoryById } from './data/flavors'
-import { analyzePairing, validateRatios, type PairingMode } from './engine/pairing'
+import { noteById, categoryById, flavorNotes } from './data/flavors'
+import { analyzePairing, validateRatios, defaultShares, type PairingMode } from './engine/pairing'
 import { evaluateRoast, evaluateExtraction } from './engine/simulation'
 import { FlavorWheel } from './components/FlavorWheel'
 import { SensationChart } from './components/SensationChart'
@@ -92,10 +93,14 @@ function PairingView() {
 
   const selected = selectedIds.map((id) => materialById(id)).filter((m): m is Material => !!m)
   const analysis = useMemo(() => (selected.length >= 2 ? analyzePairing(selected) : null), [selectedIds.join(',')])
-  const ratioError = useMemo(() => {
-    if (Object.keys(ratios).length === 0) return null
-    return validateRatios({ ...Object.fromEntries(selectedIds.map((id) => [id, ratios[id] ?? Math.floor(100 / Math.max(selectedIds.length, 1))])) }, selectedIds)
+  // 実効比率：未編集の素材は均等配分（合計100になる配分）。常に実効値で検証し、合計も常時表示する
+  // （監査 J1：素材追加直後の 33/33/33=99% が警告も合計表示もなく見逃された問題への対策）
+  const effectiveRatios = useMemo(() => {
+    const shares = defaultShares(selectedIds.length)
+    return Object.fromEntries(selectedIds.map((id, i) => [id, ratios[id] ?? shares[i] ?? 0]))
   }, [ratios, selectedIds])
+  const ratioTotal = selectedIds.reduce((acc, id) => acc + (effectiveRatios[id] ?? 0), 0)
+  const ratioError = useMemo(() => validateRatios(effectiveRatios, selectedIds), [effectiveRatios, selectedIds])
 
   // スロット式：各スロットのプルダウンで素材を即座に切り替える（スクロール不要）
   const setSlot = (index: number, id: string) => {
@@ -124,6 +129,23 @@ function PairingView() {
 
   const noteCompounds = noteId ? compounds.filter((c) => c.noteIds.includes(noteId)) : []
 
+  // お茶×チョコの2素材では、素材別の表示はチョコレート→お茶の順を基本配置にする（§14.3）
+  const orderedUniqueNotes = useMemo(() => {
+    if (!analysis) return []
+    const list = [...analysis.uniqueNotes]
+    if (selected.length === 2) {
+      const domains = selected.map((m) => m.domain)
+      if (domains.includes('tea') && domains.includes('chocolate')) {
+        list.sort((a, b) => {
+          const da = materialById(a.materialId)?.domain === 'chocolate' ? 0 : 1
+          const db = materialById(b.materialId)?.domain === 'chocolate' ? 0 : 1
+          return da - db
+        })
+      }
+    }
+    return list
+  }, [analysis, selectedIds.join(',')])
+
   return (
     <section>
       <h2>ペアリング（2〜4素材）</h2>
@@ -146,7 +168,7 @@ function PairingView() {
                 </label>
                 <label className="slot-ratio">
                   <input type="number" min={0} max={100} aria-label={`${m?.nameJa ?? ''}の比率（%）`}
-                    value={ratios[id] ?? Math.floor(100 / selectedIds.length)}
+                    value={effectiveRatios[id] ?? 0}
                     onChange={(e) => setRatios((r) => ({ ...r, [id]: Number(e.target.value) }))} />%
                 </label>
                 {selectedIds.length > 2
@@ -158,7 +180,8 @@ function PairingView() {
         </div>
         <div className="pair-controls-foot">
           {selectedIds.length < 4 && <button type="button" className="slot-add" onClick={addSlot}>＋ 素材を追加（最大4）</button>}
-          <span className="muted">比率＝質量比（合計100%）</span>
+          <span className="muted">比率＝混合（ブレンド）時の質量比（合計100%）。混ぜずに口中で合わせる食べ合わせには適用しません</span>
+          <span className={ratioTotal === 100 ? 'muted' : 'warning'} aria-live="polite">現在の合計 {ratioTotal}%</span>
           <div className="mode-tabs" role="tablist" aria-label="分析モード">
             {([['harmony', '調和'], ['contrast', '対比'], ['complement', '補完']] as [PairingMode, string][]).map(([mm, label]) => (
               <button key={mm} role="tab" aria-selected={mode === mm} className={mode === mm ? 'tab active' : 'tab'} onClick={() => setMode(mm)}>{label}</button>
@@ -203,7 +226,7 @@ function PairingView() {
               {(mode === 'contrast') && (
                 <>
                   <h3>異なっていること（対比）</h3>
-                  {analysis.uniqueNotes.map((u) => (
+                  {orderedUniqueNotes.map((u) => (
                     <p key={u.materialId}><strong>{materialById(u.materialId)?.nameJa}</strong>：{u.noteIds.length ? u.noteIds.map((id) => noteById(id)?.name).join('、') : '固有の香りノートは未確認'}</p>
                   ))}
                 </>
@@ -245,14 +268,13 @@ function SearchView() {
   const [org, setOrg] = usePersistentState('search:org', '')
   const [variety, setVariety] = usePersistentState('search:variety', '')
 
-  const candidates = (key: 'classificationId' | 'originId' | 'varietyId', labelKey: 'classification' | 'origin' | 'variety') => {
+  const candidates = (key: 'classificationId' | 'originId' | 'varietyId') => {
     const pool = materials.filter((m) => m.domain === domain
       && (key === 'classificationId' || !cls || m.classificationId === cls)
       && (key === 'originId' || !org || m.originId === org)
       && (key === 'varietyId' || !variety || m.varietyId === variety))
-    const map = new Map<string, string>()
-    for (const m of pool) map.set(m[key], m[labelKey])
-    return [...map.entries()].map(([id, label]) => ({ id, label }))
+    const ids = [...new Set(pool.map((m) => m[key]))]
+    return ids.map((id) => ({ id, label: axisLabel(key, id) }))
   }
   const results = materials.filter((m) => m.domain === domain
     && (!cls || m.classificationId === cls) && (!org || m.originId === org) && (!variety || m.varietyId === variety))
@@ -261,9 +283,9 @@ function SearchView() {
   // 他軸の変更で候補から外れた選択値は自動でリセットし、表示と状態のずれを防ぐ。
   // 選べない選択肢はグレーアウトではなく候補から隠す方式で統一している。
   useEffect(() => {
-    if (cls && !candidates('classificationId', 'classification').some((o) => o.id === cls)) setCls('')
-    if (org && !candidates('originId', 'origin').some((o) => o.id === org)) setOrg('')
-    if (variety && !candidates('varietyId', 'variety').some((o) => o.id === variety)) setVariety('')
+    if (cls && !candidates('classificationId').some((o) => o.id === cls)) setCls('')
+    if (org && !candidates('originId').some((o) => o.id === org)) setOrg('')
+    if (variety && !candidates('varietyId').some((o) => o.id === variety)) setVariety('')
   }, [cls, org, variety, domain])
 
   const resetAxis = () => { setCls(''); setOrg(''); setVariety('') }
@@ -281,19 +303,19 @@ function SearchView() {
         <label>分類
           <select value={cls} onChange={(e) => setCls(e.target.value)} aria-label="分類">
             <option value="">指定しない</option>
-            {candidates('classificationId', 'classification').map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
+            {candidates('classificationId').map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
           </select>
         </label>
         <label>産地
           <select value={org} onChange={(e) => setOrg(e.target.value)} aria-label="産地">
             <option value="">指定しない</option>
-            {candidates('originId', 'origin').map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
+            {candidates('originId').map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
           </select>
         </label>
         <label>{domain === 'tea' ? '品種' : domain === 'chocolate' ? '系統・種類区分' : '植物種・品種等'}
           <select value={variety} onChange={(e) => setVariety(e.target.value)} aria-label="品種・系統">
             <option value="">指定しない</option>
-            {candidates('varietyId', 'variety').map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
+            {candidates('varietyId').map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
           </select>
         </label>
         <button type="button" onClick={resetAxis}>絞り込みを解除</button>
@@ -342,11 +364,23 @@ function MaterialDetail({ id }: { id: string }) {
         <div className="note-detail">
           <h4>{noteById(noteId)?.name}</h4>
           <p>{noteById(noteId)?.example}</p>
-          <ul>
-            {compounds.filter((c) => c.noteIds.includes(noteId)).map((c) => (
-              <li key={c.id}><a href={`#/compound/${c.id}`}>{c.nameJa}</a>：{c.sensoryKnowledge}</li>
-            ))}
-          </ul>
+          {/* この素材で実際に報告された化合物だけに絞る（監査 J3：他素材文脈の化合物が混ざって紛らわしい問題への対策） */}
+          {(() => {
+            const scoped = compounds.filter((c) => c.noteIds.includes(noteId) && links.some((l) => l.compoundId === c.id))
+            return scoped.length ? (
+              <>
+                <p className="muted">{m.nameJa}で報告された関連化合物：</p>
+                <ul>
+                  {scoped.map((c) => (
+                    <li key={c.id}><a href={`#/compound/${c.id}`}>{c.nameJa}</a>：{c.sensoryKnowledge}</li>
+                  ))}
+                </ul>
+              </>
+            ) : (
+              <p className="muted">{m.nameJa}でこの香りに関連づけて報告された化合物は未収録です。この香りに関連する化合物（全素材）は<a href="#/chemistry">香味化学</a>で確認できます。</p>
+            )
+          })()}
+          <button type="button" onClick={() => setNoteId(null)}>選択を保持したまま閉じる</button>
         </div>
       )}
       <p>{m.description}</p>
@@ -368,7 +402,7 @@ function MaterialDetail({ id }: { id: string }) {
           )
         })}</ul>
       ) : <p className="muted">この素材と化合物の関連は未収録です（未報告であり「含まれない」という意味ではありません）。</p>}
-      <SimulationPanel material={m} />
+      <SimulationPanel key={m.id} material={m} />
       <h3>出典</h3>
       <SourceList ids={m.sourceIds} />
       <p><a href={`#/pairing`}>ペアリングで使う →</a></p>
@@ -395,6 +429,34 @@ function SourceList({ ids }: { ids: string[] }) {
 }
 
 /* ============ シミュレーション ============ */
+const PARAM_HEADING: Record<string, string> = {
+  'roast-temp': '温度に関する傾向', 'roast-time': '時間に関する傾向',
+  'extract-temp': '温度に関する傾向', 'extract-time': '時間に関する傾向',
+  'dose': '素材量・湯量に関する傾向', 'water': '素材量・湯量に関する傾向',
+}
+
+/** 傾向をパラメータ別にグループ化して見せる（どのスライダーにどの知見が対応するか分かるように） */
+function TendencyGroups({ tendencies }: { tendencies: SimulationTendency[] }) {
+  const groups = new Map<string, SimulationTendency[]>()
+  for (const t of tendencies) {
+    const key = t.parameter === 'water' ? 'dose' : t.parameter
+    if (!groups.has(key)) groups.set(key, [])
+    groups.get(key)!.push(t)
+  }
+  return (
+    <>
+      {[...groups.entries()].map(([param, list]) => (
+        <div key={param} className="tendency-group">
+          <h5>{PARAM_HEADING[param] ?? '傾向'}</h5>
+          {list.map((t) => (
+            <div key={t.id}><TierBadge tier={t.tier} /><p>{t.text}</p><p className="scope-note">限界：{t.limits}</p><SourceLinks ids={t.sourceIds} /></div>
+          ))}
+        </div>
+      ))}
+    </>
+  )
+}
+
 function SimulationPanel({ material: m }: { material: Material }) {
   const [roastTemp, setRoastTemp] = useState(120)
   const [roastMin, setRoastMin] = useState(15)
@@ -410,13 +472,6 @@ function SimulationPanel({ material: m }: { material: Material }) {
       {m.roastable ? (
         <div>
           <h4>焙煎</h4>
-          <div className="sim-result">
-            <p className="muted">{roast.statusNote}</p>
-            {roast.warnings.map((w) => <p key={w} className="warning" role="alert">{w}</p>)}
-            {roast.tendencies.map((t) => (
-              <div key={t.id}><TierBadge tier={t.tier} /><p>{t.text}</p><p className="scope-note">限界：{t.limits}</p><SourceLinks ids={t.sourceIds} /></div>
-            ))}
-          </div>
           <label>焙煎温度 {roastTemp}℃
             <input type="range" min={60} max={260} value={roastTemp} onChange={(e) => setRoastTemp(Number(e.target.value))} aria-label="焙煎温度" />
             <input type="number" value={roastTemp} onChange={(e) => setRoastTemp(Number(e.target.value))} aria-label="焙煎温度（数値）" />
@@ -425,16 +480,21 @@ function SimulationPanel({ material: m }: { material: Material }) {
             <input type="range" min={1} max={120} value={roastMin} onChange={(e) => setRoastMin(Number(e.target.value))} aria-label="焙煎時間" />
             <input type="number" value={roastMin} onChange={(e) => setRoastMin(Number(e.target.value))} aria-label="焙煎時間（数値）" />
           </label>
+          <div className="sim-result">
+            <p className="sim-summary" aria-live="polite">現在の条件：焙煎温度 {roastTemp}℃（{roastTemp < 140 ? '低温側' : roastTemp < 200 ? '中温側' : '高温側'}）・焙煎時間 {roastMin}分</p>
+            <p className="muted">{roast.statusNote}</p>
+            {roast.warnings.map((w) => <p key={w} className="warning" role="alert">{w}</p>)}
+            <TendencyGroups tendencies={roast.tendencies} />
+          </div>
         </div>
       ) : <p className="muted">焙煎：{roast.statusNote}</p>}
       {m.extractable ? (
         <div>
           <h4>抽出</h4>
-          <div className="sim-result">
-            <p className="muted">{ext.statusNote}</p>
-            {ext.warnings.map((w) => <p key={w} className="warning" role="alert">{w}</p>)}
-            {ext.tendencies.map((t) => (
-              <div key={t.id}><TierBadge tier={t.tier} /><p>{t.text}</p><p className="scope-note">限界：{t.limits}</p><SourceLinks ids={t.sourceIds} /></div>
+          <div className="preset-row" role="group" aria-label="抽出条件のプリセット">
+            <span className="muted">条件プリセット：</span>
+            {([['低温（60℃・120秒）', 60, 120], ['中温（80℃・60秒）', 80, 60], ['高温（95℃・30秒）', 95, 30]] as [string, number, number][]).map(([label, t, s]) => (
+              <button key={label} type="button" className="preset-btn" onClick={() => { setExtTemp(t); setExtSec(s) }}>{label}</button>
             ))}
           </div>
           <label>抽出温度 {extTemp}℃
@@ -451,6 +511,12 @@ function SimulationPanel({ material: m }: { material: Material }) {
           <label>湯量 {water}ml
             <input type="number" min={10} step={10} value={water} onChange={(e) => setWater(Number(e.target.value))} aria-label="湯量" />
           </label>
+          <div className="sim-result">
+            <p className="sim-summary" aria-live="polite">現在の条件：抽出温度 {extTemp}℃（{extTemp < 70 ? '低温側' : extTemp < 90 ? '中温側' : '高温側'}）・抽出時間 {extSec}秒・素材量 {dose}g／湯量 {water}ml{dose > 0 ? `（約 1:${Math.round(water / dose)}）` : ''}</p>
+            <p className="muted">{ext.statusNote}</p>
+            {ext.warnings.map((w) => <p key={w} className="warning" role="alert">{w}</p>)}
+            <TendencyGroups tendencies={ext.tendencies} />
+          </div>
         </div>
       ) : <p className="muted">抽出：{ext.statusNote}</p>}
     </div>
@@ -490,7 +556,25 @@ function ChemistryView() {
           ) : <p className="muted">関連化合物は未収録です。</p>}
         </div>
       )}
-      <h3>化合物一覧</h3>
+      {m && (
+        <>
+          <h3>{m.nameJa}で報告された化合物</h3>
+          {linksForMaterial(m.id).length ? (
+            <ul className="compound-list">
+              {linksForMaterial(m.id).map((l) => {
+                const c = compoundById(l.compoundId)
+                return (
+                  <li key={l.compoundId + l.kind}>
+                    <a href={`#/compound/${l.compoundId}`}>{c?.nameJa}</a>
+                    <span className="muted"> {l.kind === 'contribution' ? '寄与の根拠あり' : l.kind === 'composition' ? '組成として報告' : '検出の報告'}・{TIER_LABEL[l.tier]}</span>
+                  </li>
+                )
+              })}
+            </ul>
+          ) : <p className="muted">この素材で報告された化合物は未収録です。</p>}
+        </>
+      )}
+      <h3>化合物一覧（全収録）</h3>
       <ul className="compound-list">
         {compounds.map((c) => (
           <li key={c.id}><a href={`#/compound/${c.id}`}>{c.nameJa}</a><span className="muted"> {c.compoundClass}</span></li>
@@ -506,7 +590,10 @@ function CompoundDetail({ id }: { id: string }) {
   const links = linksForCompound(id)
   return (
     <section>
-      <p><a href="#/chemistry">← 香味化学へ</a></p>
+      <p>
+        <button type="button" className="back-btn" onClick={() => window.history.back()}>← 戻る</button>
+        <a href="#/chemistry">香味化学へ</a>
+      </p>
       <h2>{c.nameJa} <span className="en-name">{c.nameEn}</span></h2>
       <p className="material-meta">
         分類：{c.compoundClass}｜{c.volatile ? '揮発性' : '非揮発性'}
@@ -560,6 +647,7 @@ const GLOSSARY: { term: string; body: string }[] = [
 ]
 
 function LibraryView() {
+  const [sourceQuery, setSourceQuery] = useState('')
   const counts = {
     tea: materials.filter((m) => m.domain === 'tea').length,
     chocolate: materials.filter((m) => m.domain === 'chocolate').length,
@@ -568,7 +656,17 @@ function LibraryView() {
     compounds: compounds.length,
     sources: sources.length,
     links: materialCompoundLinks.length,
+    varieties: new Set(materials.map((m) => m.varietyId)).size,
+    origins: new Set(materials.map((m) => m.originId)).size,
+    notes: flavorNotes.length,
+    measuredLinks: materialCompoundLinks.filter((l) => l.tier === 'measured').length,
+    generalLinks: materialCompoundLinks.filter((l) => l.tier === 'general').length,
+    inferredLinks: materialCompoundLinks.filter((l) => l.tier === 'inferred').length,
   }
+  const q = sourceQuery.trim().toLowerCase()
+  const filteredSources = q
+    ? sources.filter((s) => `${s.title} ${s.authors} ${s.journal ?? ''}`.toLowerCase().includes(q))
+    : sources
   return (
     <section>
       <h2>文献・用語辞典</h2>
@@ -578,6 +676,10 @@ function LibraryView() {
         <div className="stat-card"><div className="stat-num">{counts.compounds}</div><div className="stat-label">化合物</div></div>
         <div className="stat-card"><div className="stat-num">{counts.sources}</div><div className="stat-label">出典</div></div>
         <div className="stat-card"><div className="stat-num">{counts.links}</div><div className="stat-label">素材×化合物リンク</div></div>
+        <div className="stat-card"><div className="stat-num">{counts.varieties}</div><div className="stat-label">品種・系統（種類数）</div></div>
+        <div className="stat-card"><div className="stat-num">{counts.origins}</div><div className="stat-label">産地（種類数）</div></div>
+        <div className="stat-card"><div className="stat-num">{counts.notes}</div><div className="stat-label">香味ノート（記述子）</div></div>
+        <div className="stat-card"><div className="stat-num">{counts.measuredLinks}</div><div className="stat-label">リンクの根拠内訳：実測 {counts.measuredLinks}／一般的知見 {counts.generalLinks}／推測 {counts.inferredLinks}</div></div>
       </div>
       <p className="muted">網羅率（分母を定義できない割合）は表示しません。未収録は「未報告」であり「存在しない」ではありません。</p>
       <h3>根拠区分の方針</h3>
@@ -589,7 +691,11 @@ function LibraryView() {
         ))}
       </dl>
       <h3>出典一覧</h3>
-      <SourceList ids={sources.map((s) => s.id)} />
+      <label>出典を絞り込む（題名・著者・誌名）
+        <input type="search" value={sourceQuery} onChange={(e) => setSourceQuery(e.target.value)} aria-label="出典の絞り込み" placeholder="例：cardamom" />
+      </label>
+      <p className="muted">{filteredSources.length}件／全{counts.sources}件</p>
+      {filteredSources.length ? <SourceList ids={filteredSources.map((s) => s.id)} /> : <p className="muted">条件に合う出典はありません。</p>}
     </section>
   )
 }

@@ -141,6 +141,15 @@ export function analyzePairing(selected: Material[]): PairingAnalysis {
 }
 
 /** 配合比率の検証（質量比前提。合計100%を維持する） */
+/** 均等配分の初期値。割り切れない場合は先頭の素材から1ずつ配り、合計を必ず100にする
+ * （例：3素材なら 34/33/33。切り捨てで99%にすると「合計不一致」が初期状態になるため） */
+export function defaultShares(count: number): number[] {
+  if (count <= 0) return []
+  const base = Math.floor(100 / count)
+  const rem = 100 - base * count
+  return Array.from({ length: count }, (_, i) => base + (i < rem ? 1 : 0))
+}
+
 export function validateRatios(ratios: Record<string, number>, materialIds: string[]): string | null {
   for (const id of materialIds) {
     const v = ratios[id]

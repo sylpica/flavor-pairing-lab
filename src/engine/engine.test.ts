@@ -1,11 +1,22 @@
 import { describe, it, expect } from 'vitest'
-import { analyzePairing, validateRatios } from './pairing'
+import { analyzePairing, validateRatios, defaultShares } from './pairing'
 import { evaluateRoast, evaluateExtraction } from './simulation'
 import { materialById } from '../data'
 
 const sencha = materialById('tea-sencha')!
 const dark = materialById('choco-dark-roasted')!
 const hojicha = materialById('tea-hojicha')!
+
+describe('比率の初期配分', () => {
+  it('2〜4素材で必ず合計100になる（99%のような初期不一致を作らない）', () => {
+    for (const n of [2, 3, 4]) {
+      const s = defaultShares(n)
+      expect(s).toHaveLength(n)
+      expect(s.reduce((a, b) => a + b, 0)).toBe(100)
+    }
+    expect(defaultShares(3)).toEqual([34, 33, 33])
+  })
+})
 
 describe('ペアリングエンジン', () => {
   it('2素材で分析でき、スコア的な数値を返さない', () => {
