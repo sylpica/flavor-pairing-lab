@@ -57,8 +57,8 @@ export const flavorNotes: FlavorNote[] = [
   { id: 'honey', categoryId: 'sweet-aroma', name: '蜂蜜', example: '蜂蜜のような甘い香り' },
   { id: 'wood', categoryId: 'woody-earthy', name: '木・樹皮', example: '木や樹皮のような香り' },
   { id: 'earth', categoryId: 'woody-earthy', name: '土', example: '雨上がりの土のような香り' },
-  { id: 'milk-note', categoryId: 'dairy', name: 'ミルク', example: '温かいミルクのような香り' },
-  { id: 'cream-note', categoryId: 'dairy', name: 'クリーム', example: '生クリームのようなまろやかな香り' },
+  { id: 'milk-note', categoryId: 'dairy', name: 'ミルキー', example: '乳香：温かいミルクを思わせる甘い香り' },
+  { id: 'cream-note', categoryId: 'dairy', name: 'クリーミー', example: '生クリームを思わせるまろやかな香り' },
 ]
 
 export const noteById = (id: string) => flavorNotes.find((n) => n.id === id)
