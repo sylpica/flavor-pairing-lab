@@ -79,11 +79,21 @@ function SectionHead({ no, en, title }: { no: string; en: string; title: string 
   )
 }
 
-/** ホイールを「図」として見せる枠（枠線つきパネル＋図キャプション） */
-function WheelFigure({ caption, children }: { caption: string; children: React.ReactNode }) {
+/** ホイールを「図」として見せる枠（枠線つきパネル＋図キャプション）。
+ *  statusLines を渡すと、ホイール（凡例を含む）の下に状態ブロックとして描く。
+ *  根拠区分・直接研究の有無などの状態情報は、独立した段落や単独バッジではなく
+ *  この凡例エリアへ集約する（初心者用 pairing でのユーザー指示を本アプリにも適用）。 */
+function WheelFigure({ caption, statusLines, children }: { caption: string; statusLines?: React.ReactNode[]; children: React.ReactNode }) {
   return (
     <figure className="wheel-figure">
       {children}
+      {statusLines && statusLines.length > 0 && (
+        <div className="wheel-status">
+          {statusLines.map((line, i) => (
+            <p key={i} className="wheel-status-line">{line}</p>
+          ))}
+        </div>
+      )}
       <figcaption className="wheel-caption">{caption}</figcaption>
     </figure>
   )
@@ -352,6 +362,15 @@ function PairingView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [analysis, activeIds.join(',')])
 
+  // 組み合わせ自体の根拠・状態は、相互作用節の独立段落ではなく組み合わせホイールの
+  // 凡例エリア（WheelFigure の statusLines）へ集約する。
+  const directStudyCount = analysis ? analysis.interactions.filter((i) => i.directStudy).length : 0
+  const comboStatusLine = analysis
+    ? (directStudyCount > 0
+      ? `この組み合わせ自体を対象にした直接研究があります（相互作用 ${directStudyCount} 件）`
+      : 'この組み合わせ自体を対象にした直接研究は未確認です。以下は一般的知見・推測による構成です。')
+    : null
+
   return (
     <section>
       <SectionHead no="01" en="PAIRING" title="ペアリング（2〜4素材）" />
@@ -435,7 +454,8 @@ function PairingView() {
               {wheelMode === 'taste' ? (
                 <>
                   {(() => { const mg = mergeSensations(activeMaterials); return (
-                    <WheelFigure caption="図．味わいホイール（味覚・口腔感覚のみ）。各素材の知見を表示用に重ねたもので、混合物そのものの実測ではありません。香りは含みません。">
+                    <WheelFigure caption="図．味わいホイール（味覚・口腔感覚のみ）。各素材の知見を表示用に重ねたもので、混合物そのものの実測ではありません。香りは含みません。"
+                      statusLines={comboStatusLine ? [comboStatusLine] : undefined}>
                       <TasteWheel sensations={mg.sensations} contributors={mg.contributors} />
                     </WheelFigure>
                   ) })()}
@@ -443,7 +463,8 @@ function PairingView() {
                 </>
               ) : (
               <>
-              <WheelFigure caption="図．組み合わせの香りホイール（香りのみ）。外側の輪は、選択中の素材で報告された化合物（濃い＝寄与の根拠あり／薄い＝組成・検出のみ）。味覚・口腔感覚は含みません。外側の輪の化合物はノート単位で描かれるため、複数ノートに関わる化合物は複数回現れます。">
+              <WheelFigure caption="図．組み合わせの香りホイール（香りのみ）。外側の輪は、選択中の素材で報告された化合物（濃い＝寄与の根拠あり／薄い＝組成・検出のみ）。味覚・口腔感覚は含みません。外側の輪の化合物はノート単位で描かれるため、複数ノートに関わる化合物は複数回現れます。"
+                statusLines={comboStatusLine ? [comboStatusLine] : undefined}>
                 <FlavorWheel entries={mergedProfile} onSelectNote={setNoteId} selectedNoteId={noteId}
                   compoundMaterialIds={activeIds} onSelectCompound={(id) => { window.location.hash = `#/compound/${id}` }} />
               </WheelFigure>
@@ -499,9 +520,6 @@ function PairingView() {
                 </>
               ) : <p className="muted">両素材で確認された共通化合物は未収録です。</p>}
               <h3 id="pair-interactions" className="anchor-h">組み合わせによる知覚変化（相互作用）</h3>
-              {!analysis.interactions.some((i) => i.directStudy) && (
-                <p className="direct-absence">この組み合わせ自体を対象にした直接研究は未確認です。以下は一般的知見・推測による構成です。</p>
-              )}
               {analysis.interactions.length ? (
                 <ul className="interaction-list">{analysis.interactions.map((i) => (
                   <li key={i.ruleId}>
@@ -552,6 +570,7 @@ function SearchView() {
   }, [cls, org, variety, domain])
 
   const resetAxis = () => { setCls(''); setOrg(''); setVariety(''); setNameQuery('') }
+  const hasFilters = Boolean(cls || org || variety || nameQuery.trim())
 
   return (
     <section>
@@ -561,6 +580,10 @@ function SearchView() {
           <button key={d} role="tab" aria-selected={domain === d} className={domain === d ? 'tab active' : 'tab'}
             onClick={() => { setDomain(d); resetAxis() }}>{DOMAIN_LABEL[d]}</button>
         ))}
+      </div>
+      <div className="axis-head">
+        <h3>分類・産地・品種（系統）で探す</h3>
+        <button type="button" onClick={resetAxis} disabled={!hasFilters}>リセット</button>
       </div>
       <div className="axis-selects">
         <label>分類
@@ -584,7 +607,6 @@ function SearchView() {
         <label>素材名
           <input type="search" value={nameQuery} onChange={(e) => setNameQuery(e.target.value)} aria-label="素材名で絞り込む" placeholder="例：山椒" />
         </label>
-        <button type="button" onClick={resetAxis}>絞り込みを解除</button>
       </div>
       <p className="axis-note muted">選択肢は、他の条件と組み合わせて存在するものだけが表示されます。</p>
       <div className="search-meta">
@@ -616,6 +638,9 @@ function MaterialDetail({ id }: { id: string }) {
   const [wheelMode, setWheelMode] = useState<'aroma' | 'taste'>('aroma')
   if (!m) return <p>素材が見つかりません。</p>
   const links = linksForMaterial(m.id)
+  // 素材全体の根拠区分は、仕様表の下に単独バッジで置かず、ホイール図の凡例エリアの
+  // 状態行として示す（香り／味わいの両図に同じ行を渡し、表示は常に1回だけになる）。
+  const tierStatusLine = <>この素材の根拠区分：<TierBadge tier={m.evidenceTier} /></>
   return (
     <section>
       <p><a href="#/search">← 素材検索へ</a></p>
@@ -632,7 +657,6 @@ function MaterialDetail({ id }: { id: string }) {
         {m.processing && <div className="spec-cell"><dt>加工</dt><dd>{m.processing}</dd></div>}
         {m.cacaoPercent && <div className="spec-cell"><dt>カカオ分</dt><dd>{m.cacaoPercent}%</dd></div>}
       </dl>
-      <TierBadge tier={m.evidenceTier} />
       <nav className="jump-chips" aria-label="このページのセクション">
         {([['mat-wheel', 'ホイール'], ['mat-sensations', '味覚・口腔感覚'], ['mat-compounds', '化合物'], ['mat-simulation', 'シミュレーション'], ['mat-sources', '出典']] as const).map(([target, label]) => (
           <button key={target} type="button" className="jump-chip" onClick={() => scrollToId(target)}>{label}</button>
@@ -648,14 +672,16 @@ function MaterialDetail({ id }: { id: string }) {
       </div>
       {wheelMode === 'taste' ? (
         <>
-          <WheelFigure caption="図．味わいホイール（味覚・口腔感覚のみ）。香りは含みません。出典つきの詳細は下の「味覚・口腔感覚」も参照してください。">
+          <WheelFigure caption="図．味わいホイール（味覚・口腔感覚のみ）。香りは含みません。出典つきの詳細は下の「味覚・口腔感覚」も参照してください。"
+            statusLines={[tierStatusLine]}>
             <TasteWheel sensations={m.sensations} />
           </WheelFigure>
           <p className="muted">味覚・口腔感覚だけのホイールです（香りとは混ぜていません）。出典つきの詳細は下の「味覚・口腔感覚」も参照してください。</p>
         </>
       ) : (
       <>
-      <WheelFigure caption="図．香りホイール（香りのみ）。外側の輪は、この素材で報告された化合物（濃い＝寄与の根拠あり／薄い＝組成・検出のみ）。味覚・口腔感覚は含みません。外側の輪の化合物はノート単位で描かれるため、複数ノートに関わる化合物は複数回現れます。">
+      <WheelFigure caption="図．香りホイール（香りのみ）。外側の輪は、この素材で報告された化合物（濃い＝寄与の根拠あり／薄い＝組成・検出のみ）。味覚・口腔感覚は含みません。外側の輪の化合物はノート単位で描かれるため、複数ノートに関わる化合物は複数回現れます。"
+        statusLines={[tierStatusLine]}>
         <FlavorWheel entries={m.profile} onSelectNote={setNoteId} selectedNoteId={noteId}
           compoundMaterialIds={[m.id]} onSelectCompound={(id) => { window.location.hash = `#/compound/${id}` }} />
       </WheelFigure>

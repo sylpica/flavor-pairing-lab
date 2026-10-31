@@ -245,4 +245,105 @@ describe('画面レンダリング', () => {
     render(<App />)
     expect(screen.getAllByText(/焙煎済み/).length).toBeGreaterThan(0)
   })
+
+  /* ===== 第9ラウンド：状態情報の凡例集約＋検索リセットの見出し行 ===== */
+
+  it('素材詳細では根拠区分の状態行がホイール図の凡例の下にあり、仕様表の下に単独バッジが無い（R9-1）', () => {
+    window.location.hash = '#/material/tea-sencha'
+    const { container } = render(<App />)
+    const figure = container.querySelector('figure.wheel-figure')
+    expect(figure).toBeTruthy()
+    const status = figure!.querySelector('.wheel-status')
+    expect(status).toBeTruthy()
+    expect(status!.textContent).toContain('この素材の根拠区分：')
+    // 状態行の中に、従来の TierBadge と同じ表示（バッジ）が入っている
+    expect(status!.querySelector('.badge')).toBeTruthy()
+    // 状態ブロックは凡例（.wheel-legend）より後（凡例の下）にある
+    const legend = figure!.querySelector('.wheel-legend')
+    expect(legend).toBeTruthy()
+    expect(legend!.compareDocumentPosition(status!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    // 仕様表の下・ホイールより上に、素材全体の根拠区分バッジが単独で置かれていない
+    expect(container.querySelector('section > .badge')).toBeNull()
+    // 状態行はホイールブロックに1回だけ出る（香り／味わい切替でも二重にならない）
+    expect(screen.getAllByText(/この素材の根拠区分/)).toHaveLength(1)
+    fireEvent.click(screen.getByRole('tab', { name: '味わい' }))
+    expect(screen.getAllByText(/この素材の根拠区分/)).toHaveLength(1)
+    expect(container.querySelector('figure.wheel-figure .wheel-status')!.textContent).toContain('この素材の根拠区分：')
+  })
+
+  // ペアリングのスロットを2つにそろえ、ピッカーで素材を指定する共通手順
+  const reduceSlotsTo2 = () => {
+    for (let i = 0; i < 4 && screen.getAllByLabelText(/の比率（%）$/).length > 2; i++) {
+      fireEvent.click(screen.getAllByRole('button', { name: /を外す$/ })[0])
+    }
+  }
+  const pickSlot = (slotLabel: string, query: string, optionName: string) => {
+    const input = screen.getByLabelText(slotLabel)
+    fireEvent.change(input, { target: { value: query } })
+    fireEvent.pointerDown(screen.getByRole('option', { name: optionName }))
+  }
+
+  it('ペアリング：直接研究が無い組み合わせでは未確認の状態行がホイールの凡例エリアにあり、相互作用節に独立段落が無い（R9-2）', () => {
+    window.location.hash = '#/pairing'
+    const { container } = render(<App />)
+    // 直接研究ルールが発火しない組み合わせにそろえる
+    // （茶×チョコ／乳製品の組／強い辛味、のいずれでもないスパイス×ハーブ）
+    reduceSlotsTo2()
+    pickSlot('素材1の選択', 'カルダ', 'カルダモン（グリーン）')
+    pickSlot('素材2の選択', 'カモ', 'カモミール（ジャーマン）')
+    // 相互作用セクションの独立段落（.direct-absence）は廃止されている
+    expect(container.querySelector('.direct-absence')).toBeNull()
+    // 未確認の状態行が、組み合わせホイールの凡例エリア（状態ブロック）に出る
+    const figure = container.querySelector('figure.wheel-figure')
+    expect(figure).toBeTruthy()
+    const status = figure!.querySelector('.wheel-status')
+    expect(status).toBeTruthy()
+    expect(status!.textContent).toContain('この組み合わせ自体を対象にした直接研究は未確認です。以下は一般的知見・推測による構成です。')
+    // 状態行は1回だけ（味わいモードに切り替えても二重にならない）
+    expect(screen.getAllByText(/この組み合わせ自体を対象にした直接研究は未確認です/)).toHaveLength(1)
+    fireEvent.click(screen.getByRole('tab', { name: '味わい' }))
+    expect(screen.getAllByText(/この組み合わせ自体を対象にした直接研究は未確認です/)).toHaveLength(1)
+    expect(container.querySelector('.direct-absence')).toBeNull()
+  })
+
+  it('ペアリング：直接研究がある組み合わせでは、その旨と実件数がホイールの状態行に出る（R9-2）', () => {
+    window.location.hash = '#/pairing'
+    const { container } = render(<App />)
+    reduceSlotsTo2()
+    // 片方のスロットを対象外の素材に退避してから、お茶×チョコの組にそろえる
+    pickSlot('素材1の選択', 'ローズ', 'ローズマリー')
+    pickSlot('素材2の選択', '煎茶', '煎茶')
+    pickSlot('素材1の選択', 'ダーク', 'ダークチョコレート（焙煎）')
+    expect(container.querySelector('.direct-absence')).toBeNull()
+    const status = container.querySelector('figure.wheel-figure .wheel-status')
+    expect(status).toBeTruthy()
+    expect(status!.textContent).toMatch(/この組み合わせ自体を対象にした直接研究があります（相互作用 [1-9]\d* 件）/)
+    expect(screen.getAllByText(/この組み合わせ自体を対象にした直接研究があります/)).toHaveLength(1)
+  })
+
+  it('素材検索のリセットボタン（見出しの右）で三軸と素材名がすべて初期状態に戻る（R9-3）', () => {
+    window.location.hash = '#/search'
+    render(<App />)
+    expect(screen.getByRole('heading', { name: '分類・産地・品種（系統）で探す' })).toBeTruthy()
+    const resetBtn = screen.getByRole('button', { name: 'リセット' }) as HTMLButtonElement
+    const clsSel = screen.getByLabelText('分類') as HTMLSelectElement
+    const orgSel = screen.getByLabelText('産地') as HTMLSelectElement
+    const varSel = screen.getByLabelText('品種・系統') as HTMLSelectElement
+    const nameInput = screen.getByLabelText('素材名で絞り込む') as HTMLInputElement
+    // 条件を設定する（各セレクトは現在の候補の先頭の実値を選ぶ）
+    if (clsSel.options.length > 1) fireEvent.change(clsSel, { target: { value: clsSel.options[1].value } })
+    if (orgSel.options.length > 1) fireEvent.change(orgSel, { target: { value: orgSel.options[1].value } })
+    if (varSel.options.length > 1) fireEvent.change(varSel, { target: { value: varSel.options[1].value } })
+    fireEvent.change(nameInput, { target: { value: 'かま' } })
+    expect(resetBtn.disabled).toBe(false)
+    fireEvent.click(resetBtn)
+    expect(clsSel.value).toBe('')
+    expect(orgSel.value).toBe('')
+    expect(varSel.value).toBe('')
+    expect(nameInput.value).toBe('')
+    // 条件が無くなるとボタンは無効化される
+    expect(resetBtn.disabled).toBe(true)
+    // 旧「絞り込みを解除」ボタンは廃止されている
+    expect(screen.queryByRole('button', { name: '絞り込みを解除' })).toBeNull()
+  })
 })
