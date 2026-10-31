@@ -10,6 +10,24 @@ import { evaluateRoast, evaluateExtraction } from './engine/simulation'
 import { FlavorWheel } from './components/FlavorWheel'
 import { SensationChart } from './components/SensationChart'
 
+/**
+ * 画面遷移（アンマウント）をまたいで選択を保持する state。
+ * 初心者用での実機FB「選択は戻っても保持」を反映したもの。
+ * 保持はメモリ内のみで、永続保存（localStorage等）はしない。
+ */
+const memoryStore = new Map<string, unknown>()
+export function usePersistentState<T>(key: string, initial: T) {
+  const [value, setValue] = useState<T>(() => (memoryStore.has(key) ? (memoryStore.get(key) as T) : initial))
+  const set = (v: T | ((prev: T) => T)) => {
+    setValue((prev) => {
+      const next = typeof v === 'function' ? (v as (p: T) => T)(prev) : v
+      memoryStore.set(key, next)
+      return next
+    })
+  }
+  return [value, set] as const
+}
+
 function useHashRoute() {
   const [hash, setHash] = useState(() => window.location.hash || '#/pairing')
   useEffect(() => {
@@ -67,9 +85,9 @@ export default function App() {
 
 /* ============ ペアリング ============ */
 function PairingView() {
-  const [selectedIds, setSelectedIds] = useState<string[]>(['choco-dark-roasted', 'tea-sencha'])
-  const [mode, setMode] = useState<PairingMode>('harmony')
-  const [ratios, setRatios] = useState<Record<string, number>>({})
+  const [selectedIds, setSelectedIds] = usePersistentState<string[]>('pairing:selectedIds', ['choco-dark-roasted', 'tea-sencha'])
+  const [mode, setMode] = usePersistentState<PairingMode>('pairing:mode', 'harmony')
+  const [ratios, setRatios] = usePersistentState<Record<string, number>>('pairing:ratios', {})
   const [noteId, setNoteId] = useState<string | null>(null)
 
   const selected = selectedIds.map((id) => materialById(id)).filter((m): m is Material => !!m)
@@ -222,10 +240,10 @@ function PairingView() {
 
 /* ============ 素材検索（三軸） ============ */
 function SearchView() {
-  const [domain, setDomain] = useState<Domain>('tea')
-  const [cls, setCls] = useState('')
-  const [org, setOrg] = useState('')
-  const [variety, setVariety] = useState('')
+  const [domain, setDomain] = usePersistentState<Domain>('search:domain', 'tea')
+  const [cls, setCls] = usePersistentState('search:cls', '')
+  const [org, setOrg] = usePersistentState('search:org', '')
+  const [variety, setVariety] = usePersistentState('search:variety', '')
 
   const candidates = (key: 'classificationId' | 'originId' | 'varietyId', labelKey: 'classification' | 'origin' | 'variety') => {
     const pool = materials.filter((m) => m.domain === domain
@@ -238,6 +256,15 @@ function SearchView() {
   }
   const results = materials.filter((m) => m.domain === domain
     && (!cls || m.classificationId === cls) && (!org || m.originId === org) && (!variety || m.varietyId === variety))
+
+  // 初心者用での指摘「選択を変えても表示が変わらない／ずれる」への対策：
+  // 他軸の変更で候補から外れた選択値は自動でリセットし、表示と状態のずれを防ぐ。
+  // 選べない選択肢はグレーアウトではなく候補から隠す方式で統一している。
+  useEffect(() => {
+    if (cls && !candidates('classificationId', 'classification').some((o) => o.id === cls)) setCls('')
+    if (org && !candidates('originId', 'origin').some((o) => o.id === org)) setOrg('')
+    if (variety && !candidates('varietyId', 'variety').some((o) => o.id === variety)) setVariety('')
+  }, [cls, org, variety, domain])
 
   const resetAxis = () => { setCls(''); setOrg(''); setVariety('') }
 
@@ -307,9 +334,7 @@ function MaterialDetail({ id }: { id: string }) {
         {m.cacaoPercent && <div className="spec-cell"><dt>カカオ分</dt><dd>{m.cacaoPercent}%</dd></div>}
       </dl>
       <TierBadge tier={m.evidenceTier} />
-      <p>{m.description}</p>
-      <p className="scope-note">{m.scopeNote}</p>
-      {m.safetyNote && <p className="warning" role="note">安全性：{m.safetyNote}</p>}
+      {/* 初心者用での実機FB反映：説明文より先にホイールをタイトル直下へ */}
       <h3>香りホイール（香りのみ）</h3>
       <FlavorWheel entries={m.profile} onSelectNote={setNoteId} selectedNoteId={noteId}
         compoundMaterialIds={[m.id]} onSelectCompound={(id) => { window.location.hash = `#/compound/${id}` }} />
@@ -324,6 +349,9 @@ function MaterialDetail({ id }: { id: string }) {
           </ul>
         </div>
       )}
+      <p>{m.description}</p>
+      <p className="scope-note">{m.scopeNote}</p>
+      {m.safetyNote && <p className="warning" role="note">安全性：{m.safetyNote}</p>}
       <h3>味覚・口腔感覚</h3>
       <SensationChart material={m} />
       <h3>関連する化合物</h3>
@@ -431,7 +459,7 @@ function SimulationPanel({ material: m }: { material: Material }) {
 
 /* ============ 香味化学（双方向連携） ============ */
 function ChemistryView() {
-  const [materialId, setMaterialId] = useState('tea-sencha')
+  const [materialId, setMaterialId] = usePersistentState('chemistry:materialId', 'tea-sencha')
   const [noteId, setNoteId] = useState<string | null>(null)
   const m = materialById(materialId)
   const noteCompounds = noteId ? compounds.filter((c) => c.noteIds.includes(noteId)) : []
