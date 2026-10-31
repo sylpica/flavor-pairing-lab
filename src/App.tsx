@@ -37,6 +37,10 @@ export function usePersistentState<T>(key: string, initial: T) {
   return [value, set] as const
 }
 
+/** 数値入力の空欄は 0 ではなく NaN として保持し、エンジン側の「数値が入力されていません」警告につなげる（監査 K-04） */
+const parseNumInput = (v: string) => (v.trim() === '' ? NaN : Number(v))
+const numInputValue = (v: number) => (Number.isNaN(v) ? '' : v)
+
 const scrollPositions = new Map<string, number>()
 function useHashRoute() {
   const [hash, setHash] = useState(() => window.location.hash || '#/pairing')
@@ -663,6 +667,8 @@ function MaterialDetail({ id }: { id: string }) {
   const m = materialById(id)
   const [noteId, setNoteId] = useState<string | null>(null)
   const [wheelMode, setWheelMode] = useState<'aroma' | 'taste'>('taste')
+  // 別の素材へ遷移したら、前の素材で開いたノート詳細パネルを引き継がない（監査 K-03）
+  useEffect(() => { setNoteId(null) }, [id])
   if (!m) return <p>素材が見つかりません。</p>
   const links = linksForMaterial(m.id)
   // 素材全体の根拠区分は、仕様表の下に単独バッジで置かず、ホイール図の凡例エリアの
@@ -831,7 +837,9 @@ function CaffeineModelBlock({ tempC, seconds }: { tempC: number; seconds: number
       <p>
         抽出割合（平衡比）は茶葉の量には依存しないモデルです。量の変更は茶液の濃さ（素材と水の比）にのみ反映されます。
       </p>
-      {k === null || current === null ? (
+      {Number.isNaN(tempC) || Number.isNaN(seconds) ? (
+        <p className="warning" role="alert">数値が入力されていません</p>
+      ) : k === null || current === null ? (
         <p className="warning" role="alert">
           抽出温度がモデルの適用範囲（{CAFFEINE_MODEL_TEMP_MIN_C}–{CAFFEINE_MODEL_TEMP_MAX_C}℃）の外のため、モデル計算は行いません。範囲外への外挿はしません。
         </p>
@@ -1025,15 +1033,15 @@ function SimulationPanel({ material: m }: { material: Material }) {
           <div className="sim-control">
             <span className="sim-control-label">焙煎温度</span>
             <input type="range" min={60} max={260} value={roastTemp} onChange={(e) => setRoastTemp(Number(e.target.value))} aria-label="焙煎温度" />
-            <span className="sim-value"><input type="number" value={roastTemp} onChange={(e) => setRoastTemp(Number(e.target.value))} aria-label="焙煎温度（数値）" /><span aria-hidden="true">℃</span></span>
+            <span className="sim-value"><input type="number" value={numInputValue(roastTemp)} onChange={(e) => setRoastTemp(parseNumInput(e.target.value))} aria-label="焙煎温度（数値）" /><span aria-hidden="true">℃</span></span>
           </div>
           <div className="sim-control">
             <span className="sim-control-label">焙煎時間</span>
             <input type="range" min={1} max={120} value={roastMin} onChange={(e) => setRoastMin(Number(e.target.value))} aria-label="焙煎時間" />
-            <span className="sim-value"><input type="number" value={roastMin} onChange={(e) => setRoastMin(Number(e.target.value))} aria-label="焙煎時間（数値）" /><span aria-hidden="true">分</span></span>
+            <span className="sim-value"><input type="number" value={numInputValue(roastMin)} onChange={(e) => setRoastMin(parseNumInput(e.target.value))} aria-label="焙煎時間（数値）" /><span aria-hidden="true">分</span></span>
           </div>
           <div className="sim-result">
-            <p className="sim-summary" aria-live="polite">現在の条件：焙煎温度 {roastTemp}℃（{roastTemp < 140 ? '低温側' : roastTemp < 200 ? '中温側' : '高温側'}）・焙煎時間 {roastMin}分</p>
+            <p className="sim-summary" aria-live="polite">現在の条件：焙煎温度 {Number.isNaN(roastTemp) ? '未入力' : `${roastTemp}℃（${roastTemp < 140 ? '低温側' : roastTemp < 200 ? '中温側' : '高温側'}）`}・焙煎時間 {Number.isNaN(roastMin) ? '未入力' : `${roastMin}分`}</p>
             <p className="muted">{roast.statusNote}</p>
             {roast.warnings.map((w) => <p key={w} className="warning" role="alert">{w}</p>)}
             <TendencyGroups tendencies={roast.tendencies} />
@@ -1052,23 +1060,23 @@ function SimulationPanel({ material: m }: { material: Material }) {
           <div className="sim-control">
             <span className="sim-control-label">抽出温度</span>
             <input type="range" min={20} max={100} value={extTemp} onChange={(e) => setExtTemp(Number(e.target.value))} aria-label="抽出温度" />
-            <span className="sim-value"><input type="number" value={extTemp} onChange={(e) => setExtTemp(Number(e.target.value))} aria-label="抽出温度（数値）" /><span aria-hidden="true">℃</span></span>
+            <span className="sim-value"><input type="number" value={numInputValue(extTemp)} onChange={(e) => setExtTemp(parseNumInput(e.target.value))} aria-label="抽出温度（数値）" /><span aria-hidden="true">℃</span></span>
           </div>
           <div className="sim-control">
             <span className="sim-control-label">抽出時間</span>
             <input type="range" min={5} max={600} step={5} value={extSec} onChange={(e) => setExtSec(Number(e.target.value))} aria-label="抽出時間" />
-            <span className="sim-value"><input type="number" value={extSec} onChange={(e) => setExtSec(Number(e.target.value))} aria-label="抽出時間（数値）" /><span aria-hidden="true">秒</span></span>
+            <span className="sim-value"><input type="number" value={numInputValue(extSec)} onChange={(e) => setExtSec(parseNumInput(e.target.value))} aria-label="抽出時間（数値）" /><span aria-hidden="true">秒</span></span>
           </div>
           <div className="sim-control">
             <span className="sim-control-label">素材量</span>
-            <span className="sim-value"><input type="number" min={0.5} step={0.5} value={dose} onChange={(e) => setDose(Number(e.target.value))} aria-label="素材量" /><span aria-hidden="true">g</span></span>
+            <span className="sim-value"><input type="number" min={0.5} step={0.5} value={numInputValue(dose)} onChange={(e) => setDose(parseNumInput(e.target.value))} aria-label="素材量" /><span aria-hidden="true">g</span></span>
           </div>
           <div className="sim-control">
             <span className="sim-control-label">湯量</span>
-            <span className="sim-value"><input type="number" min={10} step={10} value={water} onChange={(e) => setWater(Number(e.target.value))} aria-label="湯量" /><span aria-hidden="true">ml</span></span>
+            <span className="sim-value"><input type="number" min={10} step={10} value={numInputValue(water)} onChange={(e) => setWater(parseNumInput(e.target.value))} aria-label="湯量" /><span aria-hidden="true">ml</span></span>
           </div>
           <div className="sim-result">
-            <p className="sim-summary" aria-live="polite">現在の条件：抽出温度 {extTemp}℃（{extTemp < 70 ? '低温側' : extTemp < 90 ? '中温側' : '高温側'}）・抽出時間 {extSec}秒・素材量 {dose}g／湯量 {water}ml{dose > 0 ? `（約 1:${Math.round(water / dose)}）` : ''}</p>
+            <p className="sim-summary" aria-live="polite">現在の条件：抽出温度 {Number.isNaN(extTemp) ? '未入力' : `${extTemp}℃（${extTemp < 70 ? '低温側' : extTemp < 90 ? '中温側' : '高温側'}）`}・抽出時間 {Number.isNaN(extSec) ? '未入力' : `${extSec}秒`}・素材量 {Number.isNaN(dose) ? '未入力' : `${dose}g`}／湯量 {Number.isNaN(water) ? '未入力' : `${water}ml`}{dose > 0 ? `（約 1:${Math.round(water / dose)}）` : ''}</p>
             <p className="muted">{ext.statusNote}</p>
             {ext.warnings.map((w) => <p key={w} className="warning" role="alert">{w}</p>)}
             {m.classificationId === 'black-tea' && <CaffeineModelBlock tempC={extTemp} seconds={extSec} />}
@@ -1152,11 +1160,14 @@ function CompoundDetail({ id }: { id: string }) {
     <section>
       <p><a href="#/chemistry">← 香味化学へ</a></p>
       <h2><span className="h2-kicker" aria-hidden="true">COMPOUND FILE — 化合物詳細</span>{c.nameJa} <span className="en-name">{c.nameEn}</span></h2>
-      <p className="material-meta">
-        分類：{c.compoundClass}｜{c.volatile ? '揮発性' : '非揮発性'}
-        {c.cas ? `｜CAS: ${c.cas}` : ''}{c.formula ? `｜化学式: ${c.formula}` : ''}{c.pubchemCid ? `｜PubChem CID: ${c.pubchemCid}` : ''}
-        {c.aliases.length ? `｜別名: ${c.aliases.join('、')}` : ''}
-      </p>
+      <dl className="spec-table">
+        <div className="spec-cell"><dt>分類</dt><dd>{c.compoundClass}</dd></div>
+        <div className="spec-cell"><dt>揮発性</dt><dd>{c.volatile ? '揮発性' : '非揮発性'}</dd></div>
+        {c.cas && <div className="spec-cell"><dt>CAS</dt><dd>{c.cas}</dd></div>}
+        {c.formula && <div className="spec-cell"><dt>化学式</dt><dd>{c.formula}</dd></div>}
+        {c.pubchemCid && <div className="spec-cell"><dt>PubChem CID</dt><dd>{c.pubchemCid}</dd></div>}
+        {c.aliases.length > 0 && <div className="spec-cell"><dt>別名</dt><dd>{c.aliases.join('、')}</dd></div>}
+      </dl>
       <h3>化合物単体の香り・味の知見</h3>
       <p>{c.sensoryKnowledge}</p>
       <h3>関連する香り</h3>

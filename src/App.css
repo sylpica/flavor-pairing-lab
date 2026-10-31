@@ -169,8 +169,8 @@ button { transition: border-color .15s ease, background-color .15s ease, color .
 .axis-head button { min-height: 44px; padding: 8px 18px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--ink-soft); cursor: pointer; font-size: 0.88rem; }
 .axis-head button:hover:not(:disabled) { border-color: var(--accent); color: var(--ink); }
 .axis-head button:disabled { opacity: 0.55; cursor: not-allowed; }
-.material-list { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 14px; }
-.material-card { border: 1px solid var(--line); border-radius: 12px; background: var(--card); padding: 16px 18px; box-shadow: var(--shadow); transition: transform .15s ease, box-shadow .15s ease; }
+.material-list { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(270px, 100%), 1fr)); gap: 14px; }
+.material-card { border: 1px solid var(--line); border-radius: 12px; background: var(--card); padding: 16px 18px; box-shadow: var(--shadow); transition: transform .15s ease, box-shadow .15s ease; min-width: 0; overflow-wrap: break-word; }
 .material-card:hover { transform: translateY(-2px); }
 .material-card h3 { margin: 0 0 6px; }
 .material-meta { color: var(--muted); font-size: 0.86rem; display: block; line-height: 1.6; }

@@ -28,17 +28,18 @@ describe('文献画面の出典マージ（台帳と再確認済みの重複除�
     expect(m.ledgerKept.map((s) => s.id)).toEqual(['l2'])
   })
 
-  it('実データ：台帳と重複する14件が除去され、総数は790件になる', () => {
+  it('実データ：台帳と重複する14件が除去され、総数は792件になる', () => {
     const m = mergeLibrarySources(sources, pairingImportedSources)
-    // 第11ラウンド後の実測値（2026-11-01）：再確認済み332件（台帳からの卒業9件＋新規8件）、
-    // 台帳472件（卒業9件を除去）。重複除去は13→14件：台帳の wang-2022-dahongpao-sensomics の
-    // 題名を実題名に修正した（書誌修正6件の一つ）ことで、再確認済み側の同一論文と
-    // タイトル＋年が一致するようになり、隠れていた重複が表面化したため。
-    // 総数 = 332 + 472 − 14 = 790。
-    expect(sources.length).toBe(332)
+    // 第13ラウンド監査修正後の実測値（2026-11-01）：再確認済み334件（第11ラウンド後の
+    // 332件に、監査 A-03 の price-spitzer-1993 と A-02 の acimovic-2022 を新規登録）。
+    // 台帳472件（件数不変。Ding 2025・Zhang 2022 の記録差し替えと takimoto の年次修正、
+    // うち2件の verified 格上げ bibliographic→abstract を含む）。重複除去は14件のまま
+    // （差し替えた題名はいずれも再確認済み側と一致しない）。
+    // 総数 = 334 + 472 − 14 = 792。
+    expect(sources.length).toBe(334)
     expect(pairingImportedSources.length).toBe(472)
     expect(m.removedCount).toBe(14)
-    expect(m.sources.length).toBe(790)
+    expect(m.sources.length).toBe(792)
     // 除去後は、台帳側に残った出典が再確認済みとタイトル＋年で重複していない
     const verifiedKeys = new Set(sources.map((s) => sourceMatchKey(s.title, s.year)))
     for (const s of m.ledgerKept) expect(verifiedKeys.has(sourceMatchKey(s.title, s.year))).toBe(false)

@@ -162,8 +162,8 @@ export const expansionTeaSources: Source[] = [
     doi: '10.1016/j.fochx.2023.100730',
     url: 'https://doi.org/10.1016/j.fochx.2023.100730',
     scope: '烏龍茶適性品種（黄旦・鉄観音・梅占）と不適性品種を同一清香製程で比較し、AEDA＋再構成・欠落系で寄与を検証。適性品種ではジャスミンラクトン、インドール等の FD が高い傾向。香気形成の主段階は揺青。',
-    limits: '内容は pairing 記録ベース（書誌・タイトルは統合時に PMC レコードで確認）。品種群の比較であり、単一品種の固定プロファイルの根拠にはならない。',
-    verified: 'bibliographic',
+    limits: 'PMC 全文で確認（2026-11-01 監査）。AEDA・再構成・欠落試験は実施されているが、欠落試験は黄旦の再構成系のみで、鉄観音個別試料での欠落検証はない。品種群の比較であり、単一品種の固定プロファイルの根拠にはならない。',
+    verified: 'full',
   },
   {
     id: 'song-2025-dancong-sensomics', kind: 'original',

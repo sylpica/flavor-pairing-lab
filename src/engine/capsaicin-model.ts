@@ -22,6 +22,8 @@
 //   照合: 70℃・8時間の二次モデル予測保持率は約 73.6%
 //   （原著の実測保持率 75.7% は一次反応フィットの値であり、本モデルには混用しない）。
 
+/** パラメータ原著の出典 ID（出典レジストリに実在することをテストで検証する） */
+export const CAPSAICIN_MODEL_SOURCE_ID = 'arifin-djaeni-2018-capsaicin-drying-kinetics'
 /** Table 3 のアンカー点（温度℃、k は (µg/g)⁻¹·h⁻¹） */
 export const CAPSAICIN_MODEL_ANCHORS: readonly { tempC: number; kPerUgPerGPerHour: number }[] = [
   { tempC: 40, kPerUgPerGPerHour: 7e-6 },

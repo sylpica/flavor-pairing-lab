@@ -25,6 +25,8 @@
 //   なお原著本文の叙述（60℃・24時間で50%以上分解、100℃で2時間以内に平衡到達等）は
 //   Table 1 の定数から計算される半減期と整合しないため、モデル・テストには使っていない。
 
+/** パラメータ原著の出典 ID（出典レジストリに実在することをテストで検証する） */
+export const GINGEROL_MODEL_SOURCE_ID = 'bhattarai-2001-gingerol-shogaol-kinetics'
 /** Table 1 のアンカー点（温度℃、Kf・Kr は h⁻¹） */
 export const GINGEROL_MODEL_ANCHORS: readonly { tempC: number; kfPerHour: number; krPerHour: number }[] = [
   { tempC: 37, kfPerHour: 0.0011, krPerHour: 0.0035 },

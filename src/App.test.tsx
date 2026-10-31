@@ -447,4 +447,27 @@ describe('画面レンダリング', () => {
     expect(legendText).toContain('化合物：')
     expect(legendText).toContain('リナロール')
   })
+
+  it('素材詳細で開いたノート詳細パネルは、別の素材へ遷移したら閉じる（監査 K-03）', () => {
+    window.location.hash = '#/material/tea-sencha'
+    const { container } = render(<App />)
+    fireEvent.click(screen.getByRole('tab', { name: '香り' }))
+    const legendBtn = container.querySelector('.wheel-legend .legend-btn')
+    expect(legendBtn).toBeTruthy()
+    fireEvent.click(legendBtn!)
+    expect(container.querySelector('.note-detail')).toBeTruthy()
+    window.location.hash = '#/material/tea-hojicha'
+    fireEvent(window, new Event('hashchange'))
+    expect(container.querySelector('.note-detail')).toBeNull()
+  })
+
+  it('焙煎温度の数値欄を空欄にすると「数値が入力されていません」の警告が出て、0℃扱いにならない（監査 K-04）', () => {
+    window.location.hash = '#/material/spice-cumin'
+    render(<App />)
+    const input = screen.getByLabelText('焙煎温度（数値）') as HTMLInputElement
+    fireEvent.change(input, { target: { value: '' } })
+    expect(input.value).toBe('')
+    expect(screen.getByText(/数値が入力されていません/)).toBeTruthy()
+    expect(screen.queryByText(/焙煎温度 0℃/)).toBeNull()
+  })
 })

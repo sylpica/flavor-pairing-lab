@@ -9,6 +9,9 @@ import { CLASSIFICATION_LABELS, ORIGIN_LABELS, VARIETY_LABELS } from './axis-lab
 import { pairingImportedSources } from './sources-pairing-import'
 import { pairingBiblioNotes } from './biblio-notes-pairing'
 import { materialYomi } from './material-yomi'
+import { CAFFEINE_MODEL_SOURCE_ID } from '../engine/caffeine-model'
+import { GINGEROL_MODEL_SOURCE_ID } from '../engine/gingerol-model'
+import { CAPSAICIN_MODEL_SOURCE_ID } from '../engine/capsaicin-model'
 
 const sourceIds = new Set(sources.map((s) => s.id))
 const materialIds = new Set(materials.map((m) => m.id))
@@ -113,5 +116,29 @@ describe('データ整合性（全件検証）', () => {
       expect(s.title.length).toBeGreaterThan(0)
       expect(s.authors.length).toBeGreaterThan(0)
     }
+  })
+})
+
+describe('監査（第13ラウンド）修正の回帰防止', () => {
+  it('contribution/measured リンクが bibliographic のみの出典に依拠しない（A-01）', () => {
+    const byId = new Map(sources.map((s) => [s.id, s]))
+    for (const l of materialCompoundLinks) {
+      if (l.kind !== 'contribution' || l.tier !== 'measured') continue
+      const levels = l.sourceIds.map((id) => byId.get(id)?.verified)
+      expect(
+        levels.some((v) => v === 'full' || v === 'abstract'),
+        `${l.materialId}×${l.compoundId} の出典確認レベル: ${levels.join(',')}`,
+      ).toBe(true)
+    }
+  })
+  it('出典の著者欄にプレースホルダ（調査ファイル参照）が残っていない（A-02）', () => {
+    for (const s of [...sources, ...pairingImportedSources]) {
+      expect(s.authors.includes('調査ファイル参照'), `${s.id} の著者欄`).toBe(false)
+    }
+  })
+  it('数値モデル3件の原著出典 ID が出典レジストリに実在する（A-03）', () => {
+    expect(sourceIds.has(CAFFEINE_MODEL_SOURCE_ID), CAFFEINE_MODEL_SOURCE_ID).toBe(true)
+    expect(sourceIds.has(GINGEROL_MODEL_SOURCE_ID), GINGEROL_MODEL_SOURCE_ID).toBe(true)
+    expect(sourceIds.has(CAPSAICIN_MODEL_SOURCE_ID), CAPSAICIN_MODEL_SOURCE_ID).toBe(true)
   })
 })

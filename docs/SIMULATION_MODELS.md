@@ -40,12 +40,12 @@ Ct：時刻 t の抽出液中濃度、C∞：平衡濃度、k：一次速度定�
 
 | パラメータ | 値 | 出典 |
 |---|---|---|
-| k(80 ℃) | 0.99 min⁻¹ | 南アフリカ産紅茶（粒度 1.40–2.00 mm、水抽出、HPLC 測定）の温度依存の実測報告（Price RD；抄録で値を確認） |
+| k(80 ℃) | 0.99 min⁻¹ | 南アフリカ産紅茶（粒度 1.40–2.00 mm、水抽出、HPLC 測定）の温度依存の実測報告（Price WE & Spitzer JC 1993, *Food Chemistry* 46(2):133–136；抄録で値を確認） |
 | Ea | 40.3 kJ/mol | 同上（k と同一研究内で対になった値を 1 組として採用し、研究間の値を混ぜない） |
 | 式の出典 | — | Spiro & Jago 1982, *J. Chem. Soc., Faraday Trans. 1* 78(1):295–305（出典 ID: spiro-jago-1982-tea-infusion-model） |
 | 相互照合 | Ea = 45 ± 2 kJ/mol（ルース）、43 ± 2（ティーバッグ） | Jaganyi & Mdletshe 2000, *Food Chemistry* 70(2):163–165（アッサム紅茶、粒度 1.18–1.40 mm。出典 ID: jaganyi-mdletshe-2000-assam-caffeine-kinetics） |
 
-- Price 報告は抄録でパラメータ値を確認したが、掲載誌・年等の書誌詳細は未同定のため、出典台帳には登録せず、来歴はコード内コメントと画面の注記に明記する。
+- Price & Spitzer 報告は抄録でパラメータ値を確認した。書誌詳細は当初未同定で出典台帳に登録していなかったが、2026-11-01 の監査修正フェーズで Crossref により確定したため、出典 ID: price-spitzer-1993 として出典レジストリに登録した（DOI 10.1016/0308-8146(93)90025-b）。それまで著者名が「Price RD」と誤記されていた点もあわせて修正した。
 - ティーバッグ入りは k がルースより約 29% 小さい（Jaganyi & Mdletshe 2000）。本モデルはルース（砕けた葉）の条件を想定する。
 
 **適用範囲**
@@ -84,7 +84,7 @@ K = Kf / Kr、平衡時のジンゲロール分率 = 1 / (1 + K)     …(2)
 | 60℃ | 0.019 | 0.040 | 0.47 |
 | 37℃ | 0.0011 | 0.0035 | 0.31 |
 
-- 出典：Bhattarai S, Tran VH, Duke CC. *Journal of Pharmaceutical Sciences* 90(10):1658–1664, 2001. DOI 10.1002/jps.1116（出典 ID: bhattarai-2001-gingerol-shogaol-kinetics、verified 'full'）。Table 1 は pH 1（0.1 M HCl、エタノール5% v/v 共存）水溶液での値。
+- 出典：Bhattarai S, Tran VH, Duke CC. *Journal of Pharmaceutical Sciences* 90(10):1658–1664, 2001. DOI 10.1002/jps.1116（出典 ID: bhattarai-2001-gingerol-shogaol-kinetics、verified 'full'）。Table 1 は pH 1（0.1 M HCl、エタノール5% v/v 共存）水溶液での値。2026-11-01 の監査修正フェーズで著者公開全文の Table 1（p.1662）を再確認し、実装アンカー（37/60/80/90/100℃の Kf・Kr）と活性化エネルギー（正反応 76±4・逆反応 52±5 kJ/mol）が全点一致したため、verified 'full' を維持した。
 - 活性化エネルギー：正反応 76 ± 4 kJ/mol、逆反応 52 ± 5 kJ/mol（37–100℃の Arrhenius フィット）。
 - 実装方針：頻度因子 A は原著に数値がないため導出値は使わず、アンカー点間を Arrhenius 型（ln k を 1/T に対して線形）に内挿する。アンカー温度では Table 1 の値をそのまま使う。計算温度範囲は原著の実測範囲 37–100℃ に限定し、範囲外は計算しない。
 

@@ -52,7 +52,7 @@ export const expansionTeaLinks: MaterialCompoundLink[] = [
   { materialId: 'tea-tieguanyin', compoundId: 'indole', kind: 'contribution', tier: 'measured', conditions: '烏龍茶横断の OAV 96–138（Zhu 2015、3茶共通の範囲値）。烏龍茶適性品種でも FD が高い傾向（He 2023）', sourceIds: [ZHU, 'he-2023-oolong-cultivars'] },
   { materialId: 'tea-tieguanyin', compoundId: 'nerolidol', kind: 'contribution', tier: 'measured', conditions: '烏龍茶横断の OAV 108–184（Zhu 2015、3茶共通の範囲値）', sourceIds: [ZHU] },
   { materialId: 'tea-tieguanyin', compoundId: '6-methyl-5-hepten-2-one', kind: 'contribution', tier: 'measured', conditions: '烏龍茶横断の OAV 34–67（Zhu 2015、3茶共通の範囲値）', sourceIds: [ZHU] },
-  { materialId: 'tea-tieguanyin', compoundId: 'jasmine-lactone', kind: 'contribution', tier: 'measured', conditions: '烏龍茶適性品種（鉄観音を含む）で AEDA＋再構成系により寄与を検証（He 2023、pairing 記録ベース）。内容確認は pairing 記録経由で、原著の再確認は未実施（tier の根拠状態との不整合を避けるため明記）', sourceIds: ['he-2023-oolong-cultivars'] },
+  { materialId: 'tea-tieguanyin', compoundId: 'jasmine-lactone', kind: 'contribution', tier: 'measured', conditions: '欠落試験は黄旦の再構成系のみ。鉄観音での寄与は AEDA（FD指数4）検出と適性品種群での有意差（Kruskal-Wallis P=0.046）に基づく', sourceIds: ['he-2023-oolong-cultivars'] },
   // ---- 鳳凰単叢 ----
   { materialId: 'tea-dancong', compoundId: 'jasmine-lactone', kind: 'contribution', tier: 'measured', conditions: '単叢3香型の定量＋OAV＋ケモメトリクスで鍵マーカー（Song 2025）。香型試料レベル', sourceIds: ['song-2025-dancong-sensomics'] },
   { materialId: 'tea-dancong', compoundId: 'cis-jasmone', kind: 'contribution', tier: 'measured', conditions: '単叢3香型の鍵マーカー（Song 2025）。香型試料レベル', sourceIds: ['song-2025-dancong-sensomics'] },

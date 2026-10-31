@@ -60,12 +60,12 @@ export const expansionShLinks: MaterialCompoundLink[] = [
   { materialId: 'spice-coriander-seed', compoundId: 'camphor', kind: 'contribution', tier: 'measured', conditions: 'GC-O で寄与を確認', sourceIds: ['pater-2024-coriander-gco'] },
   { materialId: 'spice-coriander-seed', compoundId: 'gamma-terpinene', kind: 'contribution', tier: 'measured', conditions: 'GC-O で特徴成分として同定', sourceIds: ['pater-2024-coriander-gco'] },
   // ===== フェンネル種子（Zeller 2006 AEDA/OAV/官能）=====
-  { materialId: 'spice-fennel-seed', compoundId: 'fenchone', kind: 'contribution', tier: 'measured', sourceIds: ['zeller-2006-fennel-impact'] },
-  { materialId: 'spice-fennel-seed', compoundId: 'anisaldehyde', kind: 'contribution', tier: 'measured', sourceIds: ['zeller-2006-fennel-impact'] },
-  { materialId: 'spice-fennel-seed', compoundId: 'trans-4-5-epoxy-e-2-decenal', kind: 'contribution', tier: 'measured', sourceIds: ['zeller-2006-fennel-impact'] },
-  { materialId: 'spice-fennel-seed', compoundId: 'cineole', kind: 'contribution', tier: 'measured', sourceIds: ['zeller-2006-fennel-impact'] },
+  { materialId: 'spice-fennel-seed', compoundId: 'fenchone', kind: 'contribution', tier: 'measured', conditions: 'フェンネル果実（種子）とフェンネル茶を対象とした AEDA・定量・OAV・官能評価の系での寄与（Zeller & Rychlik 2006）', sourceIds: ['zeller-2006-fennel-impact'] },
+  { materialId: 'spice-fennel-seed', compoundId: 'anisaldehyde', kind: 'contribution', tier: 'measured', conditions: 'フェンネル果実（種子）とフェンネル茶を対象とした AEDA・定量・OAV・官能評価の系での寄与（Zeller & Rychlik 2006）', sourceIds: ['zeller-2006-fennel-impact'] },
+  { materialId: 'spice-fennel-seed', compoundId: 'trans-4-5-epoxy-e-2-decenal', kind: 'contribution', tier: 'measured', conditions: 'フェンネル果実（種子）とフェンネル茶を対象とした AEDA・定量・OAV・官能評価の系での寄与（Zeller & Rychlik 2006）', sourceIds: ['zeller-2006-fennel-impact'] },
+  { materialId: 'spice-fennel-seed', compoundId: 'cineole', kind: 'contribution', tier: 'measured', conditions: 'フェンネル果実（種子）とフェンネル茶を対象とした AEDA・定量・OAV・官能評価の系での寄与（Zeller & Rychlik 2006）', sourceIds: ['zeller-2006-fennel-impact'] },
   { materialId: 'spice-fennel-seed', compoundId: 'alpha-pinene', kind: 'contribution', tier: 'measured', conditions: 'Zeller & Rychlik 2006 では (R)-α-ピネンとして同定され、果実・茶の双方で高 FD を示した', sourceIds: ['zeller-2006-fennel-impact'] },
-  { materialId: 'spice-fennel-seed', compoundId: 'myrcene', kind: 'contribution', tier: 'measured', sourceIds: ['zeller-2006-fennel-impact'] },
+  { materialId: 'spice-fennel-seed', compoundId: 'myrcene', kind: 'contribution', tier: 'measured', conditions: 'フェンネル果実（種子）とフェンネル茶を対象とした AEDA・定量・OAV・官能評価の系での寄与（Zeller & Rychlik 2006）', sourceIds: ['zeller-2006-fennel-impact'] },
   // 旧リンク spice-fennel-seed × octen-3-ol-1 は全件照合（round7）で削除：Zeller & Rychlik 2006 の
   // 高 FD 群・OAV 上位のいずれにも含まれず、別素材・別出典の結果の付け替えが疑われたため。
   { materialId: 'spice-fennel-seed', compoundId: 'estragole', kind: 'contribution', tier: 'measured', conditions: '種子・精油系での寄与評価。フェンネル茶（浸出液）では官能 impact が認められなかった報告があり、形態で結論が異なる', sourceIds: ['zeller-2006-fennel-impact'] },
@@ -92,19 +92,19 @@ export const expansionShLinks: MaterialCompoundLink[] = [
   { materialId: 'herb-thyme', compoundId: 'alpha-terpinyl-acetate', kind: 'contribution', tier: 'measured', conditions: 'シネオール型試料の GC-O（Goodner 2006）に基づく。ケモタイプ条件つき', sourceIds: ['goodner-2006-thyme-gco'] },
   { materialId: 'herb-thyme', compoundId: 'beta-damascenone', kind: 'contribution', tier: 'measured', conditions: 'シネオール型試料の GC-O（Goodner 2006）に基づく。ケモタイプ条件つき', sourceIds: ['goodner-2006-thyme-gco'] },
   // ===== ローズマリー（Raffo 2026 AEDA/OAV）=====
-  { materialId: 'herb-rosemary', compoundId: 'alpha-pinene', kind: 'contribution', tier: 'measured', sourceIds: ['raffo-2026-rosemary-odorants'] },
-  { materialId: 'herb-rosemary', compoundId: 'linalool', kind: 'contribution', tier: 'measured', sourceIds: ['raffo-2026-rosemary-odorants'] },
-  { materialId: 'herb-rosemary', compoundId: 'fenchol', kind: 'contribution', tier: 'measured', sourceIds: ['raffo-2026-rosemary-odorants'] },
+  { materialId: 'herb-rosemary', compoundId: 'alpha-pinene', kind: 'contribution', tier: 'measured', conditions: 'ローズマリー精油（産地の異なる6遺伝子型）を対象とした GC-O（AEDA）＋定量＋OAV での寄与（Raffo 2026）', sourceIds: ['raffo-2026-rosemary-odorants'] },
+  { materialId: 'herb-rosemary', compoundId: 'linalool', kind: 'contribution', tier: 'measured', conditions: 'ローズマリー精油（産地の異なる6遺伝子型）を対象とした GC-O（AEDA）＋定量＋OAV での寄与（Raffo 2026）', sourceIds: ['raffo-2026-rosemary-odorants'] },
+  { materialId: 'herb-rosemary', compoundId: 'fenchol', kind: 'contribution', tier: 'measured', conditions: 'ローズマリー精油（産地の異なる6遺伝子型）を対象とした GC-O（AEDA）＋定量＋OAV での寄与（Raffo 2026）', sourceIds: ['raffo-2026-rosemary-odorants'] },
   { materialId: 'herb-rosemary', compoundId: 'hexen-3-one-1', kind: 'contribution', tier: 'measured', conditions: '1-ヘキセン-3-オン', sourceIds: ['raffo-2026-rosemary-odorants'] },
   { materialId: 'herb-rosemary', compoundId: 'octen-3-one-1', kind: 'contribution', tier: 'measured', conditions: '1-オクテン-3-オン', sourceIds: ['raffo-2026-rosemary-odorants'] },
-  { materialId: 'herb-rosemary', compoundId: 'beta-damascenone', kind: 'contribution', tier: 'measured', sourceIds: ['raffo-2026-rosemary-odorants'] },
+  { materialId: 'herb-rosemary', compoundId: 'beta-damascenone', kind: 'contribution', tier: 'measured', conditions: 'ローズマリー精油（産地の異なる6遺伝子型）を対象とした GC-O（AEDA）＋定量＋OAV での寄与（Raffo 2026）', sourceIds: ['raffo-2026-rosemary-odorants'] },
   // ===== バジル（Sonmezdag 2018 AEDA、条件つき）=====
   { materialId: 'herb-basil', compoundId: 'cineole', kind: 'contribution', tier: 'measured', conditions: 'イラン産陰干しバジル地上部（メチルチャビコール型）の AEDA で FD 512・OAV 約 987。トルコ産試料では香気活性として検出されなかった', sourceIds: ['sonmezdag-2018-basil-aroma'] },
   { materialId: 'herb-basil', compoundId: 'limonene', kind: 'contribution', tier: 'measured', conditions: 'トルコ産陰干しバジル地上部（メチルチャビコール型）の AEDA で FD 256・OAV 約 503。イラン産試料では香気活性として検出されなかった', sourceIds: ['sonmezdag-2018-basil-aroma'] },
   // ===== オレガノ（Sádecká 2008 AEDA）=====
-  { materialId: 'herb-oregano', compoundId: 'linalool', kind: 'contribution', tier: 'measured', sourceIds: ['sadecka-2008-oregano-aeda'] },
+  { materialId: 'herb-oregano', compoundId: 'linalool', kind: 'contribution', tier: 'measured', conditions: '乾燥オレガノ葉（トルコ産市販品）の非照射対照試料での GC-O＋AEDA による寄与（Sádecká & Polovka 2008）', sourceIds: ['sadecka-2008-oregano-aeda'] },
   { materialId: 'herb-oregano', compoundId: 'octen-3-ol-1', kind: 'contribution', tier: 'measured', conditions: '乾燥オレガノ葉（トルコ産市販品）の AEDA で FD 10,000（最高群）', sourceIds: ['sadecka-2008-oregano-aeda'] },
-  { materialId: 'herb-oregano', compoundId: 'beta-damascenone', kind: 'contribution', tier: 'measured', sourceIds: ['sadecka-2008-oregano-aeda'] },
+  { materialId: 'herb-oregano', compoundId: 'beta-damascenone', kind: 'contribution', tier: 'measured', conditions: '乾燥オレガノ葉（トルコ産市販品）の非照射対照試料での GC-O＋AEDA による寄与（Sádecká & Polovka 2008）', sourceIds: ['sadecka-2008-oregano-aeda'] },
   { materialId: 'herb-oregano', compoundId: 'guaiacol', kind: 'contribution', tier: 'measured', conditions: 'AEDA で FD factor 2,000', sourceIds: ['sadecka-2008-oregano-aeda'] },
   // ===== セージ（Jonas 2021 センソミクス／Chiang 2024）=====
   { materialId: 'herb-sage', compoundId: 'borneol', kind: 'contribution', tier: 'measured', conditions: '生葉のセンソミクス（再構成・欠落で検証）', sourceIds: ['jonas-2021-sage-sensomics'] },
@@ -117,8 +117,8 @@ export const expansionShLinks: MaterialCompoundLink[] = [
   { materialId: 'herb-peppermint', compoundId: 'menthofuran', kind: 'contribution', tier: 'measured', conditions: '精油の AEDA（同定は tentative の注記あり）', sourceIds: ['gabetti-2021-peppermint-gco'] },
   { materialId: 'herb-peppermint', compoundId: 'p-menthane-lactones', kind: 'contribution', tier: 'measured', conditions: '生葉の cAEDA で寄与が示されたラクトン群', sourceIds: ['shigeto-2020-peppermint-lactones'] },
   // ===== スターアニス（Zhang 2015 AEDA）=====
-  { materialId: 'spice-star-anise', compoundId: 'linalool', kind: 'contribution', tier: 'measured', sourceIds: ['zhang-2015-star-anise-volatiles'] },
-  { materialId: 'spice-star-anise', compoundId: 'limonene', kind: 'contribution', tier: 'measured', sourceIds: ['zhang-2015-star-anise-volatiles'] },
+  { materialId: 'spice-star-anise', compoundId: 'linalool', kind: 'contribution', tier: 'measured', conditions: 'スターアニス果実を対象とした GC-O/AEDA での寄与（Zhang 2015）', sourceIds: ['zhang-2015-star-anise-volatiles'] },
+  { materialId: 'spice-star-anise', compoundId: 'limonene', kind: 'contribution', tier: 'measured', conditions: 'スターアニス果実を対象とした GC-O/AEDA での寄与（Zhang 2015）', sourceIds: ['zhang-2015-star-anise-volatiles'] },
   // ===== 山椒（Jiang & Kubota 2004 AEDA：寄与4＋組成4）=====
   { materialId: 'spice-sansho', compoundId: 'citronellal', kind: 'contribution', tier: 'measured', conditions: '山椒果実の AEDA で寄与成分として同定', sourceIds: ['jiang-2004-sansho-volatiles'] },
   { materialId: 'spice-sansho', compoundId: 'geraniol', kind: 'contribution', tier: 'measured', conditions: '同上', sourceIds: ['jiang-2004-sansho-volatiles'] },
@@ -201,8 +201,8 @@ export const expansionShNewMaterialLinks: MaterialCompoundLink[] = [
   { materialId: 'herb-summer-savory', compoundId: 'p-cymene', kind: 'composition', tier: 'general', sourceIds: ['iran-2011-summer-savory'] },
   { materialId: 'herb-summer-savory', compoundId: 'gamma-terpinene', kind: 'composition', tier: 'general', sourceIds: ['iran-2011-summer-savory'] },
   // ウインターサボリー
-  { materialId: 'herb-winter-savory', compoundId: 'carvacrol', kind: 'composition', tier: 'general', conditions: 'subsp. montana で精油中 35.7%', sourceIds: ['jeor-1996-winter-savory-subspecies'] },
-  { materialId: 'herb-winter-savory', compoundId: 'thymol', kind: 'composition', tier: 'general', conditions: 'subsp. variegata で精油中 51.4%。亜種で優占が逆転する', sourceIds: ['jeor-1996-winter-savory-subspecies'] },
+  { materialId: 'herb-winter-savory', compoundId: 'carvacrol', kind: 'composition', tier: 'general', conditions: 'subsp. montana の精油で 35.7%（Aćimović 2022 の単一研究値）。亜種一般の固定値ではなく、Jeor 1996 の広範な試料では 5.58–84.19% と大きく変動した', sourceIds: ['acimovic-2022-winter-savory-extracts', 'jeor-1996-winter-savory-subspecies'] },
+  { materialId: 'herb-winter-savory', compoundId: 'thymol', kind: 'composition', tier: 'general', conditions: 'subsp. variegata の精油で 51.4%（Aćimović 2022 の単一研究値）。Jeor 1996 の広範な試料ではチモールは大半 0.45–2.84% であり、亜種で優占が逆転するとは限らない', sourceIds: ['acimovic-2022-winter-savory-extracts', 'jeor-1996-winter-savory-subspecies'] },
   // シソ PA型（Kumazawa 2023 AEDA）
   { materialId: 'herb-shiso', compoundId: 'perillaldehyde', kind: 'contribution', tier: 'measured', conditions: '新鮮葉の AEDA で最も高い FD factor', sourceIds: ['kumazawa-2023-perilla-odorants'] },
   { materialId: 'herb-shiso', compoundId: 'dihydroperillaldehyde', kind: 'contribution', tier: 'measured', conditions: 'AEDA で同定され新鮮葉から初同定。単独ではシソ様でないが、添加で嗜好性を高めた（相互作用はルール側で扱う）', sourceIds: ['kumazawa-2023-perilla-odorants'] },
