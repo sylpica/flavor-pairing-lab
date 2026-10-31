@@ -81,12 +81,19 @@ function PairingView() {
     return validateRatios({ ...Object.fromEntries(selectedIds.map((id) => [id, ratios[id] ?? Math.floor(100 / Math.max(selectedIds.length, 1))])) }, selectedIds)
   }, [ratios, selectedIds])
 
-  const toggle = (id: string) => {
+  // スロット式：各スロットのプルダウンで素材を即座に切り替える（スクロール不要）
+  const setSlot = (index: number, id: string) => {
+    setSelectedIds((prev) => prev.map((x, i) => (i === index ? id : x)))
+  }
+  const addSlot = () => {
     setSelectedIds((prev) => {
-      if (prev.includes(id)) return prev.filter((x) => x !== id)
       if (prev.length >= 4) return prev
-      return [...prev, id]
+      const next = materials.find((m) => !prev.includes(m.id))
+      return next ? [...prev, next.id] : prev
     })
+  }
+  const removeSlot = (index: number) => {
+    setSelectedIds((prev) => (prev.length <= 2 ? prev : prev.filter((_, i) => i !== index)))
   }
 
   const mergedProfile = useMemo(() => {
@@ -104,44 +111,45 @@ function PairingView() {
   return (
     <section>
       <h2>ペアリング（2〜4素材）</h2>
-      <p className="muted">素材を選ぶと、共通点・相違点・感覚の関係を根拠区分つきで表示します。左にチョコレート、右にお茶を置く配置を基本に、画面幅に応じて並びます。</p>
-      <div className="picker-grid">
-        {(['chocolate', 'tea', 'spice', 'herb'] as Domain[]).map((d) => (
-          <fieldset key={d} className="picker-group">
-            <legend>{DOMAIN_LABEL[d]}</legend>
-            {materials.filter((m) => m.domain === d).map((m) => (
-              <label key={m.id} className="picker-item">
-                <input type="checkbox" checked={selectedIds.includes(m.id)} onChange={() => toggle(m.id)}
-                  disabled={!selectedIds.includes(m.id) && selectedIds.length >= 4} />
-                {m.nameJa}
-              </label>
-            ))}
-            {materials.filter((m) => m.domain === d).length === 0 && <p className="muted">収録準備中</p>}
-          </fieldset>
-        ))}
-      </div>
-
-      {selected.length >= 2 && (
-        <div className="blend-box">
-          <h3>配合比率（質量比・合計100%）</h3>
-          <p className="muted">ブレンド（混合）の場合のみ意味を持ちます。食べ合わせでは各素材をそのまま味わいます。</p>
-          <div className="ratio-row">
-            {selected.map((m) => (
-              <label key={m.id}>{m.nameJa}
-                <input type="number" min={0} max={100} aria-label={`${m.nameJa}の比率`}
-                  value={ratios[m.id] ?? Math.floor(100 / selected.length)}
-                  onChange={(e) => setRatios((r) => ({ ...r, [m.id]: Number(e.target.value) }))} />%
-              </label>
+      <div className="pair-controls">
+        <div className="slot-list">
+          {selectedIds.map((id, i) => {
+            const m = materialById(id)
+            return (
+              <div key={i} className="slot-row">
+                <label className="slot-label">素材{i + 1}
+                  <select aria-label={`素材${i + 1}の選択`} value={id} onChange={(e) => setSlot(i, e.target.value)}>
+                    {(['tea', 'chocolate', 'spice', 'herb'] as Domain[]).map((d) => (
+                      <optgroup key={d} label={DOMAIN_LABEL[d]}>
+                        {materials.filter((x) => x.domain === d && (x.id === id || !selectedIds.includes(x.id))).map((x) => (
+                          <option key={x.id} value={x.id}>{x.nameJa}</option>
+                        ))}
+                      </optgroup>
+                    ))}
+                  </select>
+                </label>
+                <label className="slot-ratio">
+                  <input type="number" min={0} max={100} aria-label={`${m?.nameJa ?? ''}の比率（%）`}
+                    value={ratios[id] ?? Math.floor(100 / selectedIds.length)}
+                    onChange={(e) => setRatios((r) => ({ ...r, [id]: Number(e.target.value) }))} />%
+                </label>
+                {selectedIds.length > 2
+                  ? <button type="button" className="slot-remove" aria-label={`素材${i + 1}を外す`} onClick={() => removeSlot(i)}>外す</button>
+                  : <span className="slot-remove-spacer" />}
+              </div>
+            )
+          })}
+        </div>
+        <div className="pair-controls-foot">
+          {selectedIds.length < 4 && <button type="button" className="slot-add" onClick={addSlot}>＋ 素材を追加（最大4）</button>}
+          <div className="mode-tabs" role="tablist" aria-label="分析モード">
+            {([['harmony', '調和'], ['contrast', '対比'], ['complement', '補完']] as [PairingMode, string][]).map(([mm, label]) => (
+              <button key={mm} role="tab" aria-selected={mode === mm} className={mode === mm ? 'tab active' : 'tab'} onClick={() => setMode(mm)}>{label}</button>
             ))}
           </div>
-          {ratioError && <p className="warning" role="alert">{ratioError}</p>}
         </div>
-      )}
-
-      <div className="mode-tabs" role="tablist" aria-label="分析モード">
-        {([['harmony', '調和'], ['contrast', '対比'], ['complement', '補完']] as [PairingMode, string][]).map(([m, label]) => (
-          <button key={m} role="tab" aria-selected={mode === m} className={mode === m ? 'tab active' : 'tab'} onClick={() => setMode(m)}>{label}</button>
-        ))}
+        <p className="muted slot-note">比率はブレンド（混合）時の質量比です（合計100%）。食べ合わせでは各素材をそのまま味わいます。</p>
+        {ratioError && <p className="warning" role="alert">{ratioError}</p>}
       </div>
 
       {analysis && (
