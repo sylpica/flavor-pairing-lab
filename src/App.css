@@ -100,6 +100,7 @@ input[type="search"] { font-size: 1rem; padding: 7px 10px; border: 1px solid var
 .wheel-wrap { display: flex; flex-direction: column; gap: 10px; }
 .wheel { width: 100%; max-width: 370px; height: auto; align-self: center; }
 .wheel-compound-label { font-size: 6.8px; fill: var(--ink); font-weight: 600; pointer-events: none; }
+.wheel-note-label { fill: var(--ink); font-weight: 700; pointer-events: none; paint-order: stroke; stroke: rgba(255, 255, 255, 0.65); stroke-width: 2px; }
 .wheel-compound-note { font-size: 0.8rem; margin: 0; }
 .wheel-center { font-size: 13px; fill: var(--ink); font-weight: 700; font-family: var(--serif); }
 .wheel-center-sub { font-size: 9px; fill: var(--muted); }

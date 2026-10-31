@@ -103,14 +103,29 @@ export function FlavorWheel({ entries, onSelectNote, selectedNoteId, compoundMat
             <title>{noteById(s.noteId)?.name}</title>
           </path>
         ))}
+        {segs.map((s) => {
+          // ノート名は無地にせず必ずホイール上に描く（初心者用 pairing でのユーザー指示を本アプリにも適用）。
+          // 弧の長さに合わせて段階的に縮小し、最小サイズでも収まらない場合だけ凡例に委ねる。
+          const name = noteById(s.noteId)?.name ?? s.noteId
+          const mid = (s.start + s.end) / 2
+          const [lx, ly] = polar(C, C, 80, mid)
+          const arcLen = (s.end - s.start) * 80
+          const size = [9.5, 8.5, 7.5, 6.5].find((fs) => name.length * fs * 1.02 <= arcLen)
+          if (!size) return null
+          return (
+            <text key={`label-${s.noteId}`} x={lx} y={ly + size * 0.35} textAnchor="middle"
+              className="wheel-note-label" style={{ fontSize: size }}>{name}</text>
+          )
+        })}
         {csegs.map((c) => {
           const mid = (c.start + c.end) / 2
           const span = c.end - c.start
           const [lx, ly] = polar(C, C, 114, mid)
-          // 名前が弧の長さに十分収まる場合だけ描く（ラベルは水平置きで輪の端ではみ出しやすいため余裕を持たせる。
-          // 収まらないものはノート詳細に全件表示）
+          // 化合物名も可能な限り描く：基準サイズから段階的に縮小して収まる最大のサイズを使う。
+          // 最小サイズでも収まらないものだけノート詳細に委ねる（全件表示はそちらで担保）。
           const arcLen = span * 114
-          const label = arcLen >= c.name.length * 9.0 ? c.name : null
+          const csize = [6.8, 6.2, 5.6, 5.0].find((fs) => c.name.length * fs * 1.32 <= arcLen)
+          const label = csize ? c.name : null
           return (
             <g key={c.compoundId + c.start} onClick={() => onSelectCompound?.(c.compoundId)} style={{ cursor: onSelectCompound ? 'pointer' : undefined }}>
               <path d={arcPath(C, C, 128, 103, c.start, c.end)}
@@ -119,7 +134,7 @@ export function FlavorWheel({ entries, onSelectNote, selectedNoteId, compoundMat
                 stroke="#fff" strokeWidth={0.8}>
                 <title>{c.name}（{c.kind === 'contribution' ? '寄与の根拠あり' : c.kind === 'composition' ? '組成として報告' : '検出の報告'}）</title>
               </path>
-              {label && <text x={lx} y={ly + 2.2} textAnchor="middle" className="wheel-compound-label">{label}</text>}
+              {label && <text x={lx} y={ly + 2.2} textAnchor="middle" className="wheel-compound-label" style={{ fontSize: csize }}>{label}</text>}
             </g>
           )
         })}
