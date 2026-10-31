@@ -121,12 +121,16 @@ export function FlavorWheel({ entries, onSelectNote, selectedNoteId, compoundMat
         {csegs.map((c) => {
           const mid = (c.start + c.end) / 2
           const span = c.end - c.start
-          const [lx, ly] = polar(C, C, 114, mid)
-          // 化合物名も可能な限り描く：基準サイズから段階的に縮小して収まる最大のサイズを使う。
-          // 最小サイズでも収まらないものだけノート詳細に委ねる（全件表示はそちらで担保）。
-          const arcLen = span * 114
-          const csize = [6.8, 6.2, 5.6, 5.0].find((fs) => c.name.length * fs * 1.32 <= arcLen)
+          const [lx, ly] = polar(C, C, 115.5, mid)
+          // 化合物名は輪に沿って接線方向に描く（水平置きだと左右端で見切れるため）。
+          // サイズは弧長に合わせて段階的に縮小し、最小サイズでも収まらないものだけノート詳細に委ねる。
+          const arcLen = span * 115.5
+          const estWidth = (fs: number) => [...c.name].reduce((w, ch) => w + (ch.charCodeAt(0) > 0x2000 ? fs : fs * 0.58), 0)
+          const csize = [6.8, 6.2, 5.6, 5.0].find((fs) => estWidth(fs) <= arcLen * 0.98)
           const label = csize ? c.name : null
+          // 左半分では文字が逆さにならないよう180度反転させる
+          let deg = (mid * 180) / Math.PI + 90
+          if (Math.cos(mid) < 0) deg += 180
           return (
             <g key={c.compoundId + c.start} onClick={() => onSelectCompound?.(c.compoundId)} style={{ cursor: onSelectCompound ? 'pointer' : undefined }}>
               <path d={arcPath(C, C, 128, 103, c.start, c.end)}
@@ -135,7 +139,7 @@ export function FlavorWheel({ entries, onSelectNote, selectedNoteId, compoundMat
                 stroke="#fff" strokeWidth={0.8}>
                 <title>{c.name}（{c.kind === 'contribution' ? '寄与の根拠あり' : c.kind === 'composition' ? '組成として報告' : '検出の報告'}）</title>
               </path>
-              {label && <text x={lx} y={ly + 2.2} textAnchor="middle" className="wheel-compound-label" style={{ fontSize: csize }}>{label}</text>}
+              {label && <text x={lx} y={ly} textAnchor="middle" dominantBaseline="central" transform={`rotate(${deg} ${lx} ${ly})`} className="wheel-compound-label" style={{ fontSize: csize }}>{label}</text>}
             </g>
           )
         })}
