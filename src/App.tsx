@@ -42,6 +42,7 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
+        <p className="kicker">Flavor Pairing Lab — Research Edition</p>
         <h1>科学ペアリング研究ラボ</h1>
         <p className="tagline">お茶・スパイス・ハーブ・チョコレートを横断する香味化学の探究アプリ。実測・一般的知見・推測を区別し、相性スコアは作りません。</p>
         <nav className="main-nav" aria-label="主要画面">
@@ -287,8 +288,15 @@ function MaterialDetail({ id }: { id: string }) {
     <section>
       <p><a href="#/search">← 素材検索へ</a></p>
       <h2>{m.nameJa} <span className="en-name">{m.nameEn}</span></h2>
-      {m.scientificName && <p className="muted">学名：<em>{m.scientificName}</em></p>}
-      <p className="material-meta">分類：{m.classification}｜産地：{m.origin}｜{m.variety}{m.usedPart ? `｜使用部位：${m.usedPart}` : ''}{m.processing ? `｜加工：${m.processing}` : ''}{m.cacaoPercent ? `｜カカオ分：${m.cacaoPercent}%` : ''}</p>
+      <dl className="spec-table">
+        {m.scientificName && <div className="spec-cell"><dt>学名</dt><dd><em>{m.scientificName}</em></dd></div>}
+        <div className="spec-cell"><dt>分類</dt><dd>{m.classification}</dd></div>
+        <div className="spec-cell"><dt>産地</dt><dd>{m.origin}</dd></div>
+        <div className="spec-cell"><dt>品種・系統</dt><dd>{m.variety}</dd></div>
+        {m.usedPart && <div className="spec-cell"><dt>使用部位</dt><dd>{m.usedPart}</dd></div>}
+        {m.processing && <div className="spec-cell"><dt>加工</dt><dd>{m.processing}</dd></div>}
+        {m.cacaoPercent && <div className="spec-cell"><dt>カカオ分</dt><dd>{m.cacaoPercent}%</dd></div>}
+      </dl>
       <TierBadge tier={m.evidenceTier} />
       <p>{m.description}</p>
       <p className="scope-note">{m.scopeNote}</p>
@@ -526,10 +534,12 @@ function LibraryView() {
     <section>
       <h2>文献・用語辞典</h2>
       <h3>収録状況（実データからの集計）</h3>
-      <ul>
-        <li>お茶 {counts.tea}件／チョコレート {counts.chocolate}件／スパイス {counts.spice}件／ハーブ {counts.herb}件</li>
-        <li>化合物 {counts.compounds}件／出典 {counts.sources}件／素材×化合物リンク {counts.links}件</li>
-      </ul>
+      <div className="stat-grid">
+        <div className="stat-card"><div className="stat-num">{counts.tea + counts.chocolate + counts.spice + counts.herb}</div><div className="stat-label">素材（お茶 {counts.tea}／チョコ {counts.chocolate}／スパイス {counts.spice}／ハーブ {counts.herb}）</div></div>
+        <div className="stat-card"><div className="stat-num">{counts.compounds}</div><div className="stat-label">化合物</div></div>
+        <div className="stat-card"><div className="stat-num">{counts.sources}</div><div className="stat-label">出典</div></div>
+        <div className="stat-card"><div className="stat-num">{counts.links}</div><div className="stat-label">素材×化合物リンク</div></div>
+      </div>
       <p className="muted">網羅率（分母を定義できない割合）は表示しません。未収録は「未報告」であり「存在しない」ではありません。</p>
       <h3>根拠区分の方針</h3>
       <p>すべての科学的主張に根拠区分（実測／一般的知見／推測／情報不足）を付け、出典へ追跡できるようにしています。GC-MSで検出されただけの成分を「香味に寄与する」とは表示しません。根拠のない相性スコアや精密な数値は作りません。</p>
