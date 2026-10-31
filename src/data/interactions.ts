@@ -1,4 +1,5 @@
 import type { InteractionRule } from '../types'
+import { expansionInteractionRules } from './rules-expansion-sh'
 
 // 相互作用ルール：成分の足し算ではなく、知覚レベルの相互作用を文章化するための規則。
 // 直接研究（茶×チョコ自体の官能研究: Donadini 2012/2014）と一般機構研究を区別する。
@@ -52,4 +53,6 @@ export const interactionRules: InteractionRule[] = [
     level: 'exploratory', directStudy: false,
     sourceIds: ['spence-2020-flavour-pairing'],
   },
+  // ===== 文献拡充（スパイス・ハーブ第2波ほか）で追加したルール =====
+  ...expansionInteractionRules,
 ]

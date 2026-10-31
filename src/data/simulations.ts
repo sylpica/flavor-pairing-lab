@@ -1,4 +1,5 @@
 import type { SimulationTendency } from '../types'
+import { expansionSimulationTendencies } from './rules-expansion-sh'
 
 // シミュレーションは「実測データ→検証可能なモデル→文献に基づく定性的傾向→推測→データ不足」の
 // 優先順位で表示する。本アプリの第1弾は定性的傾向（tier=general / inferred）のみで構成し、
@@ -46,4 +47,6 @@ export const simulationTendencies: SimulationTendency[] = [
     sourceIds: ['zhang-2020-tea-chemistry-taste'],
     limits: '一般原理からの推測。具体的な最適比率の実測データは未収録。',
   },
+  // ===== 文献拡充で追加した傾向（ブラックペッパー焙煎・唐辛子加熱・クミン等） =====
+  ...expansionSimulationTendencies,
 ]

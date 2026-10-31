@@ -18,8 +18,21 @@
 - 重要な未解決：レモングラスの主成分の矛盾（シトラール主体 vs ゲラニオール主体）→ 両論併記で対応。カルボンの異性体帰属は未確認のまま実装していない。
 - 詳細：docs/research/herbs-research.md（未確認リスト付録B を含む）
 
+## 文献拡充ラウンド（2026-10-31、7ライン調査＋統合）
+- 新規スパイス調査（docs/research/spices-expansion.md）：12素材・出典45件。収録可能10件を素材化。
+- 新規ハーブ調査（docs/research/herbs-expansion.md）：15単位・出典81件。収録可能12件を素材化（シソは PA型／PK型に分離）。
+- 既存スパイス・ハーブ深化（docs/research/spice-herb-deepening.md）：12素材で寄与の査読原著を新規確認し、リンクを格上げ。山椒の揮発成分（Jiang & Kubota 2004）で F-03 を解消。
+- 第2波（docs/research/spice-herb-wave2.md）：クローブ Yu 2025 の全文確認、J-STAGE 日本語文献22件、地域香草7対象、相互作用の原著9件。
+- 非査読・Webライン（docs/research/spice-herb-web-line.md）：参考情報として格付けし、実測の根拠には使用していない。
+- お茶拡充（docs/research/tea-compounds-expansion.md）：一次再確認24件＋pairing 記録ベース。新規素材7件（釜炒り茶・ダージリン・キームン・アッサム・黄茶・岩茶・凍頂烏龍）、化合物38項目、リンク格上げ。pairing 記録の誤り3件を訂正。
+- カカオ拡充（docs/research/cacao-compounds-expansion.md）：一次確認29件＋書誌確認16件。新規素材（現代 Nacional 系、CCN-51、TSH 565、ドミニカ共和国産 Trinitario）、遺伝集団は足がかりのある2集団を推測つきで素材化、化合物20件。
+
+## pairing 文献資産の取り込み（2026-10-31、ユーザー指示）
+- 研究記録27ファイル全件を docs/research/pairing-inherited/ に継承（由来・格付け・既知の誤り4件を README に明記）。
+- 書誌が同定できる484件を出典台帳へ転記（全件 verified: 'bibliographic'、再確認待ち。リンクの根拠には使わない）。
+- 書誌未同定の言及818件を「書誌未同定メモ」として収録（欠落項目は推測で埋めていない）。
+
 ## 確認状態の集計
-- 原著確認済み（full）：34件（お茶・チョコレート、pairing での一次照合に基づく）
-- 要旨まで確認（abstract）：40件（スパイス・ハーブ）
-- 書誌のみ（bibliographic）：1件（コリアンダー総説。原典ページ直接確認が未実施のため）
-- 科学データへ反映した出典：75件すべて（素材・化合物・リンク・ルールのいずれかで使用）
+- 再確認済み出典：247件（第1弾75件＋拡充172件。full／abstract／bibliographic の内訳は各出典の verified フィールドに保持）
+- 台帳転記（再確認待ち）：484件
+- 書誌未同定メモ：818件

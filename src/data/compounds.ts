@@ -1,4 +1,7 @@
 import type { Compound } from '../types'
+import { expansionTeaCompounds } from './compounds-expansion-tea'
+import { expansionCacaoCompounds } from './compounds-expansion-cacao'
+import { expansionShCompounds } from './compounds-expansion-sh'
 
 // 化合物データベース（第1弾：お茶・チョコレート由来で検証済みのもの）。
 // sensoryKnowledge は「化合物単体の香り・味の知見」であり、特定食品での寄与とは分離する。
@@ -61,5 +64,8 @@ export const spiceHerbCompounds: Compound[] = [
   { id: 'alpha-thujone', nameJa: 'α-ツジョン', nameEn: 'α-Thujone', aliases: [], cas: '546-80-5', formula: 'C10H16O', compoundClass: 'モノテルペンケトン', volatile: true, sensoryKnowledge: 'セージの主要成分の一つ。毒性が論じられる成分であり、食品としての使用では注意を要する。組成と香気記述を対応づけた研究はないと総説が明記している。', noteIds: ['camphoraceous'], tasteKeys: [], sourceIds: ['craft-2017-sage-chemotaxonomy'] },
 ]
 
-export const allCompounds: Compound[] = [...compounds, ...spiceHerbCompounds]
+export const allCompounds: Compound[] = [
+  ...compounds, ...spiceHerbCompounds,
+  ...expansionTeaCompounds, ...expansionCacaoCompounds, ...expansionShCompounds,
+]
 export const compoundById = (id: string) => allCompounds.find((c) => c.id === id)

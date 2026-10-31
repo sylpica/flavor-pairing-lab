@@ -1,4 +1,7 @@
 import type { MaterialCompoundLink } from '../types'
+import { expansionTeaLinks, expansionTeaLinkUpgrades } from './links-expansion-tea'
+import { expansionCacaoLinks, expansionCacaoLinkUpgrades } from './links-expansion-cacao'
+import { expansionShAllLinks, expansionShLinkUpgrades } from './links-expansion-sh'
 
 // 素材×化合物リンク（第1弾：お茶・チョコレート）。
 // kind の区別: detection=検出の報告 / composition=組成としての含有 / contribution=官能寄与の根拠あり。
@@ -106,6 +109,35 @@ export const spiceHerbLinks: MaterialCompoundLink[] = [
   { materialId: 'herb-tarragon', compoundId: 'estragole', kind: 'composition', tier: 'general', conditions: 'フレンチ型の主体と記述される。GC-O の直接証拠は未確認', sourceIds: ['ekiert-2021-tarragon'] },
 ]
 
-export const allLinks: MaterialCompoundLink[] = [...materialCompoundLinks, ...spiceHerbLinks]
+// ===== 文献拡充の統合（2026-10-31） =====
+// 新規リンクは既存ペアと重複しないものだけを加え、格上げはペア単位で置き換える。
+// 適用順序：基礎リンク → 新規リンク（重複回避）→ SH格上げ（全置換）→ お茶格上げ（kind/tier 置換＋出典統合）
+// → カカオ注記（conditions への追記＋出典統合）。
+const linkKey = (l: { materialId: string; compoundId: string }) => `${l.materialId}::${l.compoundId}`
+const mergedLinks = new Map<string, MaterialCompoundLink>()
+for (const l of [...materialCompoundLinks, ...spiceHerbLinks]) mergedLinks.set(linkKey(l), l)
+for (const l of [...expansionTeaLinks, ...expansionCacaoLinks, ...expansionShAllLinks]) {
+  if (!mergedLinks.has(linkKey(l))) mergedLinks.set(linkKey(l), l)
+}
+for (const u of expansionShLinkUpgrades) mergedLinks.set(linkKey(u), u)
+for (const u of expansionTeaLinkUpgrades) {
+  const cur = mergedLinks.get(linkKey(u))
+  mergedLinks.set(linkKey(u), {
+    materialId: u.materialId, compoundId: u.compoundId,
+    kind: u.toKind, tier: u.toTier, conditions: u.conditions,
+    sourceIds: [...new Set([...(cur?.sourceIds ?? []), ...u.addSourceIds])],
+  })
+}
+for (const u of expansionCacaoLinkUpgrades) {
+  const cur = mergedLinks.get(linkKey(u))
+  if (cur) {
+    mergedLinks.set(linkKey(u), {
+      ...cur,
+      conditions: cur.conditions ? `${cur.conditions}／${u.note}` : u.note,
+      sourceIds: [...new Set([...cur.sourceIds, ...u.sourceIds])],
+    })
+  }
+}
+export const allLinks: MaterialCompoundLink[] = [...mergedLinks.values()]
 export const linksForMaterial = (materialId: string) => allLinks.filter((l) => l.materialId === materialId)
 export const linksForCompound = (compoundId: string) => allLinks.filter((l) => l.compoundId === compoundId)

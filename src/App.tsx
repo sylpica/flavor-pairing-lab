@@ -4,6 +4,7 @@ import { DOMAIN_LABEL, TIER_LABEL, SENSATION_LABEL } from './types'
 import { materials, materialById, sourceById, sources } from './data'
 import { axisLabel } from './data/axis-labels'
 import { allCompounds as compounds, compoundById } from './data/compounds'
+import { pairingBiblioNotes } from './data/biblio-notes-pairing'
 import { allLinks as materialCompoundLinks, linksForMaterial, linksForCompound } from './data/links'
 import { noteById, categoryById, flavorNotes } from './data/flavors'
 import { analyzePairing, validateRatios, defaultShares, type PairingMode } from './engine/pairing'
@@ -419,8 +420,9 @@ function SourceList({ ids }: { ids: string[] }) {
         return (
           <li key={id}>
             <a href={s.url} target="_blank" rel="noreferrer">{s.title}</a>
-            <span className="muted"> {s.authors}（{s.year}）{s.journal ? ` ${s.journal}` : ''}{s.doi ? ` DOI: ${s.doi}` : ''}</span>
+            <span className="muted"> {s.authors}（{s.year}）{s.journal ? ` ${s.journal}` : ''}{s.doi ? ` DOI: ${s.doi}` : ''}{s.verified === 'bibliographic' ? '（書誌レベル・再確認待ち）' : ''}</span>
             <p className="scope-note">{s.scope}</p>
+            {s.verified === 'bibliographic' && s.limits ? <p className="scope-note muted">{s.limits}</p> : null}
           </li>
         )
       })}
@@ -644,10 +646,20 @@ const GLOSSARY: { term: string; body: string }[] = [
   { term: '情報不足（insufficient）', body: '判断に必要な証拠が不足している状態。「存在しない」という意味ではない。' },
   { term: 'ケモタイプ', body: '同じ植物種でも化学成分の組成が異なる型。タイムやバジルなどで知られる。' },
   { term: 'ルビーチョコレート', body: '製品の種類（分類）であり、カカオの遺伝系統ではない。' },
+  { term: 'カカオ遺伝集団（10集団）', body: 'Motamayor et al. 2008 が遺伝解析で定義した10集団（Amelonado／Contamana／Criollo／Curaray／Guiana／Iquitos／Marañón／Nacional／Nanay／Purús）。伝統的分類（クリオロ／フォラステロ／トリニタリオ）とは1対1に対応しない。集団レベルの香味実測データは存在しないため、素材として収録するのは足がかりのある Nacional と Criollo の2集団（推測プロファイルつき）だけとし、残りの集団はここに分類情報として記録する。' },
+  { term: 'Amelonado 集団', body: '10集団の一つ。伝統的にはフォラステロの代表的集団として扱われ、西アフリカ等の栽培地域に広く導入された。ドミニカ共和国の遺伝資源では Amelonado 祖先が優占する（Boza et al. 2013）。集団レベルの香味実測はない。' },
+  { term: 'Contamana 集団', body: '10集団の一つ（ペルー側アマゾンの集団名）。Motilal et al. 2026 はペルーの新系統 Chuncho 2 が本集団に関連すると提案した（提案段階）。集団レベルの香味実測はない。' },
+  { term: 'Curaray 集団', body: '10集団の一つ（エクアドル側アマゾンの集団名）。集団レベルの香味実測はない。' },
+  { term: 'Guiana 集団', body: '10集団の一つ（ギアナ地域の集団名）。集団レベルの香味実測はない。' },
+  { term: 'Iquitos 集団', body: '10集団の一つ（ペルー側アマゾンの集団名）。クローン CCN-51 の祖先構成の主要成分として研究に現れるが、推定値は研究間で異なる（Boza et al. 2014：45.4%、Motilal et al. 2026：25%）。集団レベルの香味実測はない。' },
+  { term: 'Marañón 集団', body: '10集団の一つ（ペルー北部の河川流域名）。「ピュア・ナシオナル再発見」等の業界説明は査読原著未確認であり根拠にしない。集団レベルの香味実測はない。' },
+  { term: 'Nanay 集団', body: '10集団の一つ（ペルー側アマゾンの集団名）。集団レベルの香味実測はない。' },
+  { term: 'Purús 集団', body: '10集団の一つ（プルス川流域の集団名）。Motilal et al. 2026 はペルーの新系統 Chuncho 1 が本集団に関連すると提案した（提案段階）。集団レベルの香味実測はない。' },
 ]
 
 function LibraryView() {
   const [sourceQuery, setSourceQuery] = useState('')
+  const [noteQuery, setNoteQuery] = useState('')
   const counts = {
     tea: materials.filter((m) => m.domain === 'tea').length,
     chocolate: materials.filter((m) => m.domain === 'chocolate').length,
@@ -667,6 +679,11 @@ function LibraryView() {
   const filteredSources = q
     ? sources.filter((s) => `${s.title} ${s.authors} ${s.journal ?? ''}`.toLowerCase().includes(q))
     : sources
+  const pairingSourceCount = sources.filter((s) => s.id.startsWith('pairing-')).length
+  const nq = noteQuery.trim().toLowerCase()
+  const filteredNotes = nq
+    ? pairingBiblioNotes.filter((n) => `${n.text} ${n.title ?? ''} ${n.authors ?? ''} ${n.fromFile}`.toLowerCase().includes(nq))
+    : pairingBiblioNotes
   return (
     <section>
       <h2>文献・用語辞典</h2>
@@ -696,6 +713,28 @@ function LibraryView() {
       </label>
       <p className="muted">{filteredSources.length}件／全{counts.sources}件</p>
       {filteredSources.length ? <SourceList ids={filteredSources.map((s) => s.id)} /> : <p className="muted">条件に合う出典はありません。</p>}
+      <p className="muted">出典の内訳：再確認済み {counts.sources - pairingSourceCount}件／pairing 由来の台帳転記（書誌レベル・再確認待ち）{pairingSourceCount}件。台帳転記分は素材×化合物リンク等の主張の根拠には使っていません。</p>
+      <h3>書誌未同定メモ（pairing 由来）</h3>
+      <p className="muted">初心者用 pairing の研究記録に言及はあるものの、書誌（題名・著者・年・所在）が完全には同定できなかった文献・情報源のメモです。欠けた項目は推測で埋めていません。出典ではないため、主張の根拠には使いません。再確認が進んだものから出典へ格上げします。</p>
+      <label>メモを絞り込む（内容・著者・由来ファイル）
+        <input type="search" value={noteQuery} onChange={(e) => setNoteQuery(e.target.value)} aria-label="書誌未同定メモの絞り込み" placeholder="例：阿波番茶" />
+      </label>
+      <p className="muted">{filteredNotes.length}件／全{pairingBiblioNotes.length}件{filteredNotes.length > 300 ? '（先頭300件まで表示）' : ''}</p>
+      {filteredNotes.length ? (
+        <ul className="source-list">
+          {filteredNotes.slice(0, 300).map((n) => (
+            <li key={n.id}>
+              {n.url ? <a href={n.url} target="_blank" rel="noreferrer">{n.title ?? '（題名の記録なし）'}</a> : <span>{n.title ?? '（題名の記録なし）'}</span>}
+              <span className="muted">
+                {n.authors ? ` ${n.authors}` : ''}{n.year ? `（${n.year}）` : ''}{n.doi ? ` DOI: ${n.doi}` : ''}
+                {` 出典記録：${n.fromFile}`}
+              </span>
+              <p className="scope-note">{n.text}</p>
+              {n.context ? <p className="scope-note muted">{n.context}</p> : null}
+            </li>
+          ))}
+        </ul>
+      ) : <p className="muted">条件に合うメモはありません。</p>}
     </section>
   )
 }

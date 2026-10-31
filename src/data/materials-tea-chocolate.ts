@@ -90,9 +90,9 @@ export const teaMaterials: Material[] = [
     classification: '紅茶', classificationId: 'black-tea', origin: '中国・インド等', originId: 'multi-origin',
     variety: '品種一般', varietyId: 'general-cultivar',
     processing: '酵素酸化（発酵）', description: '酵素酸化を進めた茶。花様・果実様・蜂蜜様の香りと、テアフラビン類による渋味が特徴とされる。',
-    profile: [p('floral-general', 'moderate', [Z]), p('honey', 'moderate', [Z]), p('fruit-general', 'moderate', [Z])],
+    profile: [p('floral-general', 'moderate', [Z]), p('honey', 'moderate', [Z]), p('fruit-general', 'moderate', [Z]), p('almond', 'weak', [Z])],
     sensations: { astringent: s('moderate', ['scharbert-2005-black-tea-taste']), bitter: s('moderate', [YE]), sweet: s('weak', [ZHANG]) },
-    evidenceTier: 'general', scopeNote: '総説と紅茶浸出液の呈味研究に基づく紅茶一般の特徴。ダージリン等の産地固有プロファイルは別途実測が必要。',
+    evidenceTier: 'general', scopeNote: '総説と紅茶浸出液の呈味研究に基づく紅茶一般の特徴。ダージリン等の産地固有プロファイルは別途実測が必要。アーモンドのノートはベンズアルデヒドが紅茶の OAV>1 重要香気成分と総説で位置づけられることに基づく（リンク側）。',
     sourceIds: [Z, 'scharbert-2005-black-tea-taste'], roastable: false, extractable: true,
   },
   {
