@@ -2,25 +2,27 @@ import type { Material, Source } from '../types'
 import { teaChocolateSources } from './sources-tc'
 import { spiceHerbSources } from './sources-spice-herb'
 import { expansionTeaSources } from './sources-expansion-tea'
+import { expansionTea2Sources } from './sources-expansion-tea2'
 import { expansionCacaoSources } from './sources-expansion-cacao'
 import { expansionShSources } from './sources-expansion-sh'
 import { pairingImportedSources } from './sources-pairing-import'
 import { teaMaterials, chocolateMaterials } from './materials-tea-chocolate'
 import { spiceMaterials, herbMaterials } from './materials-spice-herb'
 import { expansionTeaMaterials } from './materials-expansion-tea'
+import { expansionTea2Materials } from './materials-expansion-tea2'
 import { expansionChocolateMaterials } from './materials-expansion-cacao'
 import { expansionSpiceMaterials, expansionHerbMaterials } from './materials-expansion-sh'
 import { axisLabel } from './axis-labels'
 
 export const sources: Source[] = [
   ...teaChocolateSources, ...spiceHerbSources,
-  ...expansionTeaSources, ...expansionCacaoSources, ...expansionShSources,
+  ...expansionTeaSources, ...expansionTea2Sources, ...expansionCacaoSources, ...expansionShSources,
   // pairing 由来の台帳転記（全件 verified: 'bibliographic'、再確認待ち。リンクの根拠には使わない）
   ...pairingImportedSources,
 ]
 export const materials: Material[] = [
   ...teaMaterials, ...chocolateMaterials, ...spiceMaterials, ...herbMaterials,
-  ...expansionTeaMaterials, ...expansionChocolateMaterials,
+  ...expansionTeaMaterials, ...expansionTea2Materials, ...expansionChocolateMaterials,
   ...expansionSpiceMaterials, ...expansionHerbMaterials,
 ]
 
