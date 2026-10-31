@@ -23,7 +23,7 @@ const SAFFRON = 'srivastava-2010-saffron'
 const VANILLA = 'molecules-2025-vanilla-pods'
 const SANSHO = 'sugai-2005-sanshool-quant'
 const HUAJIAO = 'foodchem-2022-huajiao-aroma'
-const CHILI = 'abdel-salam-2023-capsaicin'
+// 旧 CHILI（abdel-salam-2023-capsaicin）は spice-chili 廃止に伴い削除（出典自体はリンク側で使用）
 
 export const spiceMaterials: Material[] = [
   {
@@ -214,16 +214,8 @@ export const spiceMaterials: Material[] = [
     evidenceTier: 'general', scopeNote: '漢源産試料の GC-O 研究に基づく香気の記載（寄与はリンク側で measured として区別）。他産地・緑花椒への一般化はしない。',
     sourceIds: [HUAJIAO, 'hagura-2013-tingling'], roastable: true, extractable: false,
   },
-  {
-    id: 'spice-chili', domain: 'spice', nameJa: '唐辛子', nameEn: 'Chili pepper', scientificName: 'Capsicum spp.',
-    classification: '果実系スパイス', classificationId: 'fruit-spice', origin: '中南米原産・世界各地', originId: 'multi-origin',
-    variety: 'Capsicum annuum 等（種・品種で大きく異なる）', varietyId: 'capsicum-spp', usedPart: '果実',
-    processing: '乾燥・生鮮', description: '主辛味成分はカプサイシン（TRPV1作動薬）で灼熱感を生じる。種・品種により辛味が大きく異なる。揮発性成分の査読原著による確定リストは調査では未確認のため、香りプロファイルは登録していない。',
-    profile: [],
-    sensations: { pungent: s('strong', [CHILI], 'カプサイシンによる灼熱感。品種により強さは大きく異なる'), warming: s('moderate', [CHILI]) },
-    evidenceTier: 'general', scopeNote: '総説に基づく機構の記載。品種別のカプサイシノイド組成と揮発成分は調査では未確認であり、特定品種のプロファイルは作らない。',
-    sourceIds: [CHILI], roastable: true, extractable: false,
-  },
+  // 旧・汎用素材 spice-chili（唐辛子、Capsicum spp.）は round7（2026-10-31）で廃止し、
+  // 栽培化5種の種レベル素材（materials-expansion-sh.ts の spice-chili-*）に分割した。
 ]
 
 const PEPPERMINT = 'mckay-2006-peppermint-tea'

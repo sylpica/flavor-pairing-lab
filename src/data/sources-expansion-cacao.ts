@@ -283,7 +283,7 @@ export const expansionCacaoSources: Source[] = [
   },
   {
     id: 'camu-2008-ghana-fermentation', kind: 'original',
-    title: 'Dynamics and biodiversity of populations of lactic acid bacteria and acetic acid bacteria involved in spontaneous heap fermentation of cocoa beans in Ghana',
+    title: 'Influence of Turning and Environmental Contamination on the Dynamics of Populations of Lactic Acid and Acetic Acid Bacteria Involved in Spontaneous Cocoa Bean Heap Fermentation in Ghana',
     authors: 'Camu et al.', year: 2008,
     journal: 'Applied and Environmental Microbiology 74(1):86–98',
     doi: '10.1128/AEM.01512-07',
@@ -302,5 +302,40 @@ export const expansionCacaoSources: Source[] = [
     scope: '脱脂粉乳（SMP）製造の各工程段階の差がモデルホワイトチョコレートの揮発プロファイルまで持ち越されることを示した原著。ホワイトの香りの主因が乳粉の加熱履歴であることの根拠の一つ。',
     limits: '書誌確認レベル。モデル系の研究であり市販品の実測ではない。',
     verified: 'bibliographic',
+  },
+  // ===== Guiana 遺伝集団（round7 調査 guiana-research.md、2026-10-31）=====
+  // 台帳（sources-pairing-import.ts）に bibliographic で転記されていた3件を、本調査で
+  // 出版社ページ・誌公式 PDF・原著本文を直接確認したため、再確認済みレジストリへ卒業させた。
+  {
+    id: 'assemat-2005-guiana-sensory', kind: 'original',
+    title: 'Bean quality traits and sensory evaluation of wild Guianan cocoa populations (Theobroma cacao L.)',
+    authors: 'Assemat, S.; Lachenaud, Ph.; Ribeyre, F.; Davrieux, F.; Pradon, J.-L.; Cros, E.', year: 2005,
+    journal: 'Genetic Resources and Crop Evolution 52: 911–917',
+    doi: '10.1007/s10722-003-6117-2',
+    url: 'https://doi.org/10.1007/s10722-003-6117-2',
+    scope: 'フランス領ギアナ野生・帰化Guiana集団由来クローン群のチョコレート官能で、全体の香り強度とカカオフレーバーがWest African Amelonadoより統計的に優れていたとする集団間比較の実測。カフェイン含量はAmelonado対照よりはるかに高かった。',
+    limits: '本調査での確認は抄録まで（本文の統計詳細は未確認）。果実様・花様等の個別香調は評価項目にあったが有意差は報告されていない。試料は選抜されたクローン群で、野生集団全体の無作為試料ではない。erratum（10.1007/s10722-006-0022-4）が存在し、その内容は未確認。',
+    verified: 'abstract',
+  },
+  {
+    id: 'lachenaud-2015-guiana-wild-cacao', kind: 'review',
+    title: 'Wild cacao trees (Theobroma cacao L.) in French Guiana',
+    authors: 'Lachenaud, P.', year: 2015,
+    journal: 'Academic Journal of Suriname 6: 555–560',
+    url: 'https://adekusjournal.uvs.edu/index.php/acjoursu/article/download/94/78/500',
+    scope: 'Guiana集団の収集経緯（1987年以降Oyapok・Tanpok川上流で226母樹を収集、CIRAD Sinnamaryコレクション）と評価の蓄積を総覧し、官能研究でカカオフレーバーが産業リファレンスのWest African Amelonadoより統計的に良好だったことを整理する。',
+    limits: '本論文自体は新規実測ではなくCIRADの蓄積の総覧。数値・統計の原データはAssemat et al. 2005に戻る必要がある。',
+    verified: 'full',
+  },
+  {
+    id: 'jean-marie-2021-guiana-composition', kind: 'original',
+    title: "Antioxidative and Immunomodulatory Potential of the Endemic French Guiana Wild Cocoa 'Guiana'",
+    authors: 'Jean-Marie, E.; Bereau, D.; Poucheret, P.; Guzman, C.; Boudard, F.; Robinson, J.-C.', year: 2021,
+    journal: 'Foods 10(3): 522',
+    doi: '10.3390/foods10030522',
+    url: 'https://doi.org/10.3390/foods10030522',
+    scope: 'Guiana生豆とForastero参照試料の含有量実測で、テオブロミン1180.0±33.0 mg/100g DM（参照より有意に15%高い）、カフェインは参照より50%低い、エピカテキン614.1±39.3 mg/100g DM。発酵による組成変化も測定。Guiana集団の成分含有量の根拠になる。',
+    limits: '本論文自身の官能データはない（官能の記述はAssemat et al. 2005の引用と著者推測）。含有量から苦味・渋味の強さへの換算や香味の良さの主張はできない。参照ForasteroはMotamayor集団として特定された試料ではない。カフェインの方向性はAssemat et al. 2005（Amelonado対照より高い）と食い違う。',
+    verified: 'full',
   },
 ]

@@ -34,7 +34,7 @@ export const expansionCacaoLinks: MaterialCompoundLink[] = [
 // ===== (b) 既存登録化合物への新規リンク =====
 { materialId: DARK, compoundId: 'linalool', kind: 'contribution', tier: 'measured', conditions: '市販ダーク（カカオ90%・99%）の sensomics（AEDA＋SIDA 定量＋再構成）で最高 OAV 群・再構成の構成成分。単一品種ダーク16種の DoT 比較でも Forastero 系で高 DoT。既存素材（70%一般）への適用は試料範囲の外挿を含む', sourceIds: [SEYFRIED, 'ullrich-2023-variety-dark']},
 { materialId: DARK, compoundId: 'phenylacetaldehyde', kind: 'contribution', tier: 'measured', conditions: 'ココアパウダーで OAV>100・24成分再構成の構成成分（Frauendorfer & Schieberle 2006）。Criollo 豆では焙煎で増加（2008）。パウダー試料の値をダークバーへそのまま転用しない', sourceIds: [FS06, FS08]},
-{ materialId: DARK, compoundId: 'beta-ionone', kind: 'contribution', tier: 'measured', conditions: '条件付き：市販ダーク（90%・99%）でチョコレートとして初めて定量され、再構成の構成成分となった（Seyfried & Granvogl 2019）。寄与の大小は原著表の確認後に確定する。β-ダマセノンではない', sourceIds: [SEYFRIED]},
+{ materialId: DARK, compoundId: 'beta-ionone', kind: 'contribution', tier: 'measured', conditions: '市販ダーク（90%・99%）で AEDA により香気活性成分として同定され、チョコレートで初めて定量された（Seyfried & Granvogl 2019）。OAV≥1・再構成への含有は原著表で未確認のため、寄与の大小は保留。β-ダマセノンではない', sourceIds: [SEYFRIED]},
 { materialId: C100, compoundId: 'linalool', kind: 'contribution', tier: 'measured', conditions: '条件付き：根拠試料は市販99%バーであり、100%素材への適用ではこの試料範囲を併記する', sourceIds: [SEYFRIED]},
 { materialId: C100, compoundId: 'phenylacetaldehyde', kind: 'contribution', tier: 'measured', conditions: '条件付き：99%バーの sensomics とココアパウダーの再構成研究に基づく', sourceIds: [SEYFRIED, FS06]},
 // ジメチルスルフィドは PLS 予測因子（相関）であり寄与にはしない。ジメチルトリスルフィドと混同しない
@@ -46,7 +46,7 @@ export const expansionCacaoLinks: MaterialCompoundLink[] = [
 { materialId: UNROASTED, compoundId: '3-methylbutanoic-acid', kind: 'contribution', tier: 'measured', conditions: '発酵 Criollo 豆（未焙煎）の比較 AEDA で最高 FD 群。発酵由来成分であり焙煎生成物ではない', sourceIds: [FS08]},
 { materialId: MILK, compoundId: '3-methylbutanoic-acid', kind: 'contribution', tier: 'measured', conditions: '市販ミルクチョコ1製品の sensomics で OAV 上位群・再構成の構成成分', sourceIds: [FRICKE]},
 { materialId: C100, compoundId: '3-methylbutanoic-acid', kind: 'contribution', tier: 'measured', conditions: '試料は市販99%バー（最高 OAV 群）', sourceIds: [SEYFRIED]},
-{ materialId: DARK, compoundId: '2-methylbutanoic-acid', kind: 'contribution', tier: 'measured', conditions: '発酵カカオの AEDA で FD 2048–4096、Forastero ダークで高 DoT。証拠の多くは 3-メチルブタン酸とのペアで得られており、単独の OAV 実証は限定的', sourceIds: [PORCELLI, 'ullrich-2023-variety-dark']},
+{ materialId: DARK, compoundId: '2-methylbutanoic-acid', kind: 'contribution', tier: 'measured', conditions: 'FD 2048–4096 は 2-/3-メチルブタン酸合算ピークの値（Porcelli 2022、非典型的ココナッツ様香の発酵カカオ試料）。ダークチョコレートでの単独の裏付けは Ullrich 2023 の Forastero ダークでの高 DoT による。単独の OAV 実証は限定的', sourceIds: [PORCELLI, 'ullrich-2023-variety-dark']},
 { materialId: MILK, compoundId: 'phenylacetic-acid', kind: 'contribution', tier: 'measured', conditions: '市販ミルクチョコでバニリンと並ぶ最高 FD・再構成の構成成分', sourceIds: [FRICKE]},
 { materialId: DARK, compoundId: 'phenylacetic-acid', kind: 'contribution', tier: 'measured', conditions: '市販ダークで最高 OAV 群。GC-O 検出頻度法でもダーク試料の判別キーオドラント（OA 94）', sourceIds: [SEYFRIED, DEUSCHER]},
 { materialId: DARK, compoundId: 'dimethyl-trisulfide', kind: 'contribution', tier: 'measured', conditions: 'ココアパウダーで最高 FD 群、市販ダークで最高 OAV 群、製品ダークで高 DoT。焙煎の有無で寄与差が大きい。ジメチルスルフィド（DMS）とは別化合物', sourceIds: [FS06, SEYFRIED, ULLRICH22, ACPANGAN]},
@@ -63,19 +63,19 @@ export const expansionCacaoLinks: MaterialCompoundLink[] = [
 // グアイアコールはオフフレーバー文脈の併記が必須条件（通常品の上位成分であると同時に煙様オフフレーバーの主因）
 { materialId: DARK, compoundId: 'guaiacol', kind: 'contribution', tier: 'measured', conditions: '通常の市販ダークでは最高 OAV 群の一方、過剰では煙様オフフレーバーの主因。起源は乾燥時の木煙曝露（Krause & Steinhaus 2025）と過発酵（同 2026）の2つが確認されており「煙様＝煙曝露」とは断定できない。発酵豆での最大許容濃度 70 µg/kg が提案されている（Füllemann & Steinhaus 2020）', sourceIds: [SEYFRIED, 'fullemann-2020-smoky-offflavor', 'krause-2025-smoke-exposure', 'krause-2026-overfermentation']},
 { materialId: MILK, compoundId: 'guaiacol', kind: 'contribution', tier: 'measured', conditions: '市販ミルクチョコで高 FD の一方、煙様オフフレーバーの原因化合物でもある（Füllemann & Steinhaus 2020）', sourceIds: [FRICKE, 'fullemann-2020-smoky-offflavor']},
-{ materialId: DARK, compoundId: '2-phenylethyl-acetate', kind: 'contribution', tier: 'measured', conditions: '発酵カカオの AEDA で FD 4096（最高水準）。寄与は AEDA レベルであり、OAV・再構成の裏付けはない。異性体 1-phenylethyl acetate と混同しない', sourceIds: [PORCELLI]},
+{ materialId: DARK, compoundId: '2-phenylethyl-acetate', kind: 'contribution', tier: 'measured', conditions: '発酵カカオの AEDA で FD 4096（最高水準）。寄与は AEDA レベルであり、OAV・再構成の裏付けはない。異性体 1-phenylethyl acetate と混同しない。非典型的ココナッツ様試料を含む発酵カカオでの AEDA 所見であり（参照試料でも最高 FD 帯）、製品ダークチョコレートでの OAV・再構成による裏付けはない', sourceIds: [PORCELLI]},
 { materialId: DARK, compoundId: 'isoamyl-acetate', kind: 'contribution', tier: 'measured', conditions: '製品ダークの果実様ノートで高 DoT（DoT 関連付けレベル、単独の欠落検証なし）。パルプ＞豆の濃度関係が定量されている', sourceIds: [ULLRICH22, 'chetschik-2018-cocoa-pulp']},
 { materialId: DARK, compoundId: 'ethyl-2-methylbutyrate', kind: 'contribution', tier: 'measured', conditions: '製品ダークの果実様エステルとして高 DoT。発酵豆に既に存在し焙煎で増えない（Frauendorfer & Schieberle 2008）', sourceIds: [ULLRICH22, FS08]},
 { materialId: DARK, compoundId: 'ethyl-3-methylbutyrate', kind: 'contribution', tier: 'measured', conditions: '製品ダークの果実様エステルとして高 DoT。2-メチルブタン酸エチルとは別化合物', sourceIds: [ULLRICH22]},
 { materialId: DARK, compoundId: 'massoia-lactone', kind: 'contribution', tier: 'measured', conditions: 'ココナッツ様の非典型的な香りを持つ発酵カカオ試料で、定量＋OAV＋参照試料への添加実験により決定的と確認。通常品のココナッツ様ノートの主因と一般化しない', sourceIds: [PORCELLI]},
-{ materialId: MILK, compoundId: 'delta-decalactone', kind: 'contribution', tier: 'measured', conditions: '試料はクラムチョコレート（ミルクチョコレートの一種）。無水乳脂肪画分の感覚指向分析でクリーミーさへの寄与が示された。クラム方式でないミルクチョコレートへの適用は未検証。γ-デカラクトンとは別化合物', sourceIds: ['samfass-2021-crumb-chocolate-lactones']},
+{ materialId: MILK, compoundId: 'delta-tetradecalactone', kind: 'contribution', tier: 'measured', conditions: '試料はクラムチョコレート（ミルクチョコレートの一種）。無水乳脂肪画分の感覚指向分析で、長鎖 δ-ラクトンのうち δ-テトラデカラクトンの添加でのみクリーミーさの増強が有意に示された（Samfass et al. 2021）。クラム方式でないミルクチョコレートへの適用は未検証', sourceIds: ['samfass-2021-crumb-chocolate-lactones']},
 { materialId: DARK, compoundId: 'procyanidin-b2', kind: 'contribution', tier: 'measured', conditions: '製品ダークで渋味側の高 DoT（DoT 関連付けであり欠落試験ではない）。カテキン類（群）とは別に個別登録', sourceIds: [ULLRICH22]},
 { materialId: C100, compoundId: 'procyanidin-b2', kind: 'contribution', tier: 'measured', conditions: '根拠はリカーから作った製品ダークの DoT。100%製品そのものの試料ではない', sourceIds: [ULLRICH22]},
 { materialId: DARK, compoundId: 'procyanidin-c1', kind: 'contribution', tier: 'measured', conditions: '製品ダークで渋味側の高 DoT（DoT 関連付けであり欠落試験ではない）。カテキン類（群）とは別に個別登録', sourceIds: [ULLRICH22]},
 { materialId: C100, compoundId: 'procyanidin-c1', kind: 'contribution', tier: 'measured', conditions: '根拠はリカーから作った製品ダークの DoT。100%製品そのものの試料ではない', sourceIds: [ULLRICH22]},
 { materialId: DARK, compoundId: 'epicatechin', kind: 'contribution', tier: 'measured', conditions: '製品ダークで渋味・花様側の高 DoT。なお種子含有量には遺伝型間の遺伝的決定差が認められなかった（Elwers et al. 2009）ため、系統差の根拠にはしない', sourceIds: [ULLRICH22, 'elwers-2009-phenolics-genotypes']},
 { materialId: DARK, compoundId: 'diketopiperazines', kind: 'contribution', tier: 'measured', conditions: 'カカオの苦味はアルカロイドと 2,5-ジケトピペラジン類の組合せが鍵（Kauz et al. 2021、豆75試料の定量基盤＋呈味の感覚指向分析）。群として扱う。焙煎カカオニブでの呈味研究（Stark et al. 2006）も根拠に含む。根拠は豆・ニブ段階の研究であり、最終製品での直接の寄与検証ではない', sourceIds: ['kauz-2021-cocoa-tastants', 'stark-2006-cocoa-nibs-taste']},
-{ materialId: DARK, compoundId: 'n-phenylpropenoyl-amino-acids', kind: 'contribution', tier: 'measured', conditions: 'カカオの渋味の担い手の一つ（Kauz et al. 2021 の感覚指向分析）。群として扱う', sourceIds: ['kauz-2021-cocoa-tastants']},
+{ materialId: DARK, compoundId: 'n-phenylpropenoyl-amino-acids', kind: 'contribution', tier: 'measured', conditions: 'カカオの渋味の担い手の一つ（Kauz et al. 2021 の感覚指向分析）。群として扱う。根拠はカカオ豆段階（統一焙煎前後）の感覚指向分析であり、最終製品ダークチョコレートでの直接の寄与検証ではない', sourceIds: ['kauz-2021-cocoa-tastants']},
 // ジアセチルは検出頻度レベルの寄与候補に留め、寄与リンクにはしない。再構成・欠落の裏付けなし
 { materialId: DARK, compoundId: 'diacetyl', kind: 'detection', tier: 'measured', conditions: 'GC-O 検出頻度法での寄与候補（Deuscher et al. 2020：OA 7、NIF 90–100%）。再構成・欠落での単独検証は未確認のため検出リンクに留める。パルプではカメルーン産で FD 256（Bickel Haase et al. 2021）。ミルクチョコへのリンクはしない（外挿不可）', sourceIds: [DEUSCHER, BICKEL]},
 // 4-ビニルグアイアコールは検出（GC-O）レベルまで。寄与リンクにはしない

@@ -53,7 +53,7 @@ export const expansionShLinks: MaterialCompoundLink[] = [
   { materialId: 'spice-black-pepper', compoundId: 'methylbutanal-2', kind: 'contribution', tier: 'measured', conditions: '欠落試験で寄与を確認', sourceIds: ['jagella-1999-pepper-odorants', 'jagella-1999-pepper-oav'] },
   { materialId: 'spice-black-pepper', compoundId: 'methylbutanal-3', kind: 'contribution', tier: 'measured', conditions: '欠落試験で寄与を確認', sourceIds: ['jagella-1999-pepper-odorants', 'jagella-1999-pepper-oav'] },
   { materialId: 'spice-black-pepper', compoundId: 'butyric-acid', kind: 'contribution', tier: 'measured', conditions: '欠落試験で寄与を確認', sourceIds: ['jagella-1999-pepper-odorants', 'jagella-1999-pepper-oav'] },
-  { materialId: 'spice-black-pepper', compoundId: 'methylbutyric-acid-3', kind: 'contribution', tier: 'measured', conditions: '欠落試験で寄与を確認（3-メチル酪酸）', sourceIds: ['jagella-1999-pepper-odorants', 'jagella-1999-pepper-oav'] },
+  { materialId: 'spice-black-pepper', compoundId: '3-methylbutanoic-acid', kind: 'contribution', tier: 'measured', conditions: '欠落試験で寄与を確認（3-メチル酪酸）', sourceIds: ['jagella-1999-pepper-odorants', 'jagella-1999-pepper-oav'] },
   { materialId: 'spice-black-pepper', compoundId: 'rotundone', kind: 'contribution', tier: 'measured', conditions: 'OAV 評価でペッパー様香気への寄与を示した原著', sourceIds: ['wood-2008-rotundone-pepper'] },
   // ===== コリアンダー種子（Pater 2024 GC-O）=====
   { materialId: 'spice-coriander-seed', compoundId: 'carvacrol', kind: 'contribution', tier: 'measured', conditions: 'GC-O で寄与を確認', sourceIds: ['pater-2024-coriander-gco'] },
@@ -64,17 +64,19 @@ export const expansionShLinks: MaterialCompoundLink[] = [
   { materialId: 'spice-fennel-seed', compoundId: 'anisaldehyde', kind: 'contribution', tier: 'measured', sourceIds: ['zeller-2006-fennel-impact'] },
   { materialId: 'spice-fennel-seed', compoundId: 'trans-4-5-epoxy-e-2-decenal', kind: 'contribution', tier: 'measured', sourceIds: ['zeller-2006-fennel-impact'] },
   { materialId: 'spice-fennel-seed', compoundId: 'cineole', kind: 'contribution', tier: 'measured', sourceIds: ['zeller-2006-fennel-impact'] },
-  { materialId: 'spice-fennel-seed', compoundId: 'alpha-pinene', kind: 'contribution', tier: 'measured', sourceIds: ['zeller-2006-fennel-impact'] },
+  { materialId: 'spice-fennel-seed', compoundId: 'alpha-pinene', kind: 'contribution', tier: 'measured', conditions: 'Zeller & Rychlik 2006 では (R)-α-ピネンとして同定され、果実・茶の双方で高 FD を示した', sourceIds: ['zeller-2006-fennel-impact'] },
   { materialId: 'spice-fennel-seed', compoundId: 'myrcene', kind: 'contribution', tier: 'measured', sourceIds: ['zeller-2006-fennel-impact'] },
-  { materialId: 'spice-fennel-seed', compoundId: 'octen-3-ol-1', kind: 'contribution', tier: 'measured', sourceIds: ['zeller-2006-fennel-impact'] },
+  // 旧リンク spice-fennel-seed × octen-3-ol-1 は全件照合（round7）で削除：Zeller & Rychlik 2006 の
+  // 高 FD 群・OAV 上位のいずれにも含まれず、別素材・別出典の結果の付け替えが疑われたため。
   { materialId: 'spice-fennel-seed', compoundId: 'estragole', kind: 'contribution', tier: 'measured', conditions: '種子・精油系での寄与評価。フェンネル茶（浸出液）では官能 impact が認められなかった報告があり、形態で結論が異なる', sourceIds: ['zeller-2006-fennel-impact'] },
   // ===== クローブ（Yu 2025 全文：粉末で OAV>1 かつ FD≥64 の交差集合）=====
   { materialId: 'spice-clove', compoundId: 'beta-caryophyllene', kind: 'contribution', tier: 'measured', conditions: 'クローブ粉末の OAV・AEDA 交差集合', sourceIds: ['yu-2025-clove-endowment'] },
-  { materialId: 'spice-clove', compoundId: 'anethole', kind: 'contribution', tier: 'measured', conditions: '同上', sourceIds: ['yu-2025-clove-endowment'] },
+  // 旧リンク spice-clove × anethole / estragole は全件照合（round7）で削除：いずれもフェンネル／
+  // バジル／タラゴン等の標識的フェニルプロパノイドで、Yu 2025 の要旨にもクローブ蕾油の組成文献にも
+  // 構成成分としての裏付けがなく、フェンネル側化合物の混入と判断した。
   { materialId: 'spice-clove', compoundId: 'methoxy-4-methylphenol-2', kind: 'contribution', tier: 'measured', conditions: '同上（2-メトキシ-4-メチルフェノール）', sourceIds: ['yu-2025-clove-endowment'] },
   { materialId: 'spice-clove', compoundId: 'cineole', kind: 'contribution', tier: 'measured', conditions: '同上', sourceIds: ['yu-2025-clove-endowment'] },
   { materialId: 'spice-clove', compoundId: 'linalool', kind: 'contribution', tier: 'measured', conditions: '同上', sourceIds: ['yu-2025-clove-endowment'] },
-  { materialId: 'spice-clove', compoundId: 'estragole', kind: 'contribution', tier: 'measured', conditions: '同上', sourceIds: ['yu-2025-clove-endowment'] },
   { materialId: 'spice-clove', compoundId: 'pentylfuran-2', kind: 'contribution', tier: 'measured', conditions: '同上（2-ペンチルフラン）', sourceIds: ['yu-2025-clove-endowment'] },
   { materialId: 'spice-clove', compoundId: 'carene-3', kind: 'contribution', tier: 'measured', conditions: '同上（3-カレン）', sourceIds: ['yu-2025-clove-endowment'] },
   { materialId: 'spice-clove', compoundId: 'limonene', kind: 'contribution', tier: 'measured', conditions: '同上', sourceIds: ['yu-2025-clove-endowment'] },
@@ -97,8 +99,8 @@ export const expansionShLinks: MaterialCompoundLink[] = [
   { materialId: 'herb-rosemary', compoundId: 'octen-3-one-1', kind: 'contribution', tier: 'measured', conditions: '1-オクテン-3-オン', sourceIds: ['raffo-2026-rosemary-odorants'] },
   { materialId: 'herb-rosemary', compoundId: 'beta-damascenone', kind: 'contribution', tier: 'measured', sourceIds: ['raffo-2026-rosemary-odorants'] },
   // ===== バジル（Sonmezdag 2018 AEDA、条件つき）=====
-  { materialId: 'herb-basil', compoundId: 'cineole', kind: 'contribution', tier: 'measured', conditions: '乾燥バジル（メチルチャビコール型条件）の AEDA', sourceIds: ['sonmezdag-2018-basil-aroma'] },
-  { materialId: 'herb-basil', compoundId: 'limonene', kind: 'contribution', tier: 'measured', conditions: '同上（条件つき）', sourceIds: ['sonmezdag-2018-basil-aroma'] },
+  { materialId: 'herb-basil', compoundId: 'cineole', kind: 'contribution', tier: 'measured', conditions: 'イラン産陰干しバジル地上部（メチルチャビコール型）の AEDA で FD 512・OAV 約 987。トルコ産試料では香気活性として検出されなかった', sourceIds: ['sonmezdag-2018-basil-aroma'] },
+  { materialId: 'herb-basil', compoundId: 'limonene', kind: 'contribution', tier: 'measured', conditions: 'トルコ産陰干しバジル地上部（メチルチャビコール型）の AEDA で FD 256・OAV 約 503。イラン産試料では香気活性として検出されなかった', sourceIds: ['sonmezdag-2018-basil-aroma'] },
   // ===== オレガノ（Sádecká 2008 AEDA）=====
   { materialId: 'herb-oregano', compoundId: 'linalool', kind: 'contribution', tier: 'measured', sourceIds: ['sadecka-2008-oregano-aeda'] },
   { materialId: 'herb-oregano', compoundId: 'octen-3-ol-1', kind: 'contribution', tier: 'measured', conditions: '1-オクテン-3-オール', sourceIds: ['sadecka-2008-oregano-aeda'] },
@@ -109,7 +111,7 @@ export const expansionShLinks: MaterialCompoundLink[] = [
   { materialId: 'herb-sage', compoundId: 'myrcene', kind: 'contribution', tier: 'measured', conditions: '生葉のセンソミクス', sourceIds: ['jonas-2021-sage-sensomics'] },
   { materialId: 'herb-sage', compoundId: 'z-3-hexenal', kind: 'contribution', tier: 'measured', conditions: '生葉のセンソミクス', sourceIds: ['jonas-2021-sage-sensomics'] },
   { materialId: 'herb-sage', compoundId: 'eugenol', kind: 'contribution', tier: 'measured', conditions: '生葉のセンソミクス', sourceIds: ['jonas-2021-sage-sensomics'] },
-  { materialId: 'herb-sage', compoundId: 'e-2-6-nonadienal', kind: 'contribution', tier: 'measured', conditions: '乾燥セージでの寄与研究', sourceIds: ['chiang-2024-sage-odorants'] },
+  { materialId: 'herb-sage', compoundId: 'ez-2-6-nonadienal', kind: 'contribution', tier: 'measured', conditions: '乾燥セージでの寄与研究', sourceIds: ['chiang-2024-sage-odorants'] },
   // ===== ペパーミント（Gabetti 2021 精油 AEDA／Shigeto 2020 生葉 cAEDA）=====
   { materialId: 'herb-peppermint', compoundId: 'cineole', kind: 'contribution', tier: 'measured', conditions: '精油の AEDA', sourceIds: ['gabetti-2021-peppermint-gco'] },
   { materialId: 'herb-peppermint', compoundId: 'menthofuran', kind: 'contribution', tier: 'measured', conditions: '精油の AEDA（同定は tentative の注記あり）', sourceIds: ['gabetti-2021-peppermint-gco'] },
@@ -143,7 +145,7 @@ export const expansionShNewMaterialLinks: MaterialCompoundLink[] = [
   { materialId: 'spice-juniper-berry', compoundId: 'limonene', kind: 'composition', tier: 'general', sourceIds: ['hoferl-2014-juniper-berry-oil'] },
   { materialId: 'spice-juniper-berry', compoundId: 'myrcene', kind: 'composition', tier: 'general', sourceIds: ['hoferl-2014-juniper-berry-oil'] },
   // フェヌグリーク
-  { materialId: 'spice-fenugreek', compoundId: 'sotolone', kind: 'composition', tier: 'general', conditions: '毛状根培養での産生確認と種子抽出物の知見。精油試料では未検出の場合があり、精油での寄与としては扱わない', sourceIds: ['peraza-luna-2001-fenugreek-sotolone'] },
+  { materialId: 'spice-fenugreek', compoundId: 'sotolon', kind: 'composition', tier: 'general', conditions: '毛状根培養での産生確認と種子抽出物の知見。精油試料では未検出の場合があり、精油での寄与としては扱わない', sourceIds: ['peraza-luna-2001-fenugreek-sotolone'] },
   // キャラウェイ
   { materialId: 'spice-caraway', compoundId: 'carvone', kind: 'composition', tier: 'general', sourceIds: ['laribi-2010-caraway-ecotypes'] },
   { materialId: 'spice-caraway', compoundId: 'limonene', kind: 'composition', tier: 'general', sourceIds: ['laribi-2010-caraway-ecotypes'] },
@@ -210,7 +212,7 @@ export const expansionShNewMaterialLinks: MaterialCompoundLink[] = [
   { materialId: 'herb-perilla-pk', compoundId: 'egoma-ketone', kind: 'contribution', tier: 'measured', conditions: '同上', sourceIds: ['seo-2009-perilla-aroma'] },
   { materialId: 'herb-perilla-pk', compoundId: 'z-3-hexenal', kind: 'contribution', tier: 'measured', conditions: 'GC-O で強い香気活性', sourceIds: ['seo-2009-perilla-aroma'] },
   // ラベージ
-  { materialId: 'herb-lovage', compoundId: 'sotolone', kind: 'contribution', tier: 'measured', conditions: '市販抽出物の AEDA で key aroma（FD factor 300、抽出物中 7.6 mg/kg）。生鮮葉の香りそのものではない', sourceIds: ['blank-1993-lovage-extract'] },
+  { materialId: 'herb-lovage', compoundId: 'sotolon', kind: 'contribution', tier: 'measured', conditions: '市販抽出物の AEDA で key aroma（FD factor 300、抽出物中 7.6 mg/kg）。生鮮葉の香りそのものではない', sourceIds: ['blank-1993-lovage-extract'] },
   { materialId: 'herb-lovage', compoundId: 'alpha-terpinyl-acetate', kind: 'composition', tier: 'general', sourceIds: ['bylaite-2000-lovage-headspace'] },
   { materialId: 'herb-lovage', compoundId: 'z-ligustilide', kind: 'composition', tier: 'general', sourceIds: ['bylaite-2000-lovage-headspace'] },
   { materialId: 'herb-lovage', compoundId: 'beta-phellandrene', kind: 'composition', tier: 'general', conditions: '根を除く全部位で組成上最も優占したが、キャラクターインパクト成分とは認められなかった', sourceIds: ['bylaite-2000-lovage-headspace'] },
@@ -266,14 +268,33 @@ export const expansionShTeaChocoLinks: MaterialCompoundLink[] = [
   { materialId: 'tea-black-general', compoundId: 'lactic-acid', kind: 'composition', tier: 'general', sourceIds: ['zhang-2022-tea-organic-acids'] },
   { materialId: 'choco-dark-roasted', compoundId: 'lactic-acid', kind: 'contribution', tier: 'measured', conditions: '発酵カカオ豆の酸味への寄与を評価した原著', sourceIds: ['holm-1993-cocoa-organic-acids'] },
   { materialId: 'choco-dark-roasted', compoundId: 'sucrose', kind: 'composition', tier: 'general', conditions: '配合成分（添加糖）でありカカオ内在成分ではない。甘味の担い手であることは配合研究で直接確認されている', sourceIds: ['burkard-2024-chocolate-sweetness'] },
-  { materialId: 'tea-sencha', compoundId: 'sucrose', kind: 'contribution', tier: 'general', conditions: '可溶性糖と甘味の弁別・相関レベルでの寄与（原著の評価水準の範囲）', sourceIds: ['li-2025-tea-soluble-sugars'] },
+  { materialId: 'tea-sencha', compoundId: 'sucrose', kind: 'contribution', tier: 'general', conditions: '可溶性糖と甘味の弁別・相関レベルでの寄与（原著の評価水準の範囲）。出典は中国 6 茶種（中国式緑茶を含む）の官能＋糖メタボロミクスによる弁別・相関レベルの寄与であり、煎茶（蒸し製）での直接測定ではない', sourceIds: ['li-2025-tea-soluble-sugars'] },
   { materialId: 'tea-black-general', compoundId: 'sucrose', kind: 'contribution', tier: 'general', conditions: '可溶性糖と甘味の弁別・相関レベルでの寄与（Li 2025。個別TAV・再構成による証明ではない）', sourceIds: ['li-2025-tea-soluble-sugars'] },
 ]
 
+
+// ===== 唐辛子の種レベル分割に伴うリンク（round7、2026-10-31）=====
+// 旧 spice-chili × capsaicin（contribution/general）1件を廃止し、種素材5件へ移行した。
+// カプサイシンは pubescens では優位成分ではないため composition とし、pubescens では
+// ジヒドロカプサイシン側を contribution とした。組成比は種平均の傾向（Alghamdi 2025）であり
+// 種の同定指標ではない（Zewdie & Bosland 2001）。
+export const expansionShChiliLinks: MaterialCompoundLink[] = [
+  { materialId: 'spice-chili-annuum', compoundId: 'capsaicin', kind: 'contribution', tier: 'general', conditions: 'TRPV1 作動による灼熱感の主因（総説）。種平均では総カプサイシノイドの約64%を占める（Alghamdi 2025）。品種により含量は大きく異なる', sourceIds: ['abdel-salam-2023-capsaicin', 'alghamdi-2025-capsaicinoid-profiles'] },
+  { materialId: 'spice-chili-chinense', compoundId: 'capsaicin', kind: 'contribution', tier: 'general', conditions: 'TRPV1 作動による灼熱感の主因（総説）。カプサイシン優位の組成で種平均は総カプサイシノイドの約73%（Alghamdi 2025）。超辛味品種を含む', sourceIds: ['abdel-salam-2023-capsaicin', 'alghamdi-2025-capsaicinoid-profiles'] },
+  { materialId: 'spice-chili-frutescens', compoundId: 'capsaicin', kind: 'contribution', tier: 'general', conditions: 'TRPV1 作動による灼熱感の主因（総説）。カプサイシン優位の組成で種平均は総カプサイシノイドの約73%（Alghamdi 2025）', sourceIds: ['abdel-salam-2023-capsaicin', 'alghamdi-2025-capsaicinoid-profiles'] },
+  { materialId: 'spice-chili-baccatum', compoundId: 'capsaicin', kind: 'contribution', tier: 'general', conditions: 'TRPV1 作動による灼熱感の主因（総説）。種平均では総カプサイシノイドの約64%（Alghamdi 2025）。総量は対照の chinense より温和だった（Kollmannsberger 2011）', sourceIds: ['abdel-salam-2023-capsaicin', 'alghamdi-2025-capsaicinoid-profiles', 'kollmannsberger-2011-aji-rocoto-volatiles'] },
+  { materialId: 'spice-chili-pubescens', compoundId: 'capsaicin', kind: 'composition', tier: 'general', conditions: '種平均では総カプサイシノイドの約34%で、ジヒドロカプサイシンに次ぐ成分（Alghamdi 2025）。本種の辛味の主担い手はジヒドロカプサイシン側', sourceIds: ['alghamdi-2025-capsaicinoid-profiles', 'meckelmann-2015-pubescens-phytochemicals'] },
+  { materialId: 'spice-chili-annuum', compoundId: 'dihydrocapsaicin', kind: 'composition', tier: 'general', conditions: '種平均で総カプサイシノイドの約30%を占める主要カプサイシノイド（Alghamdi 2025）', sourceIds: ['alghamdi-2025-capsaicinoid-profiles'] },
+  { materialId: 'spice-chili-chinense', compoundId: 'dihydrocapsaicin', kind: 'composition', tier: 'general', conditions: '種平均で総カプサイシノイドの約25%を占める主要カプサイシノイド（Alghamdi 2025）', sourceIds: ['alghamdi-2025-capsaicinoid-profiles'] },
+  { materialId: 'spice-chili-frutescens', compoundId: 'dihydrocapsaicin', kind: 'composition', tier: 'general', conditions: '種平均で総カプサイシノイドの約25%を占める主要カプサイシノイド（Alghamdi 2025）', sourceIds: ['alghamdi-2025-capsaicinoid-profiles'] },
+  { materialId: 'spice-chili-baccatum', compoundId: 'dihydrocapsaicin', kind: 'composition', tier: 'general', conditions: '種平均で総カプサイシノイドの約30%を占める主要カプサイシノイド（Alghamdi 2025）', sourceIds: ['alghamdi-2025-capsaicinoid-profiles'] },
+  { materialId: 'spice-chili-pubescens', compoundId: 'dihydrocapsaicin', kind: 'contribution', tier: 'general', conditions: '種平均で総カプサイシノイドの約60%を占める優位成分で、本種では TRPV1 作動による灼熱感の主担い手（組成は Alghamdi 2025・Meckelmann 2015 の実測、機構はカプサイシノイドの総説）', sourceIds: ['alghamdi-2025-capsaicinoid-profiles', 'meckelmann-2015-pubescens-phytochemicals', 'abdel-salam-2023-capsaicin'] },
+]
 
 // ===== 統合エクスポート（新規リンク全件。格上げ分は expansionShLinkUpgrades を参照）=====
 export const expansionShAllLinks: MaterialCompoundLink[] = [
   ...expansionShLinks,
   ...expansionShNewMaterialLinks,
   ...expansionShTeaChocoLinks,
+  ...expansionShChiliLinks,
 ]

@@ -1,5 +1,6 @@
 import type { InteractionRule } from '../types'
 import { expansionInteractionRules } from './rules-expansion-sh'
+import { expansionDairyInteractionRules } from './rules-expansion-dairy'
 
 // 相互作用ルール：成分の足し算ではなく、知覚レベルの相互作用を文章化するための規則。
 // 直接研究（茶×チョコ自体の官能研究: Donadini 2012/2014）と一般機構研究を区別する。
@@ -21,14 +22,8 @@ export const interactionRules: InteractionRule[] = [
     level: 'general', directStudy: false,
     sourceIds: ['lesschaeve-2005-polyphenols-astringency'],
   },
-  {
-    id: 'milk-protein-catechin', kind: 'taste',
-    conditionNote: 'カテキン類を含むお茶 × 乳を含む素材（ミルク/ホワイトチョコ等）',
-    trigger: { compoundId: 'catechins', withDomain: 'chocolate' },
-    text: '乳タンパク質と茶カテキンの相互作用はミルクティー系の研究で検討されており、渋味の知覚やカテキンの挙動に影響する可能性があります。チョコレートの乳成分でも同様の相互作用が起こり得ますが、チョコレートでの直接実証ではないため探索的な説明です。',
-    level: 'exploratory', directStudy: false,
-    sourceIds: ['qie-2021-milk-tea-catechin-protein'],
-  },
+  // 旧 'milk-protein-catechin'（Qie 2021）は乳製品ドメイン追加に伴い、
+  // rules-expansion-dairy の 'milk-tea-catechin-fate' に統合・置換した（重複させない）。
   {
     id: 'temperature-sweetness-trpm5', kind: 'temporal',
     conditionNote: '温かい状態で供される素材（抽出物等）を含む',
@@ -55,4 +50,6 @@ export const interactionRules: InteractionRule[] = [
   },
   // ===== 文献拡充（スパイス・ハーブ第2波ほか）で追加したルール =====
   ...expansionInteractionRules,
+  // ===== 乳製品ドメイン追加（round7）で追加したルール =====
+  ...expansionDairyInteractionRules,
 ]

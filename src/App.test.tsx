@@ -2,6 +2,8 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, cleanup, fireEvent } from '@testing-library/react'
 import App from './App'
+import { sources } from './data/index'
+import { pairingImportedSources } from './data/sources-pairing-import'
 
 // 画面レンダリングと代表操作の検証（要件18の代表シナリオを jsdom で代替検証する。
 // 実ブラウザE2Eは公開検証フェーズで別途行い、本テストの代替とは明記する）
@@ -43,11 +45,12 @@ describe('画面レンダリング', () => {
     render(<App />)
     expect(screen.getAllByText(/収録状況/).length).toBeGreaterThan(0)
     expect(screen.getByText(/網羅率/)).toBeTruthy()
-    // 台帳データの動的読み込み後に、出典総数が741件として構成される
-    expect(await screen.findByText('741', undefined, { timeout: 15000 })).toBeTruthy()
+    // 台帳データの動的読み込み後に、出典総数が実データ（再確認済み＋台帳）と一致して構成される
+    const expectedTotal = String(sources.length + pairingImportedSources.length)
+    expect(await screen.findByText(expectedTotal, undefined, { timeout: 15000 })).toBeTruthy()
     // 出典・メモとも初期60件の段階表示になっている
     expect(screen.getAllByText(/60件を表示中/).length).toBeGreaterThanOrEqual(2)
-  })
+  }, 20000)
 
   it('素材詳細のホイールにノート名が直接描かれ、味わいモードへ切り替えられる', () => {
     window.location.hash = '#/material/tea-sencha'
@@ -115,6 +118,20 @@ describe('画面レンダリング', () => {
     render(<App />)
     expect(screen.getByText(/煎茶で報告された化合物/)).toBeTruthy()
     expect(screen.getByText(/化合物一覧（全収録）/)).toBeTruthy()
+  })
+
+  it('「ミルクを加える」ボタンで牛乳が追加され、追加済み表示になる', () => {
+    render(<App />)
+    const milkButton = screen.getByRole('button', { name: /ミルクを加える/ })
+    expect((milkButton as HTMLButtonElement).disabled).toBe(false)
+    expect(screen.queryByLabelText('牛乳の比率（%）')).toBeNull()
+    fireEvent.click(milkButton)
+    // 牛乳がスロットに追加され、比率が均等に再配分される（初期2素材50/50＋牛乳で合計100）
+    expect(screen.getByLabelText('牛乳の比率（%）')).toBeTruthy()
+    expect(screen.getByText(/現在の合計 100%/)).toBeTruthy()
+    // 追加済みになるとボタンは無効化され、状態が明示される
+    expect((screen.getByRole('button', { name: /ミルクを加える/ }) as HTMLButtonElement).disabled).toBe(true)
+    expect(screen.getByText(/ミルクは追加済みです/)).toBeTruthy()
   })
 
   it('ほうじ茶詳細では焙煎対象外の理由が表示される', () => {

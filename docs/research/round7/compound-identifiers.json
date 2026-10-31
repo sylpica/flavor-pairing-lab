@@ -1,0 +1,694 @@
+{
+  "linalool": {
+    "pubchemCid": 6549
+  },
+  "geraniol": {
+    "pubchemCid": 637566
+  },
+  "beta-ionone": {
+    "pubchemCid": 26955
+  },
+  "beta-damascenone": {
+    "pubchemCid": 5366074
+  },
+  "benzaldehyde": {
+    "pubchemCid": 240
+  },
+  "phenylacetaldehyde": {
+    "pubchemCid": 998
+  },
+  "cis-3-hexen-1-ol": {
+    "pubchemCid": 5281167
+  },
+  "hexanal": {
+    "pubchemCid": 6184
+  },
+  "dimethyl-sulfide": {
+    "pubchemCid": 1068
+  },
+  "vanillin": {
+    "pubchemCid": 1183
+  },
+  "theanine": {
+    "pubchemCid": 439378
+  },
+  "glutamic-acid": {
+    "pubchemCid": 33032
+  },
+  "caffeine": {
+    "pubchemCid": 2519
+  },
+  "theobromine": {
+    "pubchemCid": 5429
+  },
+  "piperine": {
+    "pubchemCid": 638024
+  },
+  "beta-caryophyllene": {
+    "pubchemCid": 5281515
+  },
+  "cineole": {
+    "pubchemCid": 2758
+  },
+  "alpha-terpinyl-acetate": {
+    "pubchemCid": 111037
+  },
+  "cinnamaldehyde": {
+    "pubchemCid": 637511
+  },
+  "eugenol": {
+    "pubchemCid": 3314
+  },
+  "myristicin": {
+    "pubchemCid": 4276
+  },
+  "gingerol-6": {
+    "pubchemCid": 442793
+  },
+  "shogaol-6": {
+    "pubchemCid": 5281794
+  },
+  "curcumin": {
+    "pubchemCid": 969516
+  },
+  "cuminaldehyde": {
+    "pubchemCid": 326
+  },
+  "anethole": {
+    "pubchemCid": 637563
+  },
+  "estragole": {
+    "pubchemCid": 8815
+  },
+  "safranal": {
+    "pubchemCid": 61041
+  },
+  "picrocrocin": {
+    "pubchemCid": 130796
+  },
+  "hydroxy-alpha-sanshool": {
+    "cas": "252193-26-3",
+    "formula": "C16H25NO2",
+    "pubchemCid": 46870578
+  },
+  "capsaicin": {
+    "pubchemCid": 1548943
+  },
+  "menthol": {
+    "pubchemCid": 1254
+  },
+  "menthone": {
+    "pubchemCid": 26447
+  },
+  "carvone": {
+    "pubchemCid": 7439
+  },
+  "limonene": {
+    "pubchemCid": 22311
+  },
+  "camphor": {
+    "pubchemCid": 2537
+  },
+  "thymol": {
+    "pubchemCid": 6989
+  },
+  "carvacrol": {
+    "pubchemCid": 10364
+  },
+  "citral": {
+    "pubchemCid": 638011
+  },
+  "linalyl-acetate": {
+    "pubchemCid": 8294
+  },
+  "alpha-bisabolol": {
+    "pubchemCid": 442343
+  },
+  "chamazulene": {
+    "pubchemCid": 10719
+  },
+  "alpha-thujone": {
+    "pubchemCid": 261491
+  },
+  "indole": {
+    "cas": "120-72-9",
+    "formula": "C8H7N",
+    "pubchemCid": 798
+  },
+  "nerolidol": {
+    "cas": "40716-66-3",
+    "formula": "C15H26O",
+    "pubchemCid": 5284507
+  },
+  "methyl-salicylate": {
+    "cas": "119-36-8",
+    "formula": "C8H8O3",
+    "pubchemCid": 4133
+  },
+  "methyl-anthranilate": {
+    "cas": "134-20-3",
+    "formula": "C8H9NO2",
+    "pubchemCid": 8635
+  },
+  "2-phenylethanol": {
+    "cas": "60-12-8",
+    "formula": "C8H10O",
+    "pubchemCid": 6054
+  },
+  "jasmine-lactone": {
+    "cas": "25524-95-2",
+    "formula": "C10H16O2",
+    "pubchemCid": 5352626
+  },
+  "cis-jasmone": {
+    "cas": "488-10-8",
+    "formula": "C11H16O",
+    "pubchemCid": 1549018
+  },
+  "coumarin": {
+    "cas": "91-64-5",
+    "formula": "C9H6O2",
+    "pubchemCid": 323
+  },
+  "methyl-epijasmonate": {
+    "cas": "42536-97-0",
+    "formula": "C13H20O3",
+    "pubchemCid": 10751624
+  },
+  "furaneol": {
+    "cas": "3658-77-3",
+    "formula": "C6H8O3",
+    "pubchemCid": 19309
+  },
+  "sotolon": {
+    "cas": "28664-35-9",
+    "formula": "C6H8O3",
+    "pubchemCid": 62835
+  },
+  "2-acetyl-1-pyrroline": {
+    "cas": "85213-22-5",
+    "formula": "C6H9NO",
+    "pubchemCid": 522834
+  },
+  "2-acetyl-2-thiazoline": {
+    "cas": "29926-41-8",
+    "formula": "C5H7NOS",
+    "pubchemCid": 169110
+  },
+  "2-ethyl-3-5-dimethylpyrazine": {
+    "cas": "13925-07-0",
+    "formula": "C8H12N2",
+    "pubchemCid": 26334
+  },
+  "2-3-diethyl-5-methylpyrazine": {
+    "cas": "18138-04-0",
+    "formula": "C9H14N2",
+    "pubchemCid": 28905
+  },
+  "cedrol": {
+    "cas": "77-53-2",
+    "formula": "C15H26O",
+    "pubchemCid": 65575
+  },
+  "ez-2-6-nonadienal": {
+    "cas": "557-48-2",
+    "formula": "C9H14O",
+    "pubchemCid": 643731
+  },
+  "ee-2-4-heptadienal": {
+    "cas": "5910-85-0",
+    "formula": "C7H10O",
+    "pubchemCid": 5283321
+  },
+  "6-methyl-5-hepten-2-one": {
+    "formula": "C8H14O",
+    "pubchemCid": 9862
+  },
+  "gamma-hexalactone": {
+    "cas": "695-06-7",
+    "formula": "C6H10O2",
+    "pubchemCid": 12756
+  },
+  "hotrienol": {
+    "cas": "20053-88-7",
+    "formula": "C10H16O",
+    "pubchemCid": 40510009
+  },
+  "mmp": {
+    "cas": "19872-52-7",
+    "formula": "C6H12OS",
+    "pubchemCid": 88290
+  },
+  "eez-2-4-6-nonatrienal": {
+    "cas": "56269-22-8",
+    "formula": "C9H12O",
+    "pubchemCid": 6436625
+  },
+  "methional": {
+    "cas": "3268-49-3",
+    "formula": "C4H8OS",
+    "pubchemCid": 18635
+  },
+  "guaiacol": {
+    "cas": "90-05-1",
+    "formula": "C7H8O2",
+    "pubchemCid": 460
+  },
+  "octanal": {
+    "cas": "124-13-0",
+    "formula": "C8H16O",
+    "pubchemCid": 454
+  },
+  "e-2-octenal": {
+    "cas": "2548-87-0",
+    "formula": "C8H14O",
+    "pubchemCid": 5283324
+  },
+  "egcg": {
+    "cas": "989-51-5",
+    "formula": "C22H18O11",
+    "pubchemCid": 65064
+  },
+  "ecg": {
+    "cas": "1257-08-5",
+    "formula": "C22H18O10",
+    "pubchemCid": 107905
+  },
+  "egc": {
+    "cas": "970-74-1",
+    "formula": "C15H14O7",
+    "pubchemCid": 72277
+  },
+  "ec": {
+    "cas": "490-46-0",
+    "formula": "C15H14O6",
+    "pubchemCid": 72276
+  },
+  "theaflavin": {
+    "cas": "4670-05-7",
+    "formula": "C29H24O12",
+    "pubchemCid": 135403798
+  },
+  "theaflavin-3-gallate": {
+    "cas": "30462-34-1",
+    "formula": "C36H28O16",
+    "pubchemCid": 169167
+  },
+  "theaflavin-3p-gallate": {
+    "cas": "28543-07-9",
+    "formula": "C36H28O16",
+    "pubchemCid": 135458102
+  },
+  "theaflavin-digallate": {
+    "formula": "C43H32O20",
+    "pubchemCid": 21146795
+  },
+  "coumaroylquinic-acid": {
+    "cas": "53539-37-0",
+    "formula": "C16H18O8",
+    "pubchemCid": 5281766
+  },
+  "succinic-acid": {
+    "cas": "110-15-6",
+    "formula": "C4H6O4",
+    "pubchemCid": 1110
+  },
+  "gallic-acid": {
+    "cas": "149-91-7",
+    "formula": "C7H6O5",
+    "pubchemCid": 370
+  },
+  "theogallin": {
+    "cas": "17365-11-6",
+    "formula": "C14H16O10",
+    "pubchemCid": 442988
+  },
+  "3-methylbutanoic-acid": {
+    "pubchemCid": 10430
+  },
+  "2-methylbutanoic-acid": {
+    "pubchemCid": 8314
+  },
+  "phenylacetic-acid": {
+    "pubchemCid": 999
+  },
+  "dimethyl-trisulfide": {
+    "pubchemCid": 19310
+  },
+  "acetic-acid": {
+    "pubchemCid": 176
+  },
+  "butyric-acid": {
+    "pubchemCid": 264
+  },
+  "2-phenylethyl-acetate": {
+    "pubchemCid": 7654
+  },
+  "isoamyl-acetate": {
+    "pubchemCid": 31276
+  },
+  "ethyl-2-methylbutyrate": {
+    "pubchemCid": 24020
+  },
+  "ethyl-3-methylbutyrate": {
+    "pubchemCid": 7945
+  },
+  "massoia-lactone": {
+    "cas": "51154-96-2",
+    "pubchemCid": 642793
+  },
+  "delta-decalactone": {
+    "pubchemCid": 12810
+  },
+  "procyanidin-b2": {
+    "pubchemCid": 122738
+  },
+  "epicatechin": {
+    "pubchemCid": 72276
+  },
+  "diacetyl": {
+    "pubchemCid": 650
+  },
+  "4-vinylguaiacol": {
+    "pubchemCid": 332
+  },
+  "citric-acid": {
+    "cas": "77-92-9",
+    "formula": "C6H8O7",
+    "pubchemCid": 311
+  },
+  "malic-acid": {
+    "cas": "6915-15-7",
+    "formula": "C4H6O5",
+    "pubchemCid": 525
+  },
+  "lactic-acid": {
+    "cas": "50-21-5",
+    "formula": "C3H6O3",
+    "pubchemCid": 612
+  },
+  "sucrose": {
+    "cas": "57-50-1",
+    "formula": "C12H22O11",
+    "pubchemCid": 5988
+  },
+  "sotolone": {
+    "cas": "28664-35-9",
+    "formula": "C6H8O3",
+    "pubchemCid": 62835
+  },
+  "perillaldehyde": {
+    "cas": "2111-75-3",
+    "formula": "C10H14O",
+    "pubchemCid": 16441
+  },
+  "alpha-pinene": {
+    "cas": "80-56-8",
+    "formula": "C10H16",
+    "pubchemCid": 6654
+  },
+  "beta-pinene": {
+    "cas": "127-91-3",
+    "formula": "C10H16",
+    "pubchemCid": 14896
+  },
+  "sabinene": {
+    "cas": "3387-41-5",
+    "formula": "C10H16",
+    "pubchemCid": 18818
+  },
+  "myrcene": {
+    "cas": "123-35-3",
+    "formula": "C10H16",
+    "pubchemCid": 31253
+  },
+  "alpha-phellandrene": {
+    "cas": "99-83-2",
+    "formula": "C10H16",
+    "pubchemCid": 7460
+  },
+  "beta-phellandrene": {
+    "cas": "555-10-2",
+    "formula": "C10H16",
+    "pubchemCid": 11142
+  },
+  "gamma-terpinene": {
+    "cas": "99-85-4",
+    "formula": "C10H16",
+    "pubchemCid": 7461
+  },
+  "p-cymene": {
+    "cas": "99-87-6",
+    "formula": "C10H14",
+    "pubchemCid": 7463
+  },
+  "methylpropanal": {
+    "cas": "78-84-2",
+    "formula": "C4H8O",
+    "pubchemCid": 6561
+  },
+  "methylbutanal-2": {
+    "cas": "96-17-3",
+    "formula": "C5H10O",
+    "pubchemCid": 7284
+  },
+  "methylbutanal-3": {
+    "cas": "590-86-3",
+    "formula": "C5H10O",
+    "pubchemCid": 11552
+  },
+  "methylbutyric-acid-3": {
+    "cas": "503-74-2",
+    "formula": "C5H10O2",
+    "pubchemCid": 10430
+  },
+  "rotundone": {
+    "cas": "18374-76-0",
+    "formula": "C15H22O",
+    "pubchemCid": 5321003
+  },
+  "fenchone": {
+    "cas": "1195-79-5",
+    "formula": "C10H16O",
+    "pubchemCid": 14525
+  },
+  "anisaldehyde": {
+    "cas": "123-11-5",
+    "formula": "C8H8O2",
+    "pubchemCid": 31244
+  },
+  "trans-4-5-epoxy-e-2-decenal": {
+    "cas": "134454-31-2",
+    "formula": "C10H16O2",
+    "pubchemCid": 15825667
+  },
+  "octen-3-ol-1": {
+    "cas": "3391-86-4",
+    "formula": "C8H16O",
+    "pubchemCid": 18827
+  },
+  "octen-3-one-1": {
+    "cas": "4312-99-6",
+    "formula": "C8H14O",
+    "pubchemCid": 61346
+  },
+  "hexen-3-one-1": {
+    "cas": "1629-60-3",
+    "formula": "C6H10O",
+    "pubchemCid": 15395
+  },
+  "fenchol": {
+    "cas": "1632-73-1",
+    "formula": "C10H18O",
+    "pubchemCid": 15406
+  },
+  "borneol": {
+    "cas": "507-70-0",
+    "formula": "C10H18O",
+    "pubchemCid": 64685
+  },
+  "methyl-eugenol": {
+    "cas": "93-15-2",
+    "formula": "C11H14O2",
+    "pubchemCid": 7127
+  },
+  "allyl-isothiocyanate": {
+    "cas": "57-06-7",
+    "formula": "C4H5NS",
+    "pubchemCid": 5971
+  },
+  "sedanenolide": {
+    "cas": "63038-10-8",
+    "formula": "C12H16O2",
+    "pubchemCid": 3085257
+  },
+  "butylphthalide-3n": {
+    "cas": "6066-49-5",
+    "formula": "C12H14O2",
+    "pubchemCid": 61361
+  },
+  "nonanal": {
+    "cas": "124-19-6",
+    "formula": "C9H18O",
+    "pubchemCid": 31289
+  },
+  "pentylfuran-2": {
+    "cas": "3777-69-3",
+    "formula": "C9H14O",
+    "pubchemCid": 19602
+  },
+  "methoxy-4-methylphenol-2": {
+    "cas": "93-51-6",
+    "formula": "C8H10O2",
+    "pubchemCid": 7144
+  },
+  "carene-3": {
+    "cas": "13466-78-9",
+    "formula": "C10H16",
+    "pubchemCid": 26049
+  },
+  "terpinen-4-ol": {
+    "cas": "562-74-3",
+    "formula": "C10H18O",
+    "pubchemCid": 11230
+  },
+  "cis-sabinene-hydrate": {
+    "formula": "C10H18O",
+    "pubchemCid": 11744854
+  },
+  "p-mentha-1-3-8-triene": {
+    "cas": "18368-95-1",
+    "formula": "C10H14",
+    "pubchemCid": 176983
+  },
+  "sec-butyl-methoxypyrazine-2": {
+    "cas": "24168-70-5",
+    "formula": "C9H14N2O",
+    "pubchemCid": 520098
+  },
+  "apiole": {
+    "cas": "523-80-8",
+    "formula": "C12H14O4",
+    "pubchemCid": 10659
+  },
+  "z-3-hexenal": {
+    "cas": "6789-80-6",
+    "formula": "C6H10O",
+    "pubchemCid": 643941
+  },
+  "z-dec-6-enal": {
+    "cas": "105683-99-6",
+    "formula": "C10H18O",
+    "pubchemCid": 6432852
+  },
+  "z-ligustilide": {
+    "cas": "4431-01-0",
+    "formula": "C12H14O2",
+    "pubchemCid": 5319022
+  },
+  "pinocamphone": {
+    "cas": "547-60-4",
+    "formula": "C10H16O",
+    "pubchemCid": 6427105
+  },
+  "isopinocamphone": {
+    "cas": "14575-93-0",
+    "formula": "C10H16O",
+    "pubchemCid": 84532
+  },
+  "perilla-ketone": {
+    "cas": "553-84-4",
+    "formula": "C10H14O2",
+    "pubchemCid": 68381
+  },
+  "egoma-ketone": {
+    "cas": "59204-74-9",
+    "formula": "C10H12O2",
+    "pubchemCid": 42978
+  },
+  "dihydroperillaldehyde": {
+    "cas": "137886-38-5",
+    "formula": "C10H16O",
+    "pubchemCid": 527108
+  },
+  "piperitenone-oxide": {
+    "cas": "3564-96-3",
+    "formula": "C10H14O2",
+    "pubchemCid": 442497
+  },
+  "piperitone-oxide": {
+    "cas": "5286-38-4",
+    "formula": "C10H16O2",
+    "pubchemCid": 92998
+  },
+  "pulegone": {
+    "cas": "89-82-7",
+    "formula": "C10H16O",
+    "pubchemCid": 442495
+  },
+  "neryl-acetate": {
+    "cas": "141-12-8",
+    "formula": "C12H20O2",
+    "pubchemCid": 1549025
+  },
+  "nerol": {
+    "cas": "106-25-2",
+    "formula": "C10H18O",
+    "pubchemCid": 643820
+  },
+  "citronellal": {
+    "cas": "106-23-0",
+    "formula": "C10H18O",
+    "pubchemCid": 7794
+  },
+  "citronellol": {
+    "cas": "106-22-9",
+    "formula": "C10H20O",
+    "pubchemCid": 8842
+  },
+  "methyl-cinnamate": {
+    "cas": "103-26-4",
+    "formula": "C10H10O2",
+    "pubchemCid": 637520
+  },
+  "alpha-fenchyl-acetate": {
+    "cas": "4057-31-2",
+    "formula": "C12H20O2",
+    "pubchemCid": 6427102
+  },
+  "alpha-humulene": {
+    "cas": "6753-98-6",
+    "formula": "C15H24",
+    "pubchemCid": 5281520
+  },
+  "ascaridole": {
+    "cas": "512-85-6",
+    "formula": "C10H16O2",
+    "pubchemCid": 10545
+  },
+  "alpha-terpinene": {
+    "cas": "99-86-5",
+    "formula": "C10H16",
+    "pubchemCid": 7462
+  },
+  "terpinolene": {
+    "cas": "586-62-9",
+    "formula": "C10H16",
+    "pubchemCid": 11463
+  },
+  "geranyl-acetate": {
+    "cas": "105-87-3",
+    "formula": "C12H20O2",
+    "pubchemCid": 1549026
+  },
+  "menthofuran": {
+    "cas": "494-90-6",
+    "formula": "C10H14O",
+    "pubchemCid": 329983
+  },
+  "e-2-6-nonadienal": {
+    "cas": "557-48-2",
+    "formula": "C9H14O",
+    "pubchemCid": 643731
+  }
+}

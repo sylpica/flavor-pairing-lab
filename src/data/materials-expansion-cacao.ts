@@ -7,6 +7,9 @@ import type { Material, ProfileEntry, SensationEntry } from '../types'
 //   ある Nacional と Criollo の2集団だけを素材として収録し、足がかりからの推測プロファイル
 //   （tier: 'inferred'、強度は足がかり側より一段弱い）を持たせる。集団そのものの香味実測は存在しない。
 //   足がかりの無い残り8集団は素材にせず、用語辞典（App.tsx の GLOSSARY）に分類情報として収録する。
+//   ※ round7（2026-10-31）：Guiana は集団由来材料そのもののチョコレート官能実測
+//   （Assemat et al. 2005）が確認できたため、第3の遺伝集団素材として追加した
+//   （プロファイルは cacao-note 推測・weak のみ。残り7集団は引き続き用語辞典のみ）。
 //   「選んでも結果が変わらない素材」を作らないための措置（ユーザーの絶対ルール）。
 // 新規軸ID（axis-labels への登録は統合担当）:
 //   originId: 'ecuador'（エクアドル）, 'brazil-southeast'（ブラジル南東部）, 'dominican-republic'（ドミニカ共和国）, 'amazon-basin'（アマゾン流域）
@@ -119,5 +122,26 @@ export const expansionChocolateMaterials: Material[] = [
     evidenceTier: 'inferred',
     scopeNote: 'プロファイルは全て推測（未検証）：足がかりは子孫側の現代 Nacional 系素材の実測であり、祖先的集団への外挿を含む。現代 Nacional 系の実測そのものは別素材「ダークチョコレート（現代Nacional系・エクアドル）」に収録している。',
     sourceIds: [MOTAMAYOR, 'fouet-2022-nacional-mixture'], roastable: false, extractable: false,
+  },
+  // ===== 遺伝集団 Guiana（round7 調査 guiana-research.md、2026-10-31）=====
+  // 集団由来クローン群そのもののチョコレート官能実測（Assemat et al. 2005）があり素材化した。
+  // 官能で裏付けられるのはカカオフレーバー方向のみで、プロファイルは推測・weak 1件が上限。
+  {
+    id: 'cacao-gen-guiana', domain: 'chocolate', nameJa: 'カカオ遺伝集団 Guiana', nameEn: 'Cacao genetic group: Guiana',
+    scientificName: 'Theobroma cacao L.',
+    classification: '遺伝集団', classificationId: 'genetic-group', origin: 'フランス領ギアナ', originId: 'french-guiana',
+    variety: 'Guiana（遺伝集団）', varietyId: 'gen-guiana',
+    description: 'Motamayor et al. 2008 が定義したカカオ10遺伝集団の一つで、フランス領ギアナ南東部（Oyapok・Tanpok 川流域）の野生・帰化集団に由来する。CIRAD が1987年以降に226母樹を収集し、Sinnamary コレクションで評価を続けてきた（Lachenaud 2015）。プロファイルは、この集団由来クローン群から作ったチョコレートの官能評価（Assemat et al. 2005）に基づく推測であり、野生集団全体の無作為試料による実測ではない。',
+    profile: [
+      { noteId: 'cacao-note', intensity: 'weak', tier: 'inferred', sourceIds: ['assemat-2005-guiana-sensory', 'lachenaud-2015-guiana-wild-cacao'] },
+    ],
+    sensations: {
+      sour: { intensity: 'unknown', tier: 'inferred', sourceIds: ['assemat-2005-guiana-sensory'], note: 'Assemat et al. 2005 の官能評価で対照（Amelonado・エクアドル品種）と有意差は認められなかった（相対比較の範囲）' },
+      bitter: { intensity: 'unknown', tier: 'inferred', sourceIds: ['assemat-2005-guiana-sensory'], note: '同上' },
+      astringent: { intensity: 'unknown', tier: 'inferred', sourceIds: ['assemat-2005-guiana-sensory'], note: '同上' },
+    },
+    evidenceTier: 'inferred',
+    scopeNote: 'プロファイルは全て推測（未検証）：足がかりは集団由来クローン群（GU クローン等）のチョコレート官能であり、試料は事前選抜された材料で集団全体を代表しない。官能で対照より有意に優れていたのは全体の香り強度とカカオフレーバーのみで、果実様・花様等の個別香調は対照と有意差が報告されていないため付けていない。組成ではテオブロミンが Forastero 参照試料より有意に高くカフェインが低い実測がある（Jean-Marie et al. 2021）が、含有量から苦味等の強さへの換算はしていない。カフェインについては Assemat et al. 2005 が Amelonado 対照よりはるかに高いとしており、参照試料の異なる両研究の所見は食い違う（未解決）。',
+    sourceIds: [MOTAMAYOR, 'assemat-2005-guiana-sensory', 'lachenaud-2015-guiana-wild-cacao', 'jean-marie-2021-guiana-composition'], roastable: false, extractable: false,
   },
 ]

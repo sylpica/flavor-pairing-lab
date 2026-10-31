@@ -81,6 +81,22 @@ describe('データ整合性（全件検証）', () => {
     const noteIds = pairingBiblioNotes.map((n) => n.id)
     expect(new Set(noteIds).size).toBe(noteIds.length)
   })
+  it('香味プロファイル署名（プロファイル＋感覚）が素材間で重複しない', () => {
+    // 署名＝結果を決めるデータ（香りノート＋味覚・口腔感覚）の集合。
+    // 香りプロファイルが空でも感覚エントリで結果が変わる素材（例：プベセンス種＝
+    // 辛味のみ、ドミニカ共和国産 Trinitario＝根拠に基づく空プロファイル＋感覚）は、
+    // この署名では空にならず個別に区別される（理由は各素材の scopeNote に明記）。
+    const signature = (m: (typeof materials)[number]) => [
+      ...m.profile.map((e) => `P:${e.noteId}|${e.intensity}|${e.tier}`),
+      ...Object.entries(m.sensations).map(([k, e]) => `S:${k}|${e?.intensity}|${e?.tier}`),
+    ].sort().join(';')
+    const seen = new Map<string, string>()
+    for (const m of materials) {
+      const s = signature(m)
+      expect(seen.has(s), `${m.id} の署名が ${seen.get(s)} と重複する`).toBe(false)
+      seen.set(s, m.id)
+    }
+  })
   it('出典には DOI か URL があり、主張範囲が書かれている', () => {
     for (const s of sources) {
       expect(s.url.length).toBeGreaterThan(0)

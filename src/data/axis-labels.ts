@@ -25,6 +25,9 @@ export const CLASSIFICATION_LABELS: Record<string, string> = {
   'flower-spice': '花・花蕾系スパイス',
   'seed-herb': '種子系ハーブ',
   'aromatic-herb': '芳香性ハーブ',
+  // 乳製品：分類＝製品種別。チョコ軸の 'milk'（ミルクチョコレート）とは別ID（混同防止）
+  'liquid-milk': '牛乳',
+  'cream': 'クリーム',
 }
 
 export const ORIGIN_LABELS: Record<string, string> = {
@@ -39,6 +42,9 @@ export const ORIGIN_LABELS: Record<string, string> = {
   'india-assam': 'インド・アッサム',
   'china-anhui': '中国・安徽',
   'taiwan-nantou': '台湾・南投',
+  'taiwan': '台湾',
+  'french-guiana': 'フランス領ギアナ',
+  'china-zhejiang': '中国・浙江',
   'ecuador': 'エクアドル',
   'brazil-southeast': 'ブラジル南東部',
   'dominican-republic': 'ドミニカ共和国',
@@ -71,6 +77,11 @@ export const VARIETY_LABELS: Record<string, string> = {
   'zanthoxylum-piperitum': 'Zanthoxylum piperitum',
   'zanthoxylum-bungeanum': 'Zanthoxylum bungeanum',
   'capsicum-spp': 'Capsicum annuum 等',
+  'capsicum-annuum': 'Capsicum annuum',
+  'capsicum-chinense': 'Capsicum chinense',
+  'capsicum-frutescens': 'Capsicum frutescens',
+  'capsicum-baccatum': 'Capsicum baccatum',
+  'capsicum-pubescens': 'Capsicum pubescens',
   'mentha-piperita': 'Mentha × piperita',
   'mentha-spicata': 'Mentha spicata',
   'melissa-officinalis': 'Melissa officinalis',
@@ -103,6 +114,12 @@ export const VARIETY_LABELS: Record<string, string> = {
   'komakage': 'こまかげ',
   'hongyu': '紅玉（台茶18号）',
   'jinxuan': '金萱（台茶12号）',
+  'tsuiyu': '翠玉（台茶13号）',
+  'hongyun': '紅韻（台茶21号）',
+  'baiye-1': '白葉1号',
+  'yinghong-9': '英紅9号',
+  'hatsumomiji': 'はつもみじ',
+  'ziyun': '紫韻（台茶25号）',
   'darjeeling-populations': 'ダージリン在来集団（チャイナ種・アッサム種・交雑）',
   'var-assamica': 'アッサム変種（Camellia sinensis var. assamica）',
   'dahongpao': '大紅袍',
@@ -150,6 +167,7 @@ export const VARIETY_LABELS: Record<string, string> = {
   'dysphania-ambrosioides': 'Dysphania ambrosioides',
   'citrus-hystrix': 'Citrus hystrix',
   'origanum-syriacum': 'Origanum syriacum',
+  'bos-taurus': 'ウシ（乳用種一般）',
 }
 
 export const axisLabel = (axis: 'classificationId' | 'originId' | 'varietyId', id: string): string => {

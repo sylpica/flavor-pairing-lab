@@ -9,6 +9,7 @@ import { allLinks as materialCompoundLinks, linksForMaterial, linksForCompound }
 import { noteById, categoryById, flavorNotes } from './data/flavors'
 import { analyzePairing, validateRatios, defaultShares, type PairingMode } from './engine/pairing'
 import { evaluateRoast, evaluateExtraction } from './engine/simulation'
+import { caffeineRateConstantPerMin, caffeineExtractionFraction, CAFFEINE_MODEL_TEMP_MIN_C, CAFFEINE_MODEL_TEMP_MAX_C } from './engine/caffeine-model'
 import { FlavorWheel } from './components/FlavorWheel'
 import { TasteWheel, mergeSensations } from './components/TasteWheel'
 import { SensationChart } from './components/SensationChart'
@@ -205,6 +206,19 @@ function PairingView() {
     setRatioNotice('素材の削除に合わせて、比率を均等に再配分しました（合計100%）。')
   }
 
+  // 「ミルクを加える」：乳製品ドメインの牛乳を専用ボタンで追加する（生クリームはピッカーから通常選択）。
+  // 追加時は他の追加・削除と同じく比率を均等に再配分して合計100にする。
+  const MILK_ID = 'milk-cow'
+  const milkAdded = selectedIds.includes(MILK_ID)
+  const slotsFull = selectedIds.length >= 4
+  const addMilk = () => {
+    if (milkAdded || slotsFull) return
+    const ids = [...selectedIds, MILK_ID]
+    setSelectedIds(ids)
+    equalizeRatios(ids, false)
+    setRatioNotice('ミルク（牛乳）の追加に合わせて、比率を均等に再配分しました（合計100%）。')
+  }
+
   const mergedProfile = useMemo(() => {
     const map = new Map<string, { intensity: string; tier: string }>()
     const order = { weak: 1, moderate: 2, strong: 3, unknown: 0 } as const
@@ -260,6 +274,12 @@ function PairingView() {
         </div>
         <div className="pair-controls-foot">
           {selectedIds.length < 4 && <button type="button" className="slot-add" onClick={addSlot}>＋ 素材を追加（最大4）</button>}
+          <button type="button" className="milk-add" onClick={addMilk} disabled={milkAdded || slotsFull}>＋ ミルクを加える</button>
+          {milkAdded
+            ? <span className="muted">ミルクは追加済みです</span>
+            : slotsFull
+              ? <span className="muted">素材が4つあるため追加できません（どれか外すと追加できます）</span>
+              : null}
           <button type="button" className="ratio-equalize" onClick={() => equalizeRatios(selectedIds, true)}>均等に戻す</button>
           <span className="muted">比率＝混合（ブレンド）時の質量比（合計100%）。混ぜずに口中で合わせる食べ合わせには適用しません</span>
           <span className={ratioTotal === 100 ? 'muted' : 'warning'} aria-live="polite">現在の合計 {ratioTotal}%</span>
@@ -418,7 +438,7 @@ function SearchView() {
     <section>
       <SectionHead no="02" en="SEARCH" title="素材検索（三軸：分類 × 産地 × 品種・系統）" />
       <div className="domain-tabs" role="tablist" aria-label="領域">
-        {(['tea', 'chocolate', 'spice', 'herb'] as Domain[]).map((d) => (
+        {(['tea', 'chocolate', 'spice', 'herb', 'dairy'] as Domain[]).map((d) => (
           <button key={d} role="tab" aria-selected={domain === d} className={domain === d ? 'tab active' : 'tab'}
             onClick={() => { setDomain(d); resetAxis() }}>{DOMAIN_LABEL[d]}</button>
         ))}
@@ -436,7 +456,7 @@ function SearchView() {
             {candidates('originId').map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
           </select>
         </label>
-        <label>{domain === 'tea' ? '品種' : domain === 'chocolate' ? '系統・種類区分' : '植物種・品種等'}
+        <label>{domain === 'tea' || domain === 'dairy' ? '品種' : domain === 'chocolate' ? '系統・種類区分' : '植物種・品種等'}
           <select value={variety} onChange={(e) => setVariety(e.target.value)} aria-label="品種・系統">
             <option value="">指定しない</option>
             {candidates('varietyId').map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
@@ -629,6 +649,56 @@ function TendencyGroups({ tendencies }: { tendencies: SimulationTendency[] }) {
   )
 }
 
+/* ============ 数値モデル（紅茶のカフェイン抽出） ============ */
+// 定性的な傾向とは別枠の「モデル計算」。パラメータは公開文献で値を確認したものだけを使う
+// （src/engine/caffeine-model.ts に来歴を明記）。絶対量（mg）は出さず平衡比のみを示す。
+function CaffeineModelBlock({ tempC, seconds }: { tempC: number; seconds: number }) {
+  const k = caffeineRateConstantPerMin(tempC)
+  const fmtPct = (f: number) => (f >= 0.9995 ? '99.9%以上' : `${(f * 100).toFixed(1)}%`)
+  const rows: [string, number][] = [['30秒', 0.5], ['1分', 1], ['2分', 2], ['3分', 3], ['5分', 5]]
+  const current = k !== null ? caffeineExtractionFraction(tempC, seconds / 60) : null
+  return (
+    <div className="model-block">
+      <h5>モデル計算（紅茶のカフェイン抽出）<span className="badge direct">モデル計算</span></h5>
+      <p>
+        定性的な傾向とは別枠で、検証可能なパラメータが公表されている紅茶のカフェインについてのみ数値モデルを表示します。
+        Spiro &amp; Jago（1982）の定常状態モデルに基づく一次速度式 f(t)＝1−exp(−k·t) で、
+        <strong>平衡濃度に対する抽出割合</strong>を計算します（カフェインの絶対量 mg は出しません）。
+      </p>
+      {k === null || current === null ? (
+        <p className="warning" role="alert">
+          抽出温度がモデルの適用範囲（{CAFFEINE_MODEL_TEMP_MIN_C}–{CAFFEINE_MODEL_TEMP_MAX_C}℃）の外のため、モデル計算は行いません。範囲外への外挿はしません。
+        </p>
+      ) : (
+        <>
+          <p>
+            現在の条件（抽出温度 {tempC}℃）での速度定数 k ＝ {k.toFixed(2)} min⁻¹（モデル計算）。
+            現在の抽出時間 {seconds} 秒では、平衡に対する抽出割合は約 {fmtPct(current)} です。
+          </p>
+          <table className="model-table">
+            <caption className="muted">抽出時間ごとの平衡に対する抽出割合（{tempC}℃、モデル計算）</caption>
+            <tbody>
+              {rows.map(([label, min]) => {
+                const f = caffeineExtractionFraction(tempC, min)
+                return (
+                  <tr key={label}><th scope="row">{label}</th><td>{f === null ? '—' : fmtPct(f)}</td></tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </>
+      )}
+      <p className="scope-note">
+        パラメータ：k（80℃）＝0.99 min⁻¹、活性化エネルギー 40.3 kJ/mol は、南アフリカ産紅茶（粒度 1.40–2.00 mm、水抽出、HPLC 測定）の実測報告値（Price）です。
+        アッサム紅茶では活性化エネルギー 45±2 kJ/mol（ルース）と報告されており（Jaganyi &amp; Mdletshe 2000）、産地・粒度・製法の異なる紅茶への適用は目安です。
+        ティーバッグでは速度定数が約29%小さいとの報告があります。適用温度範囲は {CAFFEINE_MODEL_TEMP_MIN_C}–{CAFFEINE_MODEL_TEMP_MAX_C}℃
+        （基準温度 80℃の近傍に限定したもので、原著の実測温度範囲の詳細は未確認のため、80℃から離れるほど目安の度合いが強まります）。
+      </p>
+      <SourceLinks ids={['spiro-jago-1982-tea-infusion-model', 'jaganyi-mdletshe-2000-assam-caffeine-kinetics']} />
+    </div>
+  )
+}
+
 function SimulationPanel({ material: m }: { material: Material }) {
   const [roastTemp, setRoastTemp] = useState(120)
   const [roastMin, setRoastMin] = useState(15)
@@ -695,6 +765,7 @@ function SimulationPanel({ material: m }: { material: Material }) {
             <p className="muted">{ext.statusNote}</p>
             {ext.warnings.map((w) => <p key={w} className="warning" role="alert">{w}</p>)}
             <TendencyGroups tendencies={ext.tendencies} />
+            {m.classificationId === 'black-tea' && <CaffeineModelBlock tempC={extTemp} seconds={extSec} />}
           </div>
         </div>
       ) : <p className="muted">抽出：{ext.statusNote}</p>}
@@ -718,7 +789,7 @@ function ChemistryView() {
       <SectionHead no="03" en="CHEMISTRY" title="香味化学（ホイール ⇄ 化合物 ⇄ 素材）" />
       <label>素材を選ぶ
         <select value={materialId} onChange={(e) => { setMaterialId(e.target.value); setNoteId(null) }} aria-label="素材">
-          {(['tea', 'chocolate', 'spice', 'herb'] as Domain[]).map((d) => (
+          {(['tea', 'chocolate', 'spice', 'herb', 'dairy'] as Domain[]).map((d) => (
             <optgroup key={d} label={DOMAIN_LABEL[d]}>
               {materials.filter((x) => x.domain === d).map((x) => <option key={x.id} value={x.id}>{x.nameJa}</option>)}
             </optgroup>
@@ -792,7 +863,7 @@ function CompoundDetail({ id }: { id: string }) {
       <h2><span className="h2-kicker" aria-hidden="true">COMPOUND FILE — 化合物詳細</span>{c.nameJa} <span className="en-name">{c.nameEn}</span></h2>
       <p className="material-meta">
         分類：{c.compoundClass}｜{c.volatile ? '揮発性' : '非揮発性'}
-        {c.cas ? `｜CAS: ${c.cas}` : ''}{c.formula ? `｜化学式: ${c.formula}` : ''}
+        {c.cas ? `｜CAS: ${c.cas}` : ''}{c.formula ? `｜化学式: ${c.formula}` : ''}{c.pubchemCid ? `｜PubChem CID: ${c.pubchemCid}` : ''}
         {c.aliases.length ? `｜別名: ${c.aliases.join('、')}` : ''}
       </p>
       <h3>化合物単体の香り・味の知見</h3>
@@ -881,6 +952,7 @@ function LibraryView() {
     chocolate: materials.filter((m) => m.domain === 'chocolate').length,
     spice: materials.filter((m) => m.domain === 'spice').length,
     herb: materials.filter((m) => m.domain === 'herb').length,
+    dairy: materials.filter((m) => m.domain === 'dairy').length,
     compounds: compounds.length,
     sources: allSources.length,
     links: materialCompoundLinks.length,
@@ -912,7 +984,7 @@ function LibraryView() {
       <div id="lib-stats" className="anchor-block">
       <h3>収録状況（実データからの集計）</h3>
       <div className="stat-grid">
-        <div className="stat-card"><div className="stat-num">{counts.tea + counts.chocolate + counts.spice + counts.herb}</div><div className="stat-label">素材（お茶 {counts.tea}／チョコ {counts.chocolate}／スパイス {counts.spice}／ハーブ {counts.herb}）</div></div>
+        <div className="stat-card"><div className="stat-num">{counts.tea + counts.chocolate + counts.spice + counts.herb + counts.dairy}</div><div className="stat-label">素材（お茶 {counts.tea}／チョコ {counts.chocolate}／スパイス {counts.spice}／ハーブ {counts.herb}／乳製品 {counts.dairy}）</div></div>
         <div className="stat-card"><div className="stat-num">{counts.compounds}</div><div className="stat-label">化合物</div></div>
         <div className="stat-card"><div className="stat-num">{ledger ? counts.sources : '…'}</div><div className="stat-label">出典</div></div>
         <div className="stat-card"><div className="stat-num">{counts.links}</div><div className="stat-label">素材×化合物リンク</div></div>

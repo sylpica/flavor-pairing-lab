@@ -33,7 +33,7 @@ export const expansionTeaLinks: MaterialCompoundLink[] = [
   { materialId: 'tea-sencha', compoundId: 'gamma-glutamyl-peptides', kind: 'contribution', tier: 'general', conditions: '緑茶浸出液一般での官能誘導型分画・再構成による同定。煎茶個別試料の実証ではない', sourceIds: ['lu-2022-kokumi-green-tea'] },
   // ---- 玉露 ----
   { materialId: 'tea-gyokuro', compoundId: 'indole', kind: 'contribution', tier: 'measured', conditions: '玉露の AEDA で最高FD（FD 27、Tan 2019）', sourceIds: [TAN] },
-  { materialId: 'tea-gyokuro', compoundId: 'dimethyl-sulfide', kind: 'contribution', tier: 'measured', conditions: '被覆栽培の覆い香の文脈。Tan 2019 の玉露 AEDA に基づく。Sakaida et al. 2010 は pairing 記録で書誌未確定のため出典登録は見送った', sourceIds: [TAN] },
+  { materialId: 'tea-gyokuro', compoundId: 'dimethyl-sulfide', kind: 'composition', tier: 'general', conditions: '被覆栽培茶の覆い香成分として知られる DMS の組成レベルの収録。引用出典 Tan 2019 では玉露の香気活性成分として示されておらず（最高 FD はインドール）、玉露での寄与の根拠は未確定。寄与を示す出典（Sakaida et al. 2010 は pairing 記録で書誌未確定）の確定までは寄与として扱わない', sourceIds: [TAN] },
   // ---- 抹茶 ----
   { materialId: 'tea-matcha', compoundId: 'furaneol', kind: 'contribution', tier: 'measured', conditions: '抹茶の AEDA で等級を問わず高FDの8成分の一つ（Tan 2019）', sourceIds: [TAN] },
   { materialId: 'tea-matcha', compoundId: 'coumarin', kind: 'contribution', tier: 'measured', conditions: '抹茶の AEDA で等級を問わず高FDの8成分の一つ（Tan 2019）', sourceIds: [TAN] },
@@ -44,7 +44,7 @@ export const expansionTeaLinks: MaterialCompoundLink[] = [
   { materialId: 'tea-hojicha', compoundId: 'geraniol', kind: 'contribution', tier: 'measured', conditions: '焙煎茎茶（棒ほうじ茶）の AEDA で高FDの花香成分で、茎茶の方が葉茶より豊富（Sasaki 2017）。葉ほうじ茶への外挿には注意', sourceIds: ['sasaki-2017-roasted-stem-tea'] },
   { materialId: 'tea-hojicha', compoundId: 'linalool', kind: 'contribution', tier: 'measured', conditions: '焙煎茎茶（棒ほうじ茶）の AEDA で高FDの花香成分（Sasaki 2017）。葉ほうじ茶への外挿には注意', sourceIds: ['sasaki-2017-roasted-stem-tea'] },
   { materialId: 'tea-hojicha', compoundId: '2-3-diethyl-5-methylpyrazine', kind: 'contribution', tier: 'measured', conditions: 'ほうじ茶の AEDA で FD 243（Tan 2019）', sourceIds: [TAN] },
-  { materialId: 'tea-hojicha', compoundId: '2-ethyl-3-5-dimethylpyrazine', kind: 'contribution', tier: 'measured', conditions: '茎茶のドラム焙煎で高温ほど増加（Sasaki 2020）。水上らの AEDA 記録は書誌未確定のため根拠に含めない', sourceIds: ['sasaki-2020-roasting-conditions'] },
+  { materialId: 'tea-hojicha', compoundId: '2-ethyl-3-5-dimethylpyrazine', kind: 'contribution', tier: 'measured', conditions: '寄与の根拠は焙煎茎茶（棒ほうじ茶）の AEDA で高 FD を示した Sasaki 2017。Sasaki 2020 は焙煎温度による生成量の依存（組成）を示す補助出典。葉ほうじ茶への外挿は未検証', sourceIds: ['sasaki-2017-roasted-stem-tea', 'sasaki-2020-roasting-conditions'] },
   // ---- 白牡丹 ----
   { materialId: 'tea-white-baimudan', compoundId: '2-phenylethanol', kind: 'composition', tier: 'measured', conditions: '白茶4亜型で標準添加法により定量（Feng 2022）。主寄与は貢眉・寿眉側であり、白牡丹では組成（定量された含有）として扱う', sourceIds: ['feng-2022-white-tea-sensomics'] },
   { materialId: 'tea-white-baimudan', compoundId: 'cedrol', kind: 'contribution', tier: 'measured', conditions: '貯蔵0–11年の陳年白牡丹で rOAV≥1 の特徴香気成分（Li 2026）。新茶には適用できない。寄与の根拠は rOAV＋多変量レベルで、GC-O・再構成はない', sourceIds: ['li-2026-stored-baimudan'] },
@@ -52,19 +52,20 @@ export const expansionTeaLinks: MaterialCompoundLink[] = [
   { materialId: 'tea-tieguanyin', compoundId: 'indole', kind: 'contribution', tier: 'measured', conditions: '烏龍茶横断の OAV 96–138（Zhu 2015、3茶共通の範囲値）。烏龍茶適性品種でも FD が高い傾向（He 2023）', sourceIds: [ZHU, 'he-2023-oolong-cultivars'] },
   { materialId: 'tea-tieguanyin', compoundId: 'nerolidol', kind: 'contribution', tier: 'measured', conditions: '烏龍茶横断の OAV 108–184（Zhu 2015、3茶共通の範囲値）', sourceIds: [ZHU] },
   { materialId: 'tea-tieguanyin', compoundId: '6-methyl-5-hepten-2-one', kind: 'contribution', tier: 'measured', conditions: '烏龍茶横断の OAV 34–67（Zhu 2015、3茶共通の範囲値）', sourceIds: [ZHU] },
-  { materialId: 'tea-tieguanyin', compoundId: 'jasmine-lactone', kind: 'contribution', tier: 'measured', conditions: '烏龍茶適性品種（鉄観音を含む）で AEDA＋再構成系により寄与を検証（He 2023、pairing 記録ベース）', sourceIds: ['he-2023-oolong-cultivars'] },
+  { materialId: 'tea-tieguanyin', compoundId: 'jasmine-lactone', kind: 'contribution', tier: 'measured', conditions: '烏龍茶適性品種（鉄観音を含む）で AEDA＋再構成系により寄与を検証（He 2023、pairing 記録ベース）。内容確認は pairing 記録経由で、原著の再確認は未実施（tier の根拠状態との不整合を避けるため明記）', sourceIds: ['he-2023-oolong-cultivars'] },
   // ---- 鳳凰単叢 ----
   { materialId: 'tea-dancong', compoundId: 'jasmine-lactone', kind: 'contribution', tier: 'measured', conditions: '単叢3香型の定量＋OAV＋ケモメトリクスで鍵マーカー（Song 2025）。香型試料レベル', sourceIds: ['song-2025-dancong-sensomics'] },
   { materialId: 'tea-dancong', compoundId: 'cis-jasmone', kind: 'contribution', tier: 'measured', conditions: '単叢3香型の鍵マーカー（Song 2025）。香型試料レベル', sourceIds: ['song-2025-dancong-sensomics'] },
   { materialId: 'tea-dancong', compoundId: 'gamma-hexalactone', kind: 'contribution', tier: 'measured', conditions: '単叢3香型の鍵マーカー（Song 2025）。香型試料レベル', sourceIds: ['song-2025-dancong-sensomics'] },
   // ---- 紅茶（一般） ----
   { materialId: 'tea-black-general', compoundId: 'methyl-salicylate', kind: 'contribution', tier: 'general', conditions: '四大紅茶横断の GC-O 最強群（Kang 2019、茶種別ではセイロンで最も決定的）と四川工夫紅茶の再構成系3位（Wang 2025）に基づく茶類レベルの知見', sourceIds: [KANG, 'wang-2025-sichuan-congou'] },
-  { materialId: 'tea-black-general', compoundId: 'hotrienol', kind: 'contribution', tier: 'general', conditions: '四大紅茶横断の GC-O 最強群（Kang 2019）に基づく茶類レベルの知見', sourceIds: [KANG] },
+  { materialId: 'tea-black-general', compoundId: 'hotrienol', kind: 'contribution', tier: 'general', conditions: '四大紅茶横断の GC-O 最強群（Kang 2019）に基づく茶類レベルの知見。4 茶種横断の GC-O 最強群という位置づけであり、個別茶種での寄与度は異なる', sourceIds: [KANG] },
   { materialId: 'tea-black-general', compoundId: 'flavonol-glycosides', kind: 'contribution', tier: 'measured', conditions: '味覚希釈分析で紅茶浸出液の渋みの主役と同定（Scharbert 2004）。再構成・除去でも主要寄与群（Scharbert 2005）', sourceIds: ['scharbert-2004-astringent-compounds', SCHARBERT05] },
   { materialId: 'tea-black-general', compoundId: 'egcg', kind: 'contribution', tier: 'measured', conditions: '紅茶浸出液の再構成・除去で渋み寄与群（Scharbert 2005）。DoT 1.19–1.43 は安茶試料の値（Huang 2025）', sourceIds: [SCHARBERT05, 'huang-2025-ancha-dot'] },
-  { materialId: 'tea-black-general', compoundId: 'ecg', kind: 'contribution', tier: 'measured', conditions: '紅茶浸出液の再構成・除去で渋み寄与群（Scharbert 2005）。DoT 0.88–1.02 は安茶試料の値（Huang 2025）', sourceIds: [SCHARBERT05, 'huang-2025-ancha-dot'] },
-  { materialId: 'tea-black-general', compoundId: 'egc', kind: 'contribution', tier: 'general', conditions: 'DoT 0.52–0.69（安茶、Huang 2025）で直接の寄与は小さい。小さい寄与であることを明記した上での収録', sourceIds: ['huang-2025-ancha-dot'] },
-  { materialId: 'tea-black-general', compoundId: 'ec', kind: 'contribution', tier: 'general', conditions: 'DoT 0.02–0.03（安茶、Huang 2025）で直接の寄与はごく小さい', sourceIds: ['huang-2025-ancha-dot'] },
+  { materialId: 'tea-black-general', compoundId: 'ecg', kind: 'contribution', tier: 'measured', conditions: 'ECG は Scharbert 2005 で定量・DoT 評価されたガレート型カテキンの一つだが、欠落試験で確定した主要 12 成分には含まれない。DoT 0.88–1.02 は安茶試料（Huang 2025）の値で閾値前後の境界域であり、紅茶浸出液での単独寄与の実証ではない', sourceIds: [SCHARBERT05, 'huang-2025-ancha-dot'] },
+  // 旧リンク tea-black-general × egc / ec（contribution）は全件照合（round7）で削除：唯一の出典
+  // Huang 2025（安茶試料）で EGC は DoT 0.52–0.69、EC は DoT 0.02–0.03 といずれも閾値未満であり、
+  // 同論文の寄与成分6種にも含まれない（出典の基準では「寄与しない」側）。試料も紅茶ではない。
   { materialId: 'tea-black-general', compoundId: 'theaflavin', kind: 'composition', tier: 'measured', conditions: '浸出液中濃度と閾値（0.016 mmol/L）から taste activity を評価。実寄与は渋み全体の 0.1% 未満と結論されたため寄与ではなく組成として扱う（Scharbert 2004）', sourceIds: ['scharbert-2004-theaflavin-taste'] },
   { materialId: 'tea-black-general', compoundId: 'theaflavin-3-gallate', kind: 'composition', tier: 'measured', conditions: '閾値は実測されたが、テアフラビン類全体の実寄与は渋みの 0.1% 未満（Scharbert 2004）。組成として扱う', sourceIds: ['scharbert-2004-theaflavin-taste'] },
   { materialId: 'tea-black-general', compoundId: 'theaflavin-3p-gallate', kind: 'composition', tier: 'measured', conditions: '閾値は実測されたが、テアフラビン類全体の実寄与は渋みの 0.1% 未満（Scharbert 2004）。組成として扱う', sourceIds: ['scharbert-2004-theaflavin-taste'] },
@@ -92,7 +93,7 @@ expansionTeaLinks.push(
   { materialId: 'tea-darjeeling', compoundId: 'eez-2-4-6-nonatrienal', kind: 'contribution', tier: 'measured', conditions: 'AEDA 最高FD群で、OAV により従来未知の鍵成分として浮上（Schuh 2006）', sourceIds: [SCHUH] },
   { materialId: 'tea-darjeeling', compoundId: 'hotrienol', kind: 'contribution', tier: 'measured', conditions: 'AEDA でダージリン特徴成分として同定（Baba 2017）。四大紅茶横断の GC-O 最強群（Kang 2019）', sourceIds: [BABA, KANG] },
   { materialId: 'tea-darjeeling', compoundId: 'mmp', kind: 'contribution', tier: 'measured', conditions: 'AEDA で同定（Baba 2017）。マスカテル香はリナロール、ゲラニオール、β-ダマセノンとの組合せで形成されると考察されており、単独の寄与ではない', sourceIds: [BABA] },
-  { materialId: 'tea-darjeeling', compoundId: 'beta-damascenone', kind: 'contribution', tier: 'measured', conditions: 'マスカテル香を形成する組合せ（リナロール、ゲラニオール、MMP と）の一部として（Baba 2017、AEDA 比較）', sourceIds: [BABA] },
+  { materialId: 'tea-darjeeling', compoundId: 'beta-damascenone', kind: 'contribution', tier: 'measured', conditions: 'β-ダマセノンは Baba 2017 でマスカテル香形成に関わる組合せ成分として考察されたもので、同研究でダージリン特徴成分として同定された成分ではない。寄与は考察レベルの根拠にとどまる', sourceIds: [BABA] },
   { materialId: 'tea-darjeeling', compoundId: '2-3-diethyl-5-methylpyrazine', kind: 'contribution', tier: 'measured', conditions: 'AEDA でダージリン特徴成分として同定（Baba 2017）', sourceIds: [BABA] },
   // キームン
   { materialId: 'tea-keemun', compoundId: 'linalool', kind: 'contribution', tier: 'measured', conditions: '日干し萎凋で rOAV 161（Huang 2022、QDA＋添加実験で検証）。萎凋条件つき', sourceIds: [HUANG22] },
@@ -114,13 +115,16 @@ expansionTeaLinks.push(
   { materialId: 'tea-yellow', compoundId: 'linalool', kind: 'contribution', tier: 'measured', conditions: '再構成＋欠落でキーオドラントと確認（Wei 2024）。悶黄最適化条件の試料での確認であり、黄茶一般への一般化には限界がある', sourceIds: [WEI] },
   // 岩茶（大紅袍）（Wang 2022、再構成・欠落。原料は水仙品種）
   { materialId: 'tea-dahongpao', compoundId: 'gamma-hexalactone', kind: 'contribution', tier: 'measured', conditions: 'OAV 154（Wang 2022）。原料は水仙品種', sourceIds: [WANG22] },
-  { materialId: 'tea-dahongpao', compoundId: '6-methyl-5-hepten-2-one', kind: 'contribution', tier: 'measured', conditions: '欠落試験で焙煎・カラメル香の鍵と実証（OAV 91、Wang 2022）', sourceIds: [WANG22] },
-  { materialId: 'tea-dahongpao', compoundId: '2-ethyl-3-5-dimethylpyrazine', kind: 'contribution', tier: 'measured', conditions: '欠落試験で実証（OAV 19、Wang 2022）', sourceIds: [WANG22] },
-  { materialId: 'tea-dahongpao', compoundId: 'furaneol', kind: 'contribution', tier: 'measured', conditions: '欠落試験で実証（OAV 13、Wang 2022）', sourceIds: [WANG22] },
-  { materialId: 'tea-dahongpao', compoundId: 'guaiacol', kind: 'contribution', tier: 'measured', conditions: '新規キーオドラントとして同定（OAV 3.4、Wang 2022）。燻製・焙煎文脈に限定', sourceIds: [WANG22] },
-  { materialId: 'tea-dahongpao', compoundId: 'vanillin', kind: 'contribution', tier: 'measured', conditions: '新規キーオドラントとして同定（OAV 1.8、Wang 2022）', sourceIds: [WANG22] },
+  { materialId: 'tea-dahongpao', compoundId: '6-methyl-5-hepten-2-one', kind: 'contribution', tier: 'measured', conditions: '欠落試験で焙煎・カラメル香の鍵と実証（OAV 91、Wang 2022）。原料は水仙品種であり、大紅袍ブレンド一般への一般化には限界がある', sourceIds: [WANG22] },
+  { materialId: 'tea-dahongpao', compoundId: '2-ethyl-3-5-dimethylpyrazine', kind: 'contribution', tier: 'measured', conditions: '欠落試験で実証（OAV 19、Wang 2022）。原料は水仙品種であり、大紅袍ブレンド一般への一般化には限界がある', sourceIds: [WANG22] },
+  { materialId: 'tea-dahongpao', compoundId: 'furaneol', kind: 'contribution', tier: 'measured', conditions: '欠落試験で実証（OAV 13、Wang 2022）。原料は水仙品種であり、大紅袍ブレンド一般への一般化には限界がある', sourceIds: [WANG22] },
+  { materialId: 'tea-dahongpao', compoundId: 'guaiacol', kind: 'contribution', tier: 'measured', conditions: '新規キーオドラントとして同定（OAV 3.4、Wang 2022）。燻製・焙煎文脈に限定。原料は水仙品種であり、大紅袍ブレンド一般への一般化には限界がある', sourceIds: [WANG22] },
+  { materialId: 'tea-dahongpao', compoundId: 'vanillin', kind: 'contribution', tier: 'measured', conditions: '新規キーオドラントとして同定（OAV 1.8、Wang 2022）。原料は水仙品種であり、大紅袍ブレンド一般への一般化には限界がある', sourceIds: [WANG22] },
   // 凍頂烏龍
-  { materialId: 'tea-dongding', compoundId: 'sotolon', kind: 'contribution', tier: 'measured', conditions: '凍結乾燥茶葉の熱水抽出物での欠落試験で、焙煎様カラメル香に最も寄与（Wang 2023、pairing 記録ベース）', sourceIds: [WANG23] },
+  // 旧リンク tea-dongding × sotolon は全件照合（round7）で削除：引用していた Wang 2023 の記録は
+  // 実在論文（Foods 12(17):3158、凍頂烏龍27試料のセンソミクス）と一致せず、同論文にソトロンの
+  // 記載は皆無だった（書誌・scope の創作が疑われるため出典レコード自体も実在論文に差し替えた）。
+  { materialId: 'tea-dongding', compoundId: 'alkylpyrazines', kind: 'contribution', tier: 'measured', conditions: '凍頂烏龍27試料のセンソミクスでピラジン類がキー化合物として同定され、欠落試験でカラメル様香りへの寄与が検証された（Wang 2023、実在論文に差し替え後の記録）', sourceIds: [WANG23] },
   { materialId: 'tea-dongding', compoundId: 'indole', kind: 'contribution', tier: 'measured', conditions: '烏龍茶横断の OAV 96–138（Zhu 2015、3茶共通の範囲値）', sourceIds: [ZHU] },
   { materialId: 'tea-dongding', compoundId: 'nerolidol', kind: 'contribution', tier: 'measured', conditions: '烏龍茶横断の OAV 108–184（Zhu 2015、3茶共通の範囲値）', sourceIds: [ZHU] },
   { materialId: 'tea-dongding', compoundId: '6-methyl-5-hepten-2-one', kind: 'contribution', tier: 'measured', conditions: '烏龍茶横断の OAV 34–67（Zhu 2015、3茶共通の範囲値）', sourceIds: [ZHU] },
@@ -173,7 +177,7 @@ export const expansionTeaLinkUpgrades: ExpansionTeaLinkUpgrade[] = [
     materialId: 'tea-black-general', compoundId: 'linalool', existingPair: true,
     fromKind: 'contribution', fromTier: 'general', toKind: 'contribution', toTier: 'measured',
     addSourceIds: [SCHUH, KANG],
-    conditions: 'ダージリン試料のセンソミクス（OAV＋再構成、Schuh 2006）と四大紅茶横断（Kang 2019）に基づく。根拠試料はダージリン等の特定紅茶であり、紅茶一般への適用範囲は親担当の判断に委ねる',
+    conditions: '根拠はダージリン試料のセンソミクス（Schuh 2006）および四大紅茶横断比較（Kang 2019）の実測。『紅茶（一般）』への適用は代表試料に基づく外挿であり、寄与度は茶種により異なる',
     reason: '調査 §6(b)：Schuh 2006・Kang 2019 で紅茶リンク自体の格上げが可能とされた。ただし根拠は特定試料のため conditions に明記した。',
   },
   {

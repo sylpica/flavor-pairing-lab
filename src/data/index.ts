@@ -3,14 +3,18 @@ import { teaChocolateSources } from './sources-tc'
 import { spiceHerbSources } from './sources-spice-herb'
 import { expansionTeaSources } from './sources-expansion-tea'
 import { expansionTea2Sources } from './sources-expansion-tea2'
+import { expansionTea3Sources } from './sources-expansion-tea3'
 import { expansionCacaoSources } from './sources-expansion-cacao'
 import { expansionShSources } from './sources-expansion-sh'
+import { expansionDairySources } from './sources-expansion-dairy'
 import { teaMaterials, chocolateMaterials } from './materials-tea-chocolate'
 import { spiceMaterials, herbMaterials } from './materials-spice-herb'
 import { expansionTeaMaterials } from './materials-expansion-tea'
 import { expansionTea2Materials } from './materials-expansion-tea2'
+import { expansionTea3Materials } from './materials-expansion-tea3'
 import { expansionChocolateMaterials } from './materials-expansion-cacao'
 import { expansionSpiceMaterials, expansionHerbMaterials } from './materials-expansion-sh'
+import { expansionDairyMaterials } from './materials-expansion-dairy'
 import { axisLabel } from './axis-labels'
 
 // 初期バンドルに含めるのは再確認済みの出典のみ。
@@ -18,12 +22,14 @@ import { axisLabel } from './axis-labels'
 // 文献画面でのみ動的 import する（どの素材・リンク・化合物も pairing 由来 ID を参照しない）。
 export const sources: Source[] = [
   ...teaChocolateSources, ...spiceHerbSources,
-  ...expansionTeaSources, ...expansionTea2Sources, ...expansionCacaoSources, ...expansionShSources,
+  ...expansionTeaSources, ...expansionTea2Sources, ...expansionTea3Sources, ...expansionCacaoSources, ...expansionShSources,
+  ...expansionDairySources,
 ]
 export const materials: Material[] = [
   ...teaMaterials, ...chocolateMaterials, ...spiceMaterials, ...herbMaterials,
-  ...expansionTeaMaterials, ...expansionTea2Materials, ...expansionChocolateMaterials,
+  ...expansionTeaMaterials, ...expansionTea2Materials, ...expansionTea3Materials, ...expansionChocolateMaterials,
   ...expansionSpiceMaterials, ...expansionHerbMaterials,
+  ...expansionDairyMaterials,
 ]
 
 export const sourceById = (id: string) => sources.find((s) => s.id === id)

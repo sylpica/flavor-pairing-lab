@@ -121,6 +121,61 @@ export const expansionSpiceMaterials: Material[] = [
     evidenceTier: 'general', scopeNote: '南インド産試料の GC/GC-MS＋嗅覚測定に基づく組成の記述。コウリョウキョウ（Alpinia officinarum、別種）とは混同しない。産地差が大きく、単一の代表組成は置けない。',
     sourceIds: ['jirovetz-2003-galangal-oils', 'rana-2010-galangal-comparison'], roastable: true, extractable: false,
   },
+  // ===== 唐辛子の種レベル分割（round7 調査 chili-species-research.md、2026-10-31）=====
+  // 旧・汎用素材 spice-chili（Capsicum spp.）を廃止し、栽培化5種に分割した。
+  // プロファイルはいずれも複数研究の一般的傾向（tier: general）止まりで、単一試料の実測を
+  // 素材プロファイルとして主張するものはない。カプサイシノイド組成比は「種平均の傾向」として
+  // 扱い、種の同定指標としては使わない（Zewdie & Bosland 2001 の反証を併記）。
+  {
+    id: 'spice-chili-annuum', domain: 'spice', nameJa: '唐辛子（アンナム種）', nameEn: 'Chili pepper (C. annuum)', scientificName: 'Capsicum annuum L.',
+    classification: '果実系スパイス', classificationId: 'fruit-spice', origin: '中南米原産・世界各地', originId: 'multi-origin',
+    variety: 'Capsicum annuum', varietyId: 'capsicum-annuum', usedPart: '果実',
+    processing: '乾燥・生鮮', description: '栽培化5種のうち種内の多様性が最も大きい種で、ハラペーニョ、カイエンヌ、鷹の爪、ピーマン類を含む。官能評価つき比較研究では、香りはフルーティー／エキゾチックと green/vegetable の組み合わせとされる。',
+    profile: [p('green-vegetable', 'moderate', ['trovato-2022-capsicum-species-volatiles', 'rodriguez-burruezo-2010-capsicum-complex-gco']), p('green-leaf', 'weak', ['trovato-2022-capsicum-species-volatiles']), p('fruit-general', 'weak', ['trovato-2022-capsicum-species-volatiles'])],
+    sensations: { pungent: s('moderate', ['alghamdi-2025-capsaicinoid-profiles'], '本素材は辛味のある品種群を対象とする。無辛味品種（ピーマン・シシトウ類の一部等）は含まない。同一種内でも実測 SHU の幅は極めて大きい') },
+    evidenceTier: 'general', scopeNote: '官能評価つき比較研究に基づく一般傾向。annuum は種内の多様性が最も大きく、品種・熟度・乾燥等の加工で香りも辛味も大きく変わる。組成比の平均傾向は 64:30:6（Alghamdi 2025）だが種の同定指標ではない（Zewdie & Bosland 2001）。',
+    sourceIds: ['trovato-2022-capsicum-species-volatiles', 'rodriguez-burruezo-2010-capsicum-complex-gco', 'alghamdi-2025-capsaicinoid-profiles', 'zewdie-bosland-2001-capsaicinoid-profiles'], roastable: true, extractable: false,
+  },
+  {
+    id: 'spice-chili-chinense', domain: 'spice', nameJa: '唐辛子（キネンセ種）', nameEn: 'Chili pepper (C. chinense)', scientificName: 'Capsicum chinense Jacq.',
+    classification: '果実系スパイス', classificationId: 'fruit-spice', origin: '中南米原産・世界各地', originId: 'multi-origin',
+    variety: 'Capsicum chinense', varietyId: 'capsicum-chinense', usedPart: '果実',
+    processing: '乾燥・生鮮', description: 'ハバネロ、スコッチボネット等を含む種。フルーティーな香りは GC-O による寄与レベルの知見（分枝鎖エステル類、6-methyl-(E)-4-heptenyl エステル類）に支えられる。超辛味品種を含む。',
+    profile: [p('tropical', 'moderate', ['murakami-2019-habanero-volatiles', 'trovato-2022-capsicum-species-volatiles', 'rodriguez-burruezo-2010-capsicum-complex-gco']), p('fruit-general', 'moderate', ['trovato-2022-capsicum-species-volatiles', 'rodriguez-burruezo-2010-capsicum-complex-gco'])],
+    sensations: { pungent: s('strong', ['alghamdi-2025-capsaicinoid-profiles'], '辛味系品種群が対象（ビキーニョ等の無辛味品種は含まない）。カプサイシン優位の組成（平均 73:25:2、Alghamdi 2025）。超辛味品種を含む') },
+    evidenceTier: 'general', scopeNote: 'フルーティーな香りは GC-O による寄与レベルの知見に支えられる。ただし香りの強さ・質は品種差が大きく、無香に近い系統や無辛味品種も存在する。組成比は種の同定指標ではない（Zewdie & Bosland 2001）。',
+    sourceIds: ['murakami-2019-habanero-volatiles', 'trovato-2022-capsicum-species-volatiles', 'rodriguez-burruezo-2010-capsicum-complex-gco', 'zhou-2023-chinense-jt1-aroma', 'alghamdi-2025-capsaicinoid-profiles', 'zewdie-bosland-2001-capsaicinoid-profiles'], roastable: true, extractable: false,
+  },
+  {
+    id: 'spice-chili-frutescens', domain: 'spice', nameJa: '唐辛子（フルテセンス種）', nameEn: 'Chili pepper (C. frutescens)', scientificName: 'Capsicum frutescens L.',
+    classification: '果実系スパイス', classificationId: 'fruit-spice', origin: '中南米原産・世界各地', originId: 'multi-origin',
+    variety: 'Capsicum frutescens', varietyId: 'capsicum-frutescens', usedPart: '果実',
+    processing: '乾燥・生鮮', description: 'タバスコ、プリッキーヌ、マラゲータ等を含む種。annuum–chinense–frutescens 複合群の比較研究では、chinense と並んでフルーティー／エキゾチックな香りで、エステルとイオノンの寄与が高いとされる。',
+    profile: [p('fruit-general', 'moderate', ['rodriguez-burruezo-2010-capsicum-complex-gco']), p('tropical', 'weak', ['rodriguez-burruezo-2010-capsicum-complex-gco'])],
+    sensations: { pungent: s('strong', ['alghamdi-2025-capsaicinoid-profiles'], 'カプサイシン優位の組成（平均 73:25:2、Alghamdi 2025）で、chinense と近縁の複合群に属する。辛味系品種群が対象') },
+    evidenceTier: 'general', scopeNote: 'annuum–chinense–frutescens 複合群の比較研究（GC-O による寄与レベル）に基づく一般傾向。frutescens 単独を対象にした寄与研究は薄く、フルーティー方向は複合群レベルの知見である。組成比の平均傾向は 73:25:2（Alghamdi 2025）だが種の同定指標ではない（Zewdie & Bosland 2001）。',
+    sourceIds: ['rodriguez-burruezo-2010-capsicum-complex-gco', 'alghamdi-2025-capsaicinoid-profiles', 'zewdie-bosland-2001-capsaicinoid-profiles', 'wahyuni-2011-capsicum-metabolite-biodiversity'], roastable: true, extractable: false,
+  },
+  {
+    id: 'spice-chili-baccatum', domain: 'spice', nameJa: '唐辛子（バッカートゥム種）', nameEn: 'Chili pepper (C. baccatum)', scientificName: 'Capsicum baccatum L.',
+    classification: '果実系スパイス', classificationId: 'fruit-spice', origin: '中南米原産・世界各地', originId: 'multi-origin',
+    variety: 'Capsicum baccatum', varietyId: 'capsicum-baccatum', usedPart: '果実',
+    processing: '乾燥・生鮮', description: 'アヒ（ají）として南米で使われる種。香調の方向は比較研究間で一部食い違い（フルーティー主体 vs 系統により野菜様が強い）、試料依存性が高い。',
+    profile: [p('green-vegetable', 'moderate', ['kollmannsberger-2011-aji-rocoto-volatiles']), p('fruit-general', 'weak', ['trovato-2022-capsicum-species-volatiles', 'kollmannsberger-2011-aji-rocoto-volatiles'])],
+    sensations: { pungent: s('weak', ['kollmannsberger-2011-aji-rocoto-volatiles'], '総カプサイシノイドは対照の chinense と比べて温和だった（Kollmannsberger 2011）。ただし品種差は大きい') },
+    evidenceTier: 'general', scopeNote: '2つの比較研究で香調の方向が一部食い違うため試料依存性を明記する：Trovato 2022 は主としてフルーティー（ただし他種より弱い）、Kollmannsberger 2011 はエクアドル・ペルー産系統で vegetable-like な香りが強い（属モノグラフ経由の要約を含む）。組成比の平均傾向は 64:30:6（Alghamdi 2025）だが種の同定指標ではない（Zewdie & Bosland 2001）。',
+    sourceIds: ['trovato-2022-capsicum-species-volatiles', 'kollmannsberger-2011-aji-rocoto-volatiles', 'alghamdi-2025-capsaicinoid-profiles', 'zewdie-bosland-2001-capsaicinoid-profiles', 'wahyuni-2011-capsicum-metabolite-biodiversity'], roastable: true, extractable: false,
+  },
+  {
+    id: 'spice-chili-pubescens', domain: 'spice', nameJa: '唐辛子（プベセンス種）', nameEn: 'Chili pepper (C. pubescens)', scientificName: 'Capsicum pubescens Ruiz & Pav.',
+    classification: '果実系スパイス', classificationId: 'fruit-spice', origin: '中南米原産・世界各地', originId: 'multi-origin',
+    variety: 'Capsicum pubescens', varietyId: 'capsicum-pubescens', usedPart: '果実',
+    processing: '乾燥・生鮮', description: 'ロコト（rocoto）。黒色の種子が特徴の種。カプサイシノイド組成はジヒドロカプサイシン優位という種典型パターンが複数原著で裏付けられる。香りの方向性は査読文献で確認できなかったため、香りプロファイルは登録していない。',
+    profile: [],
+    sensations: { pungent: s('moderate', ['alghamdi-2025-capsaicinoid-profiles', 'meckelmann-2015-pubescens-phytochemicals'], 'ジヒドロカプサイシン優位の組成（平均 34:60:6）。総量の報告は研究間で幅が大きい（Meckelmann 2015 は乾物 55–410 mg/100g、Kollmannsberger 2011 では対照 chinense より温和）') },
+    evidenceTier: 'general', scopeNote: '香りプロファイルが空なのは原著に基づく理由による：揮発パターンが他種と異なることは報告されるが、香調の方向（何の香りが立つか）は要旨レベルで確認できなかったため、方向のない差異を香味ノートに変換しない。カプサイシノイド組成の種典型パターン（ジヒドロカプサイシン優位）は Alghamdi 2025 と Meckelmann 2015 で裏付けられるが、組成比は種の同定指標ではない（Zewdie & Bosland 2001）。',
+    sourceIds: ['alghamdi-2025-capsaicinoid-profiles', 'meckelmann-2015-pubescens-phytochemicals', 'kollmannsberger-2011-aji-rocoto-volatiles', 'zewdie-bosland-2001-capsaicinoid-profiles'], roastable: true, extractable: false,
+  },
 ]
 
 export const expansionHerbMaterials: Material[] = [

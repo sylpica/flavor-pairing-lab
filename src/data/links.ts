@@ -2,6 +2,7 @@ import type { MaterialCompoundLink } from '../types'
 import { expansionTeaLinks, expansionTeaLinkUpgrades } from './links-expansion-tea'
 import { expansionCacaoLinks, expansionCacaoLinkUpgrades } from './links-expansion-cacao'
 import { expansionShAllLinks, expansionShLinkUpgrades } from './links-expansion-sh'
+import { expansionDairyLinks } from './links-expansion-dairy'
 
 // 素材×化合物リンク（第1弾：お茶・チョコレート）。
 // kind の区別: detection=検出の報告 / composition=組成としての含有 / contribution=官能寄与の根拠あり。
@@ -12,7 +13,7 @@ const Z = 'zeng-2025-tea-vocs'
 export const materialCompoundLinks: MaterialCompoundLink[] = [
   // 煎茶
   { materialId: 'tea-sencha', compoundId: 'linalool', kind: 'contribution', tier: 'general', conditions: '総説で茶類レベルで OAV>1 の重要香気成分として掲載。煎茶個別試料の寄与実証ではない', sourceIds: [Z] },
-  { materialId: 'tea-sencha', compoundId: 'dimethyl-sulfide', kind: 'contribution', tier: 'measured', conditions: '煎茶試料の GC-O による重要香気成分の同定研究', sourceIds: ['kumazawa-1999-sencha-odorants'] },
+  { materialId: 'tea-sencha', compoundId: 'dimethyl-sulfide', kind: 'contribution', tier: 'measured', conditions: '煎茶試料の GC-O による重要香気成分の同定研究。ただし AEDA 36 成分への DMS の含有・FD 値は全文照合中（要旨レベルでは最高 FD 群・新規同定群のいずれにも含まれない）', sourceIds: ['kumazawa-1999-sencha-odorants'] },
   { materialId: 'tea-sencha', compoundId: 'cis-3-hexen-1-ol', kind: 'detection', tier: 'general', conditions: '総説での茶の揮発性成分としての報告', sourceIds: [Z] },
   { materialId: 'tea-sencha', compoundId: 'catechins', kind: 'composition', tier: 'general', sourceIds: ['ye-2022-bitterness-astringency'] },
   { materialId: 'tea-sencha', compoundId: 'caffeine', kind: 'composition', tier: 'general', sourceIds: ['zhang-2020-tea-chemistry-taste'] },
@@ -34,14 +35,17 @@ export const materialCompoundLinks: MaterialCompoundLink[] = [
   // 紅茶
   { materialId: 'tea-black-general', compoundId: 'geraniol', kind: 'contribution', tier: 'general', conditions: '総説で紅茶を含む茶類の OAV>1 重要香気成分として掲載', sourceIds: [Z] },
   { materialId: 'tea-black-general', compoundId: 'linalool', kind: 'contribution', tier: 'general', sourceIds: [Z] },
-  { materialId: 'tea-black-general', compoundId: 'theaflavins', kind: 'contribution', tier: 'measured', conditions: '紅茶浸出液での味覚活性・再構成・欠落試験による評価', sourceIds: ['scharbert-2005-black-tea-taste'] },
+  // 旧リンク tea-black-general × theaflavins（群）は全件照合（round7）で削除：引用出典
+  // Scharbert & Hofmann 2005 は欠落試験で確定した鍵呈味成分12種にテアフラビン類を含めておらず、
+  // 「鍵寄与ではない」と結論する側の研究だった（出典の結論と逆向きの引用）。個別テアフラビン類の
+  // 組成リンク（Scharbert 2004、実寄与は渋み全体の0.1%未満という結論つき）は別途収録済み。
   { materialId: 'tea-black-general', compoundId: 'benzaldehyde', kind: 'contribution', tier: 'general', conditions: '総説で紅茶の OAV>1 重要香気成分として掲載', sourceIds: [Z] },
   // 黒茶
   { materialId: 'tea-dark-puer', compoundId: 'beta-ionone', kind: 'detection', tier: 'general', sourceIds: [Z] },
   // チョコレート
   { materialId: 'choco-dark-roasted', compoundId: 'alkylpyrazines', kind: 'contribution', tier: 'measured', conditions: '焙煎ダークチョコ試料の GC-O 等による重要香気成分の同定研究の範囲', sourceIds: ['acpangan-2023-dark-chocolate-aroma'] },
   { materialId: 'choco-dark-roasted', compoundId: 'strecker-aldehydes', kind: 'contribution', tier: 'measured', conditions: '同上（焙煎・未焙煎の比較研究）', sourceIds: ['acpangan-2023-dark-chocolate-aroma'] },
-  { materialId: 'choco-dark-roasted', compoundId: 'theobromine', kind: 'contribution', tier: 'measured', conditions: '焙煎カカオニブの呈味の定量・官能研究', sourceIds: ['stark-2006-cocoa-nibs-taste'] },
+  { materialId: 'choco-dark-roasted', compoundId: 'theobromine', kind: 'contribution', tier: 'measured', conditions: '出典試料は焙煎カカオニブであり、製品自体の実測ではない。ニブ段階での呈味寄与を根拠とし、製品での寄与度は配合に依存する', sourceIds: ['stark-2006-cocoa-nibs-taste'] },
   { materialId: 'choco-dark-roasted', compoundId: 'vanillin', kind: 'detection', tier: 'general', conditions: 'ダークチョコの香気成分としての報告（寄与の程度は試料依存）', sourceIds: ['deuscher-2020-dark-chocolate-gco'] },
   { materialId: 'choco-dark-unroasted', compoundId: 'alkylpyrazines', kind: 'detection', tier: 'measured', conditions: '未焙煎試料では焙煎生成物の水準が異なることが同研究で比較された', sourceIds: ['acpangan-2023-dark-chocolate-aroma'] },
   { materialId: 'choco-milk', compoundId: 'vanillin', kind: 'contribution', tier: 'measured', conditions: 'ミルクチョコとココアマスの AEDA による主要香気成分研究', sourceIds: ['schnermann-1997-milk-chocolate'] },
@@ -73,13 +77,13 @@ export const spiceHerbLinks: MaterialCompoundLink[] = [
   { materialId: 'spice-star-anise', compoundId: 'anethole', kind: 'composition', tier: 'general', conditions: '精油の主成分（総説）', sourceIds: ['patra-2020-star-anise'] },
   { materialId: 'spice-saffron', compoundId: 'safranal', kind: 'composition', tier: 'general', conditions: '最も豊富な揮発成分（総説）。AEDA/OAV の寄与確定は未確認', sourceIds: ['srivastava-2010-saffron'] },
   { materialId: 'spice-saffron', compoundId: 'picrocrocin', kind: 'contribution', tier: 'general', conditions: 'サフランの苦味成分として総説で機能分担が明記', sourceIds: ['srivastava-2010-saffron'] },
-  { materialId: 'spice-vanilla', compoundId: 'vanillin', kind: 'contribution', tier: 'general', conditions: '特徴香の主因と原著・総説で一致。ただしバニリン単独では天然バニラの複雑さを再現できない', sourceIds: ['molecules-2025-vanilla-pods'] },
+  { materialId: 'spice-vanilla', compoundId: 'vanillin', kind: 'contribution', tier: 'general', conditions: '引用出典自体は組成・同位体比の研究で寄与手法を含まない。『特徴香は主にバニリンによる』は同論文序論が先行文献を引いて述べる一般論であり、本リンクは tier general の根拠とする。バニリン単独では天然バニラの複雑さを再現できない', sourceIds: ['molecules-2025-vanilla-pods'] },
   { materialId: 'spice-sansho', compoundId: 'hydroxy-alpha-sanshool', kind: 'contribution', tier: 'measured', conditions: '果実の主サンショール。定量と官能（閾値・味質）の原著研究に基づく', sourceIds: ['sugai-2005-sanshool-quant'] },
   { materialId: 'spice-huajiao', compoundId: 'hydroxy-alpha-sanshool', kind: 'contribution', tier: 'general', conditions: 'しびれの主因（アルキルアミド類）。ヒト実験は花椒のヒドロキシ-α-サンショールで実施', sourceIds: ['hagura-2013-tingling'] },
   { materialId: 'spice-huajiao', compoundId: 'linalool', kind: 'contribution', tier: 'measured', conditions: '漢源産試料の GC-O/AEDA/OAV で主要香気活性成分として同定', sourceIds: ['foodchem-2022-huajiao-aroma'] },
   { materialId: 'spice-huajiao', compoundId: 'cineole', kind: 'contribution', tier: 'measured', conditions: '同上（GC-O で強い香気活性）', sourceIds: ['foodchem-2022-huajiao-aroma'] },
   { materialId: 'spice-huajiao', compoundId: 'limonene', kind: 'contribution', tier: 'measured', conditions: '同上（主要香気活性成分として同定）', sourceIds: ['foodchem-2022-huajiao-aroma'] },
-  { materialId: 'spice-chili', compoundId: 'capsaicin', kind: 'contribution', tier: 'general', conditions: 'TRPV1 作動による灼熱感の主因（総説）。品種により含量は大きく異なる', sourceIds: ['abdel-salam-2023-capsaicin'] },
+  // 旧 spice-chili × capsaicin リンクは round7 で種素材5件へ移行した（links-expansion-sh.ts）。
   { materialId: 'herb-peppermint', compoundId: 'menthol', kind: 'composition', tier: 'general', conditions: '精油の主要成分（単一試料で40.7%。精油中の値）', sourceIds: ['schmidt-2009-peppermint-oil'] },
   { materialId: 'herb-peppermint', compoundId: 'menthone', kind: 'composition', tier: 'general', conditions: '精油の主要成分（単一試料で23.4%）', sourceIds: ['schmidt-2009-peppermint-oil'] },
   { materialId: 'herb-spearmint', compoundId: 'carvone', kind: 'composition', tier: 'general', conditions: '主成分として総説が集計。ケモタイプにより異なる場合がある', sourceIds: ['mahendran-2021-spearmint'] },
@@ -116,7 +120,7 @@ export const spiceHerbLinks: MaterialCompoundLink[] = [
 const linkKey = (l: { materialId: string; compoundId: string }) => `${l.materialId}::${l.compoundId}`
 const mergedLinks = new Map<string, MaterialCompoundLink>()
 for (const l of [...materialCompoundLinks, ...spiceHerbLinks]) mergedLinks.set(linkKey(l), l)
-for (const l of [...expansionTeaLinks, ...expansionCacaoLinks, ...expansionShAllLinks]) {
+for (const l of [...expansionTeaLinks, ...expansionCacaoLinks, ...expansionShAllLinks, ...expansionDairyLinks]) {
   if (!mergedLinks.has(linkKey(l))) mergedLinks.set(linkKey(l), l)
 }
 for (const u of expansionShLinkUpgrades) mergedLinks.set(linkKey(u), u)

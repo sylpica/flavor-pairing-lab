@@ -7,7 +7,7 @@
 // - 推測は estimation: 'inferred' を型で必須とし、実測と混ぜない
 // - 相性スコア等の根拠のない数値は型に存在しない
 
-export type Domain = 'tea' | 'chocolate' | 'spice' | 'herb'
+export type Domain = 'tea' | 'chocolate' | 'spice' | 'herb' | 'dairy'
 
 export type EvidenceTier = 'measured' | 'general' | 'inferred' | 'insufficient'
 
@@ -98,6 +98,8 @@ export interface Compound {
   aliases: string[]
   cas?: string
   formula?: string
+  /** PubChem Compound ID（CID）。化合物群など単一化合物でないレコードには付けない */
+  pubchemCid?: number
   /** 化合物分類（テルペン／フェニルプロパノイド／アルデヒド等） */
   compoundClass: string
   volatile: boolean
@@ -203,4 +205,5 @@ export const DOMAIN_LABEL: Record<Domain, string> = {
   chocolate: 'チョコレート',
   spice: 'スパイス',
   herb: 'ハーブ',
+  dairy: '乳製品',
 }
