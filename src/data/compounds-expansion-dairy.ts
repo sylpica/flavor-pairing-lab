@@ -31,7 +31,7 @@ export const expansionDairyCompounds: Compound[] = [
   },
   {
     id: 'z6-dodeceno-gamma-lactone', nameJa: '(Z)-6-ドデセノ-γ-ラクトン', nameEn: '(Z)-6-Dodeceno-γ-lactone',
-    aliases: [], compoundClass: 'ラクトン', volatile: true,
+    aliases: [], cas: '18679-18-0', formula: 'C12H20O2', pubchemCid: 5352428, compoundClass: 'ラクトン', volatile: true,
     sensoryKnowledge: 'クリーミー／ココナッツ様の甘い香りを持つラクトン類の一つ。脂肪30%殺菌クリームの AEDA で FD 因子が突出して高かった成分の一つ（Schlutt et al. 2007）。',
     noteIds: ['cream-note'], tasteKeys: [], sourceIds: ['schlutt-2007-cream-lactones'],
   },

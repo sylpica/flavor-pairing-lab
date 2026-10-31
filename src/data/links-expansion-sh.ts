@@ -103,7 +103,7 @@ export const expansionShLinks: MaterialCompoundLink[] = [
   { materialId: 'herb-basil', compoundId: 'limonene', kind: 'contribution', tier: 'measured', conditions: 'トルコ産陰干しバジル地上部（メチルチャビコール型）の AEDA で FD 256・OAV 約 503。イラン産試料では香気活性として検出されなかった', sourceIds: ['sonmezdag-2018-basil-aroma'] },
   // ===== オレガノ（Sádecká 2008 AEDA）=====
   { materialId: 'herb-oregano', compoundId: 'linalool', kind: 'contribution', tier: 'measured', sourceIds: ['sadecka-2008-oregano-aeda'] },
-  { materialId: 'herb-oregano', compoundId: 'octen-3-ol-1', kind: 'contribution', tier: 'measured', conditions: '1-オクテン-3-オール', sourceIds: ['sadecka-2008-oregano-aeda'] },
+  { materialId: 'herb-oregano', compoundId: 'octen-3-ol-1', kind: 'contribution', tier: 'measured', conditions: '乾燥オレガノ葉（トルコ産市販品）の AEDA で FD 10,000（最高群）', sourceIds: ['sadecka-2008-oregano-aeda'] },
   { materialId: 'herb-oregano', compoundId: 'beta-damascenone', kind: 'contribution', tier: 'measured', sourceIds: ['sadecka-2008-oregano-aeda'] },
   { materialId: 'herb-oregano', compoundId: 'guaiacol', kind: 'contribution', tier: 'measured', conditions: 'AEDA で FD factor 2,000', sourceIds: ['sadecka-2008-oregano-aeda'] },
   // ===== セージ（Jonas 2021 センソミクス／Chiang 2024）=====

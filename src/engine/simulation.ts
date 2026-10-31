@@ -26,7 +26,8 @@ export function evaluateRoast(material: Material, params: RoastParams): Simulati
   if (params.tempC < 0 || params.tempC > 300) warnings.push('焙煎温度が想定範囲（0〜300℃）の外です。範囲外の外挿は行いません')
   if (params.minutes < 0 || params.minutes > 240) warnings.push('焙煎時間が想定範囲（0〜240分）の外です')
   const tendencies = simulationTendencies.filter(
-    (t) => (t.parameter === 'roast-temp' || t.parameter === 'roast-time') && t.applicableDomains.includes(material.domain),
+    (t) => (t.parameter === 'roast-temp' || t.parameter === 'roast-time') && t.applicableDomains.includes(material.domain)
+      && (!t.applicableMaterialIds || t.applicableMaterialIds.includes(material.id)),
   )
   return {
     applicable: warnings.length === 0, tendencies, warnings,
@@ -47,7 +48,8 @@ export function evaluateExtraction(material: Material, params: ExtractParams): S
   if (params.seconds < 0 || params.seconds > 3600) warnings.push('抽出時間が想定範囲の外です')
   if (params.doseG <= 0 || params.waterMl <= 0) warnings.push('素材量・湯量は正の数で指定してください')
   const tendencies = simulationTendencies.filter(
-    (t) => ['extract-temp', 'extract-time', 'dose', 'water'].includes(t.parameter) && t.applicableDomains.includes(material.domain),
+    (t) => ['extract-temp', 'extract-time', 'dose', 'water'].includes(t.parameter) && t.applicableDomains.includes(material.domain)
+      && (!t.applicableMaterialIds || t.applicableMaterialIds.includes(material.id)),
   )
   return {
     applicable: warnings.length === 0, tendencies, warnings,

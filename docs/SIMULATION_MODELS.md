@@ -8,12 +8,12 @@
 ## 採用した傾向モデル
 | ID | パラメータ | 根拠 | 限界 |
 |---|---|---|---|
-| roast-maillard | 焙煎温度 | Ac-Pangan et al. 2023（焙煎/未焙煎ダークチョコ比較） | カカオ試料。他素材への適用は類推 |
-| roast-oolong-volatiles | 焙煎時間 | Lan et al. 2022（青心烏龍の焙煎度） | 青心烏龍での研究 |
+| roast-maillard | 焙煎温度 | Ac-Pangan et al. 2023（焙煎/未焙煎ダークチョコ比較）＋ Mizukami et al. 2008 / Gotti et al. 2021（緑茶・ほうじ茶の焙煎、第10ラウンドで追加） | カカオ試料。他素材への適用は類推 |
+| roast-oolong-volatiles | 焙煎時間 | Lan et al. 2022（青心烏龍の焙煎度）＋ Cao et al. 2021（鐵観音）/ Liu et al. 2021（武夷岩茶）/ Ding et al. 2026（鳳凰単叢・再焙火）（第10ラウンドで追加） | 青心烏龍での研究が全体の根拠。鐵観音・大紅袍・鳳凰単叢は素材自体の研究あり |
 | extract-temp-perception | 抽出温度 | Pramudya & Seo 2018（日本緑茶の温度別官能） | 日本緑茶での研究 |
-| extract-temp-bitter | 抽出温度 | Zhang et al. 2020 / Ye et al. 2022（総説） | 総説レベルの一般的傾向 |
-| extract-time-infusions | 抽出時間 | Lee et al. 2013（韓国緑茶の浸出回数） | 抽出時間と浸出回数は同一条件ではない |
-| dose-water-balance | 素材量 | Zhang et al. 2020（一般原理） | 推測。最適比率は断定しない |
+| extract-temp-bitter | 抽出温度 | Zhang et al. 2020 / Ye et al. 2022（総説）＋ Yang et al. 2007 / Kelebek 2016 / Labbé 2006 / Perva-Uzunalić 2006（原著、第10ラウンドで併記） | 総説レベルの一般的傾向。エピ型カテキンの非単調性（Saklar et al. 2015）を併記 |
+| extract-time-infusions | 抽出時間 | Lee et al. 2013（韓国緑茶の浸出回数）＋ Zhang et al. 2020（大紅袍）/ Li et al. 2022（生プーアル）（第10ラウンドで追加） | 抽出時間と浸出回数は同一条件ではない |
+| dose-water-balance | 素材量 | Zhang et al. 2020（一般原理）＋ Lin et al. 2014 / Cao et al. 2022（原著、第10ラウンドで追加） | 推測。最適比率は断定しない |
 
 ## 検証した境界
 - 最小値・最大値・小数入力・不正数値（NaN）・範囲外温度（水抽出で100℃超、焙煎で300℃超）→ 警告し外挿しない。
@@ -63,3 +63,22 @@ Ct：時刻 t の抽出液中濃度、C∞：平衡濃度、k：一次速度定�
 
 ## 未採用（今後の課題）
 - 抽出速度論の数値モデルは、紅茶のカフェイン（上記）以外は未採用。緑茶のカフェイン（Spiro et al. 1992 は原著表の確認が前提）、カテキン類（Arrhenius パラメータ付きの速度定数セットが公開情報で未確認）、カカオ焙煎の色変化（原著の k 表が前提）、カプサイシン加熱分解（A の単位と半減期表の原著確認が前提）はいずれも条件付き・不可の判定であり、条件が満たされるまで導入しない。
+
+## 条件付き候補の詳細（第10ラウンド調査、2026-10-31）
+
+第10ラウンドで3候補を一次文献レベルで再調査した。いずれも「本文確認が条件」であり、数値モデルは導入しない。調査の正本は docs/research/round10/research-summary.md。
+
+### カカオ焙煎の色変化（Sacchetti et al. 2016）
+- 文献：Sacchetti G, Ioannone F, De Gregorio M, Di Mattia C, Serafini M, Mastrocola D. "Non enzymatic browning: The case of the Maillard reaction in milk chocolate hydrocolloids and cocoa beans by accelerated shelf life testing (ASLT) method." *Journal of Food Engineering* 169:44–52, 2016. DOI 10.1016/j.jfoodeng.2015.08.018
+- 要旨で確認できた範囲：色度 L* の低下は一次反応で記述され、メラノイジン生成の活性化エネルギーは 132 kJ/mol。色変化一般の Ea は本研究の引用で 60–80 kJ/mol の帯域まで言及されている。
+- 不足点：各温度の速度定数 k と、明度（L*）単独の Ea は本文の表が必要であり、温度→色の予測に使えるパラメータセットは要旨だけでは組めない。
+
+### カプサイシン熱分解（Bustamante et al. 2022）
+- 文献：Bustamante KE et al. "Decomposition Kinetics of Natural and Synthetic Capsaicin." *Journal of the Arizona-Nevada Academy of Science* 49(2):99–108, 2022. DOI 10.2181/036.049.0207
+- 要旨で確認できた範囲：一次反応・100–210 ℃の範囲で、カプサイシン A = 2.60×10⁹・Ea = 87.2 kJ/mol、ジヒドロカプサイシン A = 1.25×10⁹・Ea = 84.0 kJ/mol の対が示されている。
+- 不足点：頻度因子 A の時間単位が要旨に無く、本文の半減期表との照合が前提になる。また油中モデルでは Ea ≈ 52.8 kJ/mol と大きく異なり、媒体依存性が大きい（水系・粉末・油で別モデルになる）。パラメータをそのまま食品一般へ適用できない。
+
+### ジンゲロール⇌ショウガオール変換（Bhattarai et al. 2001）
+- 文献：Bhattarai S, Tran VH, Duke CC. "The stability of gingerol and shogaol in aqueous solutions." *Journal of Pharmaceutical Sciences* 90(10):1658–1664, 2001. DOI 10.1002/jps.1116
+- 要旨で確認できた範囲：水溶液・pH 1/4/7・37–100 ℃での可逆反応であり、正逆両方向の活性化エネルギーが論文内にある。
+- 不足点：正逆両方向の Ea の数値は本文の表にのみあり、要旨では確認できない。さらに食品マトリクスではなく水溶液モデルであり、ショウガ実試料への換算には別の裏付けが要る。

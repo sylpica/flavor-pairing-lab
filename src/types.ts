@@ -171,6 +171,9 @@ export interface SimulationTendency {
   text: string
   tier: EvidenceTier
   applicableDomains: Domain[]
+  /** 対象素材を特定素材だけに限定する場合のみ指定する（未指定なら applicableDomains のみで判定）。
+      テキストが特定素材の話なのにドメイン全体へ表示される誤表示を防ぐためのスコープ。 */
+  applicableMaterialIds?: string[]
   sourceIds: string[]
   limits: string
 }

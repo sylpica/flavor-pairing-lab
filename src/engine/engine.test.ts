@@ -103,4 +103,26 @@ describe('シミュレーション', () => {
     expect(e.tendencies.length).toBeGreaterThan(0)
     for (const t of e.tendencies) expect(t.limits.length).toBeGreaterThan(0)
   })
+  it('素材限定の傾向は対象素材にだけ出る（第10ラウンドの表示スコープ）', () => {
+    const pepper = materialById('spice-black-pepper')!
+    const cardamom = materialById('spice-cardamom')!
+    const chili = materialById('spice-chili-annuum')!
+    const cumin = materialById('spice-cumin')!
+    const rp = evaluateRoast(pepper, { tempC: 150, minutes: 10 })
+    expect(rp.tendencies.map((t) => t.id)).toContain('roast-black-pepper-temp')
+    expect(rp.tendencies.map((t) => t.id)).not.toContain('roast-chili-temp')
+    expect(rp.tendencies.map((t) => t.id)).not.toContain('roast-cumin-heat')
+    // カルダモン（roastable な別スパイス）では素材限定の傾向は一切出ない
+    const rc = evaluateRoast(cardamom, { tempC: 150, minutes: 10 })
+    for (const id of ['roast-black-pepper-temp', 'roast-chili-temp', 'roast-cumin-heat', 'roast-coriander-method']) {
+      expect(rc.tendencies.map((t) => t.id)).not.toContain(id)
+    }
+    // ドメイン全体に開かれた傾向（roast-maillard）は従来どおり出る
+    expect(rc.tendencies.map((t) => t.id)).toContain('roast-maillard')
+    const rch = evaluateRoast(chili, { tempC: 180, minutes: 10 })
+    expect(rch.tendencies.map((t) => t.id)).toContain('roast-chili-temp')
+    expect(rch.tendencies.map((t) => t.id)).not.toContain('roast-black-pepper-temp')
+    const rcu = evaluateRoast(cumin, { tempC: 180, minutes: 10 })
+    expect(rcu.tendencies.map((t) => t.id)).toContain('roast-cumin-heat')
+  })
 })

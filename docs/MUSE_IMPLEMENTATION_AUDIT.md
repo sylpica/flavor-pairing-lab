@@ -158,3 +158,17 @@
 - 素材検索に小見出し行「分類・産地・品種（系統）で探す」を追加し、その右端にリセットボタンを配置（3セレクト＋素材名フィルタを一括初期化、条件なしでは無効化）。従来のセレクト行内ボタンは廃止。
 - 取り込まなかったもの：pairing で削除された検索窓の削除は、こちらでは実施しない。素材名フィルタは122素材への主要な到達手段であり、かな検索対応とあわせてユーザーが本チャットで動作確認済みのため。原則（ホイールが上／根拠・状態は凡例へ／操作要素が先）を取り込み、構造が異なる箇所の写経はしない、という判断。
 - 検証：テスト 66/66。実ブラウザでバッジの凡例内配置、凡例の状態行、リセットの全初期化を確認。
+
+---
+
+## 第10ラウンド：台帳格上げ第2バッチ・傾向の原著置き換え・表示スコープ修正（2026-10-31）
+
+調査4ライン（保留リンク照合／台帳格上げ／傾向の原著探索／条件付きモデル）の確定結論を統合した。調査の正本は docs/research/round10/research-summary.md。
+
+- 保留リンクの決着（削除ゼロ・全件維持）：ポピーシード×リモネン／×ノナナールは Kopuncová et al. 2016 の要旨で principal odour-active compounds として両成分が明記され裏付け完了（出典の url を誌公式 PDF に差し替え）。Sádecká 2008 は出版社全文で FD 値を確認し、1-オクテン-3-オール（オレガノ）のリンク conditions を「乾燥オレガノ葉（トルコ産市販品）の AEDA で FD 10,000（最高群）」に差し替え、出典の題名綴りを原著どおり Multi-experimental に修正、url を出版社全文 PDF に差し替えて limits の URL 未確認記述を解消した。(Z)-6-ドデセノ-γ-ラクトンに同定子（CAS 18679-18-0／C12H20O2／CID 5352428）を記入。
+- 台帳格上げ第2バッチ62件：確定文案（docs/research/round10/batch2-upgrades.md）の scope／limits をそのまま適用し verified を bibliographic→abstract に変更。台帳内訳は abstract 141件／bibliographic 340件になった。pairing-li-2025-chinese-teas-amino-acids は PubMed で同定でき（Food Research International 2025;222(Pt 1):117616、DOI 10.1016/j.foodres.2025.117616、著者・試料数2983が台帳記録と一致）、書誌を補完して格上げした。DOI 誤記2件（Hřivna 2021／Chen 2023）は doi フィールドを除去し limits にその旨を追記（url は型で必須のため残置し、誤 DOI の除去は doi フィールドと注記で行った）。題名不一致3件は据え置き。Amien 2025 プレプリントの scope に出版版と同一研究である旨を追記した。
+- シミュレーション傾向の出典置き換え：原著13件を再確認済み出典（verified abstract）として新規登録（src/data/sources-expansion-round10.ts）。extract-temp-bitter は総説2件に原著4件（Yang 2007／Kelebek 2016／Labbé 2006／Perva-Uzunalić 2006）を併記し、limits にエピ型カテキンの非単調性（Saklar et al. 2015）を追加。roast-oolong-volatiles は Lan 2022 を全体の根拠に残しつつ鐵観音 Cao 2021・武夷岩茶 Liu 2021・鳳凰単叢 Ding 2026（再焙火）を追加し limits に素材別裏付けの有無を明記。dose-water-balance に Lin 2014／Cao 2022 を追加（tier は inferred のまま）。extract-time-infusions に Zhang 2020（大紅袍）／Li 2022（生プーアル）を追加し、テキストに「2煎目前後にピーク」の精密化を加えた。roast-maillard に Mizukami 2008／Gotti 2021 を追加。extract-temp-perception は置き換え候補が存在せず現行維持。
+- 条件付きシミュレーションモデル3候補（カカオ焙煎の色変化／カプサイシン熱分解／ジンゲロール変換）は数値モデルを導入しない。本文確認が条件である理由（カプサイシンは A/Ea は要旨で確認済みだが頻度因子の時間単位が未確認、等）を docs/SIMULATION_MODELS.md に記録した。
+- 表示スコープ修正（本ラウンド唯一のエンジン変更）：SimulationTendency に任意の applicableMaterialIds を追加し、テキストが特定素材の話である4傾向に対象素材を設定した（roast-black-pepper-temp＝コショウ2素材※、roast-chili-temp＝唐辛子5種、roast-cumin-heat＝クミン、roast-coriander-method＝コリアンダーシード）。※傾向テキストが黒コショウと白コショウの両方の温度域に言及するため両素材を対象とした。src/engine/simulation.ts のフィルタはドメイン絞りと併用する形にし、単体テストで対象外素材（カルダモン等）に出ないことを検証した。
+- 出典件数の変化：再確認済み 302→315件、表示総数 774→783件（新規登録した原著のうち4件が台帳側にも存在し、重複統合が9件→13件）。
+- 検証：tsc clean、テスト全合格（件数は最終検証の実測を参照）。

@@ -28,12 +28,12 @@ describe('文献画面の出典マージ（台帳と再確認済みの重複除�
     expect(m.ledgerKept.map((s) => s.id)).toEqual(['l2'])
   })
 
-  it('実データ：台帳と重複する9件が除去され、総数は774件になる', () => {
+  it('実データ：台帳と重複する13件が除去され、総数は783件になる', () => {
     const m = mergeLibrarySources(sources, pairingImportedSources)
-    expect(sources.length).toBe(302)
+    expect(sources.length).toBe(315)
     expect(pairingImportedSources.length).toBe(481)
-    expect(m.removedCount).toBe(9)
-    expect(m.sources.length).toBe(774)
+    expect(m.removedCount).toBe(13)
+    expect(m.sources.length).toBe(783)
     // 除去後は、台帳側に残った出典が再確認済みとタイトル＋年で重複していない
     const verifiedKeys = new Set(sources.map((s) => sourceMatchKey(s.title, s.year)))
     for (const s of m.ledgerKept) expect(verifiedKeys.has(sourceMatchKey(s.title, s.year))).toBe(false)
