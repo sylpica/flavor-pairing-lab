@@ -15,7 +15,19 @@ const WEIGHT = { weak: 1, moderate: 2, strong: 3, unknown: 0 } as const
 const KIND_ORDER = { contribution: 0, composition: 1, detection: 2 } as const
 const MAX_COMPOUNDS_PER_NOTE = 3
 
-interface Seg { noteId: string; start: number; end: number; color: string; tier: string }
+interface Seg { noteId: string; start: number; end: number; color: string; tier: string; pct: number }
+
+/** 強さ区分の重みから、各セグメントの割合（%・目安）を最大剰余法で求め、合計を必ず100にする */
+export function weightPercents(weights: number[]): number[] {
+  const total = weights.reduce((a, b) => a + b, 0)
+  if (total === 0) return weights.map(() => 0)
+  const raw = weights.map((w) => (w / total) * 100)
+  const base = raw.map((v) => Math.floor(v))
+  let rest = 100 - base.reduce((a, b) => a + b, 0)
+  const order = raw.map((v, i) => ({ i, frac: v - Math.floor(v) })).sort((a, b) => b.frac - a.frac)
+  for (let k = 0; rest > 0 && order.length > 0; k = (k + 1) % order.length) { base[order[k].i] += 1; rest -= 1 }
+  return base
+}
 interface CSeg { compoundId: string; name: string; kind: string; start: number; end: number }
 
 function polar(cx: number, cy: number, r: number, rad: number) {
@@ -58,12 +70,13 @@ export function FlavorWheel({ entries, onSelectNote, selectedNoteId, compoundMat
     const usable = entries.filter((e) => WEIGHT[e.intensity] > 0)
     const total = usable.reduce((acc, e) => acc + WEIGHT[e.intensity], 0)
     if (total === 0) return []
+    const pcts = weightPercents(usable.map((e) => WEIGHT[e.intensity]))
     let angle = -Math.PI / 2
-    return usable.map((e) => {
+    return usable.map((e, idx) => {
       const span = (WEIGHT[e.intensity] / total) * Math.PI * 2
       const seg: Seg = {
         noteId: e.noteId, start: angle, end: angle + Math.max(span - 0.02, 0.05),
-        color: categoryById(noteById(e.noteId)?.categoryId ?? '')?.color ?? '#999', tier: e.tier,
+        color: categoryById(noteById(e.noteId)?.categoryId ?? '')?.color ?? '#999', tier: e.tier, pct: pcts[idx],
       }
       angle += span
       return seg
@@ -109,7 +122,7 @@ export function FlavorWheel({ entries, onSelectNote, selectedNoteId, compoundMat
             strokeDasharray={s.tier === 'inferred' ? '4 2' : undefined}
             onMouseEnter={() => setHover(s.noteId)} onMouseLeave={() => setHover(null)}
             onClick={() => onSelectNote?.(s.noteId)} style={{ cursor: 'pointer' }}>
-            <title>{noteById(s.noteId)?.name}</title>
+            <title>{noteById(s.noteId)?.name}（{s.pct}%・重みに基づく目安）</title>
           </path>
         ))}
         {segs.map((s) => {
@@ -119,11 +132,15 @@ export function FlavorWheel({ entries, onSelectNote, selectedNoteId, compoundMat
           const mid = (s.start + s.end) / 2
           const [lx, ly] = polar(C, C, 80, mid)
           const arcLen = (s.end - s.start) * 80
-          const size = [9.5, 8.5, 7.5, 6.5].find((fs) => name.length * fs * 1.02 <= arcLen)
+          // ％つきラベルを優先し、弧に収まらない場合だけ名前のみに落とす（レイアウトを崩さないため）。
+          // ％は凡例には常に出るので、落としても情報は失われない。
+          const withPct = `${name} ${s.pct}%`
+          const sizePct = [9.5, 8.5, 7.5, 6.5].find((fs) => withPct.length * fs * 1.02 <= arcLen)
+          const size = sizePct ?? [9.5, 8.5, 7.5, 6.5].find((fs) => name.length * fs * 1.02 <= arcLen)
           if (!size) return null
           return (
             <text key={`label-${s.noteId}`} x={lx} y={ly + size * 0.35} textAnchor="middle"
-              className="wheel-note-label" style={{ fontSize: size }}>{name}</text>
+              className="wheel-note-label" style={{ fontSize: size }}>{sizePct ? withPct : name}</text>
           )
         })}
         {csegs.map((c) => {
@@ -154,6 +171,7 @@ export function FlavorWheel({ entries, onSelectNote, selectedNoteId, compoundMat
         <text x={C} y={C - 3} textAnchor="middle" className="wheel-center">香り</text>
         <text x={C} y={C + 12} textAnchor="middle" className="wheel-center-sub">ホイール</text>
       </svg>
+      <p className="muted wheel-pct-note">％は強さ区分（弱い・中程度・強い）の重みから計算した目安で、実測の割合ではありません（合計100%になるよう調整）。</p>
       {csegs.length > 0 && (
         <p className="muted wheel-compound-note">外側の輪：表示中の素材で報告された化合物（濃い＝寄与の根拠あり／薄い＝組成・検出のみ）。クリックで化合物の詳細へ。名前が入りきらない化合物は、凡例でノートを選ぶと詳細に全件表示されます。</p>
       )}
@@ -172,7 +190,7 @@ export function FlavorWheel({ entries, onSelectNote, selectedNoteId, compoundMat
                       <button type="button" className={selectedNoteId === s.noteId ? 'legend-btn active' : 'legend-btn'}
                         onClick={() => onSelectNote?.(s.noteId)}>
                         <span className="swatch" style={{ background: s.color }} />
-                        {cat.name}：{note?.name}
+                        {cat.name}：{note?.name} {s.pct}%
                         {s.tier === 'inferred' ? '（推測）' : s.tier === 'measured' ? '（実測）' : '（一般的知見）'}
                         {(legendCompoundCounts.get(s.noteId) ?? 0) > 0 && <span className="legend-compounds">・化合物 {legendCompoundCounts.get(s.noteId)} 種</span>}
                       </button>

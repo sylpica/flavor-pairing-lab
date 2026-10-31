@@ -346,4 +346,35 @@ describe('画面レンダリング', () => {
     // 旧「絞り込みを解除」ボタンは廃止されている
     expect(screen.queryByRole('button', { name: '絞り込みを解除' })).toBeNull()
   })
+
+  it('ホイールの凡例に％（目安）が出て、合計が100になる（R10-1）', () => {
+    window.location.hash = '#/material/tea-sencha'
+    const { container } = render(<App />)
+    // 香りホイール：凡例の各項目に％があり、抽出できる％の合計が100
+    const legendText = [...container.querySelectorAll('.wheel-legend .legend-btn')]
+      .map((el) => el.textContent ?? '').join(' ')
+    const aromaPcts = [...legendText.matchAll(/ (\d+)%/g)].map((m) => Number(m[1]))
+    expect(aromaPcts.length).toBeGreaterThan(0)
+    expect(aromaPcts.reduce((a, b) => a + b, 0)).toBe(100)
+    expect(container.textContent).toContain('重みから計算した目安')
+    // 味わいホイールも同様
+    fireEvent.click(screen.getByRole('tab', { name: '味わい' }))
+    const tasteText = [...container.querySelectorAll('.wheel-legend li')].map((el) => el.textContent ?? '').join(' ')
+    const tastePcts = [...tasteText.matchAll(/ (\d+)%/g)].map((m) => Number(m[1]))
+    expect(tastePcts.length).toBeGreaterThan(0)
+    expect(tastePcts.reduce((a, b) => a + b, 0)).toBe(100)
+  })
+
+  it('ペアリング画面のリセットで初期の組み合わせ・モードに戻る（R10-2）', () => {
+    window.location.hash = '#/pairing'
+    render(<App />)
+    const resetBtn = screen.getByRole('button', { name: 'リセット' }) as HTMLButtonElement
+    // 前テストまでの永続状態に依存しないよう、まず非デフォルト状態（対比モード）にしてから検証する
+    fireEvent.click(screen.getByRole('tab', { name: '対比' }))
+    expect(resetBtn.disabled).toBe(false)
+    fireEvent.click(resetBtn)
+    expect((screen.getByRole('tab', { name: '調和' }) as HTMLElement).getAttribute('aria-selected')).toBe('true')
+    expect(screen.getByText(/組み合わせを初期状態に戻しました/)).toBeTruthy()
+    expect(resetBtn.disabled).toBe(true)
+  })
 })

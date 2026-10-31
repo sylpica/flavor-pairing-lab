@@ -297,6 +297,20 @@ function PairingView() {
     undoSnapshot.current = null
     setRatioNotice('比率を均等に再配分しました（合計100%）。')
   }
+  /** 組み合わせ全体を初期状態に戻す（初心者用 pairing の「プルダウンのある画面にはリセット」原則を本画面のスロット式に適応） */
+  const resetPairing = () => {
+    setSelectedIds(['choco-dark-roasted', 'tea-sencha'])
+    setMode('harmony')
+    setRatios({})
+    setNoteId(null)
+    setCanUndo(false)
+    undoSnapshot.current = null
+    setPairingNotice(null)
+    setRatioNotice('組み合わせを初期状態に戻しました。')
+  }
+  const isPairingDefault = selectedIds.length === 2
+    && selectedIds[0] === 'choco-dark-roasted' && selectedIds[1] === 'tea-sencha'
+    && mode === 'harmony' && Object.keys(ratios).length === 0
 
   // 「ミルクを加える」：乳製品ドメインの牛乳を専用ボタンで追加する（生クリームはピッカーから通常選択）。
   const MILK_ID = 'milk-cow'
@@ -405,6 +419,7 @@ function PairingView() {
           <button type="button" className="milk-add" onClick={addMilk} disabled={milkAdded || slotsFull}>＋ ミルクを加える</button>
           {milkDisabledReasons.length > 0 && <span className="muted">{milkDisabledReasons.join('／')}</span>}
           <button type="button" className="ratio-equalize" onClick={equalizeManually}>均等に戻す</button>
+          <button type="button" className="pairing-reset" onClick={resetPairing} disabled={isPairingDefault}>リセット</button>
           <span className="muted">比率＝混合（ブレンド）時の質量比（合計100%）。混ぜずに口中で合わせる食べ合わせには適用しません</span>
           <span className="ratio-total-group">
             <span className={ratioTotal === 100 ? 'muted' : 'warning'} aria-live="polite">現在の合計 {ratioTotal}%</span>
