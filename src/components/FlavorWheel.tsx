@@ -88,6 +88,14 @@ export function FlavorWheel({ entries, onSelectNote, selectedNoteId, compoundMat
     return out
   }, [segs, compoundMaterialIds?.join(',')])
 
+  // 凡例に、その文脈素材でこのノートにリンクする化合物の種数を併記する（輪に描く上限とは別に全数を数える）
+  const legendCompoundCounts = useMemo(() => {
+    const map = new Map<string, number>()
+    if (!compoundMaterialIds || compoundMaterialIds.length === 0) return map
+    for (const s of segs) map.set(s.noteId, compoundsForNoteInContext(s.noteId, compoundMaterialIds).length)
+    return map
+  }, [segs, compoundMaterialIds?.join(',')])
+
   if (segs.length === 0) return <p className="muted">香りプロファイルのデータが不足しています。</p>
   const active = hover ?? selectedNoteId
   const C = 120
@@ -166,6 +174,7 @@ export function FlavorWheel({ entries, onSelectNote, selectedNoteId, compoundMat
                         <span className="swatch" style={{ background: s.color }} />
                         {cat.name}：{note?.name}
                         {s.tier === 'inferred' ? '（推測）' : s.tier === 'measured' ? '（実測）' : '（一般的知見）'}
+                        {(legendCompoundCounts.get(s.noteId) ?? 0) > 0 && <span className="legend-compounds">・化合物 {legendCompoundCounts.get(s.noteId)} 種</span>}
                       </button>
                     </li>
                   )

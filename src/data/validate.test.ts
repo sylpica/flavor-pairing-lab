@@ -6,6 +6,8 @@ import { flavorNotes, flavorCategories } from './flavors'
 import { interactionRules } from './interactions'
 import { simulationTendencies } from './simulations'
 import { CLASSIFICATION_LABELS, ORIGIN_LABELS, VARIETY_LABELS } from './axis-labels'
+import { pairingImportedSources } from './sources-pairing-import'
+import { pairingBiblioNotes } from './biblio-notes-pairing'
 
 const sourceIds = new Set(sources.map((s) => s.id))
 const materialIds = new Set(materials.map((m) => m.id))
@@ -71,6 +73,13 @@ describe('データ整合性（全件検証）', () => {
       expect(ORIGIN_LABELS[m.originId], `${m.id} の産地 ${m.originId}`).toBeTruthy()
       expect(VARIETY_LABELS[m.varietyId], `${m.id} の品種 ${m.varietyId}`).toBeTruthy()
     }
+  })
+  it('pairing 台帳（動的 import 対象）の ID に重複がなく、再確認済み出典と衝突しない', () => {
+    const ledgerIds = pairingImportedSources.map((s) => s.id)
+    expect(new Set(ledgerIds).size).toBe(ledgerIds.length)
+    for (const id of ledgerIds) expect(sourceIds.has(id), `台帳 ID ${id} が再確認済みと衝突`).toBe(false)
+    const noteIds = pairingBiblioNotes.map((n) => n.id)
+    expect(new Set(noteIds).size).toBe(noteIds.length)
   })
   it('出典には DOI か URL があり、主張範囲が書かれている', () => {
     for (const s of sources) {

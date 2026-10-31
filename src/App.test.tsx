@@ -12,7 +12,7 @@ describe('画面レンダリング', () => {
     render(<App />)
     expect(screen.getByRole('heading', { name: /ペアリング（2〜4素材）/ })).toBeTruthy()
     expect(screen.getAllByText(/官能評価の結果ではありません/).length).toBeGreaterThan(0)
-    expect(screen.getByText(/直接研究あり/)).toBeTruthy()
+    expect(screen.getAllByText(/直接研究あり/).length).toBeGreaterThan(0)
   })
 
   it('素材検索画面で三軸プルダウンが出る', () => {
@@ -38,11 +38,15 @@ describe('画面レンダリング', () => {
     expect(screen.getByText(/報告されている素材/)).toBeTruthy()
   })
 
-  it('文献画面で収録数が実データと一致する表示になる', () => {
+  it('文献画面で収録数が実データと一致する表示になる', async () => {
     window.location.hash = '#/library'
     render(<App />)
-    expect(screen.getByText(/収録状況/)).toBeTruthy()
+    expect(screen.getAllByText(/収録状況/).length).toBeGreaterThan(0)
     expect(screen.getByText(/網羅率/)).toBeTruthy()
+    // 台帳データの動的読み込み後に、出典総数が741件として構成される
+    expect(await screen.findByText('741', undefined, { timeout: 15000 })).toBeTruthy()
+    // 出典・メモとも初期60件の段階表示になっている
+    expect(screen.getAllByText(/60件を表示中/).length).toBeGreaterThanOrEqual(2)
   })
 
   it('素材詳細のホイールにノート名が直接描かれ、味わいモードへ切り替えられる', () => {
