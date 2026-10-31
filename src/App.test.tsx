@@ -45,6 +45,22 @@ describe('画面レンダリング', () => {
     expect(screen.getByText(/網羅率/)).toBeTruthy()
   })
 
+  it('素材詳細のホイールにノート名が直接描かれ、味わいモードへ切り替えられる', () => {
+    window.location.hash = '#/material/tea-sencha'
+    const { container } = render(<App />)
+    const svgText = () => container.querySelector('svg')?.textContent ?? ''
+    // 香りモード：ノート名がホイール上に描かれる（無地セグメントを作らない）
+    expect(svgText()).toContain('香り')
+    expect(svgText().length).toBeGreaterThan(10)
+    // 味わいモードへ切替：味わいホイールが出て、香りの外側の輪（化合物）は消える
+    fireEvent.click(screen.getByRole('tab', { name: '味わい' }))
+    expect(svgText()).toContain('味わい')
+    expect(svgText()).toContain('うま味')
+    // 香りに戻せる
+    fireEvent.click(screen.getByRole('tab', { name: '香り' }))
+    expect(svgText()).toContain('ホイール')
+  })
+
   it('素材詳細のホイール外側の輪に、その素材で報告された化合物名が描かれる', () => {
     window.location.hash = '#/material/tea-sencha'
     const { container } = render(<App />)

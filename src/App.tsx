@@ -10,6 +10,7 @@ import { noteById, categoryById, flavorNotes } from './data/flavors'
 import { analyzePairing, validateRatios, defaultShares, type PairingMode } from './engine/pairing'
 import { evaluateRoast, evaluateExtraction } from './engine/simulation'
 import { FlavorWheel } from './components/FlavorWheel'
+import { TasteWheel, mergeSensations } from './components/TasteWheel'
 import { SensationChart } from './components/SensationChart'
 
 /**
@@ -91,6 +92,7 @@ function PairingView() {
   const [mode, setMode] = usePersistentState<PairingMode>('pairing:mode', 'harmony')
   const [ratios, setRatios] = usePersistentState<Record<string, number>>('pairing:ratios', {})
   const [noteId, setNoteId] = useState<string | null>(null)
+  const [wheelMode, setWheelMode] = useState<'aroma' | 'taste'>('aroma')
 
   const selected = selectedIds.map((id) => materialById(id)).filter((m): m is Material => !!m)
   const analysis = useMemo(() => (selected.length >= 2 ? analyzePairing(selected) : null), [selectedIds.join(',')])
@@ -199,7 +201,19 @@ function PairingView() {
           </p>
           <div className="analysis-cols">
             <div>
-              <h3>組み合わせの香りホイール</h3>
+              <h3>組み合わせのホイール</h3>
+              <div className="mode-tabs" role="tablist" aria-label="ホイールの表示モード">
+                {([['aroma', '香り'], ['taste', '味わい']] as const).map(([wm, label]) => (
+                  <button key={wm} role="tab" aria-selected={wheelMode === wm} className={wheelMode === wm ? 'tab active' : 'tab'} onClick={() => setWheelMode(wm)}>{label}</button>
+                ))}
+              </div>
+              {wheelMode === 'taste' ? (
+                <>
+                  {(() => { const mg = mergeSensations(selected); return <TasteWheel sensations={mg.sensations} contributors={mg.contributors} /> })()}
+                  <p className="muted">各素材の味覚・口腔感覚の知見を表示用に重ねたものです。混合物そのものの実測ではありません。相互作用による変化は「味覚・口腔感覚の関係」と下層の分析を参照してください。</p>
+                </>
+              ) : (
+              <>
               <FlavorWheel entries={mergedProfile} onSelectNote={setNoteId} selectedNoteId={noteId}
                 compoundMaterialIds={selectedIds} onSelectCompound={(id) => { window.location.hash = `#/compound/${id}` }} />
               {noteId && (
@@ -213,6 +227,8 @@ function PairingView() {
                   ) : <p className="muted">この香りに直接関連づけられた化合物は未収録です。</p>}
                   <button type="button" onClick={() => setNoteId(null)}>選択を保持したまま閉じる</button>
                 </div>
+              )}
+              </>
               )}
             </div>
             <div>
@@ -341,6 +357,7 @@ function SearchView() {
 function MaterialDetail({ id }: { id: string }) {
   const m = materialById(id)
   const [noteId, setNoteId] = useState<string | null>(null)
+  const [wheelMode, setWheelMode] = useState<'aroma' | 'taste'>('aroma')
   if (!m) return <p>素材が見つかりません。</p>
   const links = linksForMaterial(m.id)
   return (
@@ -358,12 +375,24 @@ function MaterialDetail({ id }: { id: string }) {
       </dl>
       <TierBadge tier={m.evidenceTier} />
       {/* 初心者用での実機FB反映：説明文より先にホイールをタイトル直下へ */}
-      <h3>香りホイール（香りのみ）</h3>
+      <h3>ホイール（香り／味わい）</h3>
+      <div className="mode-tabs" role="tablist" aria-label="ホイールの表示モード">
+        {([['aroma', '香り'], ['taste', '味わい']] as const).map(([wm, label]) => (
+          <button key={wm} role="tab" aria-selected={wheelMode === wm} className={wheelMode === wm ? 'tab active' : 'tab'} onClick={() => setWheelMode(wm)}>{label}</button>
+        ))}
+      </div>
+      {wheelMode === 'taste' ? (
+        <>
+          <TasteWheel sensations={m.sensations} />
+          <p className="muted">味覚・口腔感覚だけのホイールです（香りとは混ぜていません）。出典つきの詳細は下の「味覚・口腔感覚」も参照してください。</p>
+        </>
+      ) : (
+      <>
       <FlavorWheel entries={m.profile} onSelectNote={setNoteId} selectedNoteId={noteId}
         compoundMaterialIds={[m.id]} onSelectCompound={(id) => { window.location.hash = `#/compound/${id}` }} />
       {noteId && (
         <div className="note-detail">
-          <h4>{noteById(noteId)?.name}</h4>
+          <h4>{categoryById(noteById(noteId)?.categoryId ?? '')?.name}：{noteById(noteId)?.name}</h4>
           <p>{noteById(noteId)?.example}</p>
           {/* この素材で実際に報告された化合物だけに絞る（監査 J3：他素材文脈の化合物が混ざって紛らわしい問題への対策） */}
           {(() => {
@@ -383,6 +412,8 @@ function MaterialDetail({ id }: { id: string }) {
           })()}
           <button type="button" onClick={() => setNoteId(null)}>選択を保持したまま閉じる</button>
         </div>
+      )}
+      </>
       )}
       <p>{m.description}</p>
       <p className="scope-note">{m.scopeNote}</p>

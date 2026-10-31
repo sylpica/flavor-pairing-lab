@@ -9,7 +9,8 @@ import { compoundById } from '../data/compounds'
 // 外側の輪：その文脈（表示中の素材）で実際に報告された化合物だけを、親ノートの角度範囲に並べる。
 //   初心者用 pairing の作法を研究用に適応したもの：化合物は「その素材でリンクがあるもの」に限定し、
 //   寄与（contribution）の根拠があるものを濃く、組成・検出のみのものを薄く表示する。
-//   名前が入りきらない化合物は輪に描かず、ノート詳細（凡例クリック後）に全件表示する。
+//   化合物名は弧に合わせて段階的に縮小して可能な限り描き、最小サイズでも収まらないものだけ
+//   ノート詳細（凡例クリック後）に委ねる。ノート名も同様に段階縮小して必ず描く（無地セグメントを作らない）。
 const WEIGHT = { weak: 1, moderate: 2, strong: 3, unknown: 0 } as const
 const KIND_ORDER = { contribution: 0, composition: 1, detection: 2 } as const
 const MAX_COMPOUNDS_PER_NOTE = 3
@@ -145,17 +146,27 @@ export function FlavorWheel({ entries, onSelectNote, selectedNoteId, compoundMat
         <p className="muted wheel-compound-note">外側の輪：表示中の素材で報告された化合物（濃い＝寄与の根拠あり／薄い＝組成・検出のみ）。クリックで化合物の詳細へ。名前が入りきらない化合物は、凡例でノートを選ぶと詳細に全件表示されます。</p>
       )}
       <ul className="wheel-legend">
-        {segs.map((s) => {
-          const note = noteById(s.noteId)
-          const cat = flavorCategories.find((c) => c.id === note?.categoryId)
+        {flavorCategories.map((cat) => {
+          const inCat = segs.filter((s) => noteById(s.noteId)?.categoryId === cat.id)
+          if (inCat.length === 0) return null
           return (
-            <li key={s.noteId}>
-              <button type="button" className={selectedNoteId === s.noteId ? 'legend-btn active' : 'legend-btn'}
-                onClick={() => onSelectNote?.(s.noteId)}>
-                <span className="swatch" style={{ background: s.color }} />
-                {cat?.name}：{note?.name}
-                {s.tier === 'inferred' ? '（推測）' : s.tier === 'measured' ? '（実測）' : '（一般的知見）'}
-              </button>
+            <li key={`cat-${cat.id}`} className="legend-group">
+              <span className="legend-cat">{cat.name}</span>
+              <ul>
+                {inCat.map((s) => {
+                  const note = noteById(s.noteId)
+                  return (
+                    <li key={s.noteId}>
+                      <button type="button" className={selectedNoteId === s.noteId ? 'legend-btn active' : 'legend-btn'}
+                        onClick={() => onSelectNote?.(s.noteId)}>
+                        <span className="swatch" style={{ background: s.color }} />
+                        {cat.name}：{note?.name}
+                        {s.tier === 'inferred' ? '（推測）' : s.tier === 'measured' ? '（実測）' : '（一般的知見）'}
+                      </button>
+                    </li>
+                  )
+                })}
+              </ul>
             </li>
           )
         })}
