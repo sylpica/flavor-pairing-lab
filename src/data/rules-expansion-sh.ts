@@ -10,10 +10,10 @@ export const expansionInteractionRules: InteractionRule[] = [
     kind: 'taste',
     conditionNote: '辛味（pungent）が強い素材と甘味素材を組み合わせたとき（チョコレート×唐辛子自体の直接研究あり）',
     trigger: { sensation: 'pungent', minIntensity: 'strong' },
-    text: 'シュガーフリー・ダークチョコレートに唐辛子（Capsicum baccatum）と甘味料を組み合わせた直接研究では、最高水準の辛味×最高水準の甘味の組合せでのみ、辛味の強度と持続が有意に低下した。低〜中水準ではこの抑制は観察されておらず、「甘味は辛味を和らげる」は全濃度域の一般則ではない。',
+    text: 'シュガーフリー・ダークチョコレートに唐辛子（Capsicum baccatum）と甘味料を組み合わせた直接研究では、最高水準の辛味×最高水準の甘味の組合せでのみ、辛味の強度と持続が有意に低下した。低〜中水準ではこの抑制は観察されておらず、「甘味は辛味を和らげる」は全濃度域の一般則ではない。なお心理物理実験（Prescott & Stevenson 1995）では、カプサイシンの口腔刺激は甘味とフレーバー知覚を抑制する一方で、酸味は抑制されなかった。辛味による知覚の抑制は味質により一様ではない（モデル溶液での結果であり、食品中の抑制の大きさそのものではない）。',
     level: 'general',
     directStudy: true,
-    sourceIds: ['martins-2025-spicy-chocolate'],
+    sourceIds: ['martins-2025-spicy-chocolate', 'pairing-prescott-1995-effects-oral-chemical'],
   },
   {
     id: 'capsaicin-rinse-cooling-sweetness',

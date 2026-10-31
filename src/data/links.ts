@@ -3,6 +3,7 @@ import { expansionTeaLinks, expansionTeaLinkUpgrades } from './links-expansion-t
 import { expansionCacaoLinks, expansionCacaoLinkUpgrades } from './links-expansion-cacao'
 import { expansionShAllLinks, expansionShLinkUpgrades } from './links-expansion-sh'
 import { expansionDairyLinks } from './links-expansion-dairy'
+import { round11Links } from './links-expansion-round11'
 
 // 素材×化合物リンク（第1弾：お茶・チョコレート）。
 // kind の区別: detection=検出の報告 / composition=組成としての含有 / contribution=官能寄与の根拠あり。
@@ -120,7 +121,7 @@ export const spiceHerbLinks: MaterialCompoundLink[] = [
 const linkKey = (l: { materialId: string; compoundId: string }) => `${l.materialId}::${l.compoundId}`
 const mergedLinks = new Map<string, MaterialCompoundLink>()
 for (const l of [...materialCompoundLinks, ...spiceHerbLinks]) mergedLinks.set(linkKey(l), l)
-for (const l of [...expansionTeaLinks, ...expansionCacaoLinks, ...expansionShAllLinks, ...expansionDairyLinks]) {
+for (const l of [...expansionTeaLinks, ...expansionCacaoLinks, ...expansionShAllLinks, ...expansionDairyLinks, ...round11Links]) {
   if (!mergedLinks.has(linkKey(l))) mergedLinks.set(linkKey(l), l)
 }
 for (const u of expansionShLinkUpgrades) mergedLinks.set(linkKey(u), u)

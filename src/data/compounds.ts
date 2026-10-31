@@ -3,6 +3,7 @@ import { expansionTeaCompounds } from './compounds-expansion-tea'
 import { expansionCacaoCompounds } from './compounds-expansion-cacao'
 import { expansionShCompounds } from './compounds-expansion-sh'
 import { expansionDairyCompounds } from './compounds-expansion-dairy'
+import { round11Compounds } from './compounds-expansion-round11'
 
 // 化合物データベース（第1弾：お茶・チョコレート由来で検証済みのもの）。
 // sensoryKnowledge は「化合物単体の香り・味の知見」であり、特定食品での寄与とは分離する。
@@ -68,6 +69,6 @@ export const spiceHerbCompounds: Compound[] = [
 export const allCompounds: Compound[] = [
   ...compounds, ...spiceHerbCompounds,
   ...expansionTeaCompounds, ...expansionCacaoCompounds, ...expansionShCompounds,
-  ...expansionDairyCompounds,
+  ...expansionDairyCompounds, ...round11Compounds,
 ]
 export const compoundById = (id: string) => allCompounds.find((c) => c.id === id)

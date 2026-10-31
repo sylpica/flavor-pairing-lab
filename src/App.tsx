@@ -10,6 +10,8 @@ import { noteById, categoryById, flavorNotes } from './data/flavors'
 import { analyzePairing, validateRatios, defaultShares, type PairingMode } from './engine/pairing'
 import { evaluateRoast, evaluateExtraction } from './engine/simulation'
 import { caffeineRateConstantPerMin, caffeineExtractionFraction, CAFFEINE_MODEL_TEMP_MIN_C, CAFFEINE_MODEL_TEMP_MAX_C } from './engine/caffeine-model'
+import { gingerolRateConstants, gingerolEquilibrium, gingerolRemainingFraction, GINGEROL_MODEL_TEMP_MIN_C, GINGEROL_MODEL_TEMP_MAX_C } from './engine/gingerol-model'
+import { capsaicinRateConstant, capsaicinRetentionFraction, CAPSAICIN_MODEL_TEMP_MIN_C, CAPSAICIN_MODEL_TEMP_MAX_C } from './engine/capsaicin-model'
 import { FlavorWheel } from './components/FlavorWheel'
 import { MaterialPicker } from './components/MaterialPicker'
 import { mergeLibrarySources } from './data/library-merge'
@@ -845,6 +847,146 @@ function CaffeineModelBlock({ tempC, seconds }: { tempC: number; seconds: number
   )
 }
 
+/* ============ 数値モデル（ジンゲロール⇌ショウガオール可逆変換） ============ */
+// Bhattarai, Tran & Duke 2001 の Table 1（pH 1 水溶液）に基づく可逆一次反応モデル。
+// pH 1 水溶液のモデルであり、食品そのものの予測ではないことを必ず併記する
+// （src/engine/gingerol-model.ts に来歴を明記）。
+function GingerolModelBlock({ materialId }: { materialId: string }) {
+  const [tempC, setTempC] = usePersistentState(`sim:${materialId}:gingerolTemp`, 80)
+  const [hours, setHours] = usePersistentState(`sim:${materialId}:gingerolHours`, 5)
+  const rates = gingerolRateConstants(tempC)
+  const eq = gingerolEquilibrium(tempC)
+  const remaining = gingerolRemainingFraction(tempC, hours)
+  const fmtPct = (f: number) => `${(f * 100).toFixed(1)}%`
+  return (
+    <div className="model-block">
+      <h5>モデル計算（ジンゲロール⇌ショウガオールの可逆変換）</h5>
+      <p>
+        定性的な傾向とは別枠で、検証可能なパラメータが公表されているジンゲロール（ショウガの辛味成分）と
+        その脱水生成物ショウガオールの可逆変換についてのみ数値モデルを表示します。
+        Bhattarai, Tran &amp; Duke（2001）の可逆一次反応モデル
+        A(t)＝Aeq＋(A0−Aeq)·exp(−(Kf＋Kr)t) で、ジンゲロールの残存分率と平衡組成を計算します。
+      </p>
+      <p className="warning" role="note">
+        このモデルは <strong>pH 1 の水溶液</strong>で測られた速度定数に基づきます。
+        生姜そのもの・食品の中での変換速度の予測ではありません（食品マトリクス・pH・水分で大きく変わります）。
+      </p>
+      <div className="sim-control">
+        <span className="sim-control-label">温度</span>
+        <input type="range" min={GINGEROL_MODEL_TEMP_MIN_C} max={GINGEROL_MODEL_TEMP_MAX_C} value={tempC} onChange={(e) => setTempC(Number(e.target.value))} aria-label="ジンゲロールモデルの温度" />
+        <span className="sim-value"><input type="number" value={tempC} onChange={(e) => setTempC(Number(e.target.value))} aria-label="ジンゲロールモデルの温度（数値）" /><span aria-hidden="true">℃</span></span>
+      </div>
+      <div className="sim-control">
+        <span className="sim-control-label">加熱時間</span>
+        <input type="range" min={0} max={48} step={0.5} value={hours} onChange={(e) => setHours(Number(e.target.value))} aria-label="ジンゲロールモデルの加熱時間" />
+        <span className="sim-value"><input type="number" value={hours} onChange={(e) => setHours(Number(e.target.value))} aria-label="ジンゲロールモデルの加熱時間（数値）" /><span aria-hidden="true">時間</span></span>
+      </div>
+      {rates === null || eq === null || remaining === null ? (
+        <p className="warning" role="alert">
+          温度がモデルの適用範囲（{GINGEROL_MODEL_TEMP_MIN_C}–{GINGEROL_MODEL_TEMP_MAX_C}℃）の外のため、モデル計算は行いません。範囲外への外挿はしません。
+        </p>
+      ) : (
+        <>
+          <p>
+            現在の条件（{tempC}℃）での速度定数は Kf ＝ {rates.kfPerHour.toFixed(4)} h⁻¹（ジンゲロール→ショウガオール）、
+            Kr ＝ {rates.krPerHour.toFixed(4)} h⁻¹（逆反応）です。平衡定数 K ＝ {eq.equilibriumConstantK.toFixed(2)} で、
+            平衡時の組成はジンゲロール約 {fmtPct(eq.gingerolFraction)}／ショウガオール約 {fmtPct(eq.shogaolFraction)} です。
+            純粋なジンゲロールから出発した場合、{hours} 時間後のジンゲロール残存分率は約 {fmtPct(remaining)} です（モデル計算）。
+          </p>
+          <table className="model-table">
+            <caption className="muted">温度ごとの平衡組成（ジンゲロール分率、モデル計算）</caption>
+            <tbody>
+              {[37, 60, 80, 90, 100].map((t) => {
+                const e = gingerolEquilibrium(t)
+                return (
+                  <tr key={t}><th scope="row">{t}℃</th><td>{e === null ? '—' : fmtPct(e.gingerolFraction)}</td></tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </>
+      )}
+      <p className="scope-note">
+        パラメータ：Bhattarai, Tran &amp; Duke 2001（J Pharm Sci 90(10):1658–1664）の Table 1
+        （pH 1 = 0.1 M HCl 水溶液、エタノール5%共存、合成 [6]-ジンゲロール／[6]-ショウガオールの希薄水溶液）。
+        活性化エネルギーは正反応 76±4・逆反応 52±5 kJ/mol。アンカー温度の間は Arrhenius 型に内挿し、
+        頻度因子の導出値は使っていません。原著本文の一部叙述は Table 1 の定数と整合しないため採用していません。
+      </p>
+      <SourceLinks ids={['bhattarai-2001-gingerol-shogaol-kinetics']} />
+    </div>
+  )
+}
+
+/* ============ 数値モデル（カプサイシンの乾燥分解） ============ */
+// Arifin & Djaeni 2018 の Table 3（前処理系列）に基づく二次反応モデル。
+// 乾燥工程（40–70℃）専用で、調理域への外挿はしない（src/engine/capsaicin-model.ts に来歴を明記）。
+const CAPSAICIN_MODEL_MATERIAL_IDS = ['spice-chili-annuum', 'spice-chili-chinense', 'spice-chili-frutescens', 'spice-chili-baccatum', 'spice-chili-pubescens']
+function CapsaicinModelBlock({ materialId }: { materialId: string }) {
+  const [tempC, setTempC] = usePersistentState(`sim:${materialId}:capsaicinTemp`, 60)
+  const [hours, setHours] = usePersistentState(`sim:${materialId}:capsaicinHours`, 8)
+  const k = capsaicinRateConstant(tempC)
+  const retention = capsaicinRetentionFraction(tempC, hours)
+  const fmtPct = (f: number) => `${(f * 100).toFixed(1)}%`
+  const isModelSpecies = materialId === 'spice-chili-frutescens'
+  return (
+    <div className="model-block">
+      <h5>モデル計算（カプサイシンの乾燥分解）</h5>
+      <p>
+        定性的な傾向とは別枠で、検証可能なパラメータが公表されているカプサイシンの乾燥中の分解についてのみ数値モデルを表示します。
+        Arifin &amp; Djaeni（2018）の二次反応モデル（保持率＝1/(1＋C₀kt)）で、
+        乾燥開始時に対するカプサイシンの保持率を計算します。
+      </p>
+      <p className="warning" role="note">
+        このモデルは<strong>乾燥工程（40–70℃）専用</strong>です。炒める・煮る等の調理温度域（100℃超）への外挿はしません。
+        {isModelSpecies
+          ? '原著の試料はこの種（Capsicum frutescens）の前処理済み赤唐辛子です。'
+          : '原著の試料は Capsicum frutescens の前処理済み赤唐辛子であり、この素材（別種）への適用は目安です。'}
+      </p>
+      <div className="sim-control">
+        <span className="sim-control-label">乾燥温度</span>
+        <input type="range" min={CAPSAICIN_MODEL_TEMP_MIN_C} max={CAPSAICIN_MODEL_TEMP_MAX_C} value={tempC} onChange={(e) => setTempC(Number(e.target.value))} aria-label="カプサイシンモデルの乾燥温度" />
+        <span className="sim-value"><input type="number" value={tempC} onChange={(e) => setTempC(Number(e.target.value))} aria-label="カプサイシンモデルの乾燥温度（数値）" /><span aria-hidden="true">℃</span></span>
+      </div>
+      <div className="sim-control">
+        <span className="sim-control-label">乾燥時間</span>
+        <input type="range" min={0} max={24} step={0.5} value={hours} onChange={(e) => setHours(Number(e.target.value))} aria-label="カプサイシンモデルの乾燥時間" />
+        <span className="sim-value"><input type="number" value={hours} onChange={(e) => setHours(Number(e.target.value))} aria-label="カプサイシンモデルの乾燥時間（数値）" /><span aria-hidden="true">時間</span></span>
+      </div>
+      {k === null || retention === null ? (
+        <p className="warning" role="alert">
+          乾燥温度がモデルの適用範囲（{CAPSAICIN_MODEL_TEMP_MIN_C}–{CAPSAICIN_MODEL_TEMP_MAX_C}℃）の外のため、モデル計算は行いません。範囲外への外挿はしません。
+        </p>
+      ) : (
+        <>
+          <p>
+            現在の条件（乾燥温度 {tempC}℃）での二次速度定数 k ＝ {k.toExponential(1)} (µg/g)⁻¹·h⁻¹（モデル計算）。
+            {hours} 時間後のカプサイシン保持率は約 {fmtPct(retention)} です。
+          </p>
+          <table className="model-table">
+            <caption className="muted">乾燥時間ごとのカプサイシン保持率（{tempC}℃、モデル計算）</caption>
+            <tbody>
+              {[1, 2, 4, 8, 16, 24].map((h) => {
+                const f = capsaicinRetentionFraction(tempC, h)
+                return (
+                  <tr key={h}><th scope="row">{h}時間</th><td>{f === null ? '—' : fmtPct(f)}</td></tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </>
+      )}
+      <p className="scope-note">
+        パラメータ：Arifin &amp; Djaeni 2018（Bull Chem React Eng Catal 13(2):365–372）の Table 3
+        （前処理＝ブランチング＋食塩水＋CaCl₂ 処理をした赤唐辛子のトレイ乾燥）。
+        二次反応のため保持率は初期含量に依存し、原著試料の C₀＝1491.37 µg/g を用いて計算しています。
+        活性化エネルギーは 45.10367 kJ/mol。アンカー温度の間は Arrhenius 型に内挿します。
+        照合値：70℃・8時間のモデル予測保持率は約73.6%です。
+      </p>
+      <SourceLinks ids={['arifin-djaeni-2018-capsaicin-drying-kinetics']} />
+    </div>
+  )
+}
+
 function SimulationPanel({ material: m }: { material: Material }) {
   // 条件は素材IDごとにメモリ保持し、詳細を開き直しても初期値に戻らないようにする（永続保存はしない）
   const [roastTemp, setRoastTemp] = usePersistentState(`sim:${m.id}:roastTemp`, 120)
@@ -917,6 +1059,8 @@ function SimulationPanel({ material: m }: { material: Material }) {
           </div>
         </div>
       ) : <p className="muted">抽出：{ext.statusNote}</p>}
+      {m.id === 'spice-ginger-fresh' && <GingerolModelBlock materialId={m.id} />}
+      {CAPSAICIN_MODEL_MATERIAL_IDS.includes(m.id) && <CapsaicinModelBlock materialId={m.id} />}
     </div>
   )
 }

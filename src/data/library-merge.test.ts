@@ -28,12 +28,17 @@ describe('文献画面の出典マージ（台帳と再確認済みの重複除�
     expect(m.ledgerKept.map((s) => s.id)).toEqual(['l2'])
   })
 
-  it('実データ：台帳と重複する13件が除去され、総数は783件になる', () => {
+  it('実データ：台帳と重複する14件が除去され、総数は790件になる', () => {
     const m = mergeLibrarySources(sources, pairingImportedSources)
-    expect(sources.length).toBe(315)
-    expect(pairingImportedSources.length).toBe(481)
-    expect(m.removedCount).toBe(13)
-    expect(m.sources.length).toBe(783)
+    // 第11ラウンド後の実測値（2026-11-01）：再確認済み332件（台帳からの卒業9件＋新規8件）、
+    // 台帳472件（卒業9件を除去）。重複除去は13→14件：台帳の wang-2022-dahongpao-sensomics の
+    // 題名を実題名に修正した（書誌修正6件の一つ）ことで、再確認済み側の同一論文と
+    // タイトル＋年が一致するようになり、隠れていた重複が表面化したため。
+    // 総数 = 332 + 472 − 14 = 790。
+    expect(sources.length).toBe(332)
+    expect(pairingImportedSources.length).toBe(472)
+    expect(m.removedCount).toBe(14)
+    expect(m.sources.length).toBe(790)
     // 除去後は、台帳側に残った出典が再確認済みとタイトル＋年で重複していない
     const verifiedKeys = new Set(sources.map((s) => sourceMatchKey(s.title, s.year)))
     for (const s of m.ledgerKept) expect(verifiedKeys.has(sourceMatchKey(s.title, s.year))).toBe(false)
