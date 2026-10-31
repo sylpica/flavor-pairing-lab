@@ -8,6 +8,7 @@ import { simulationTendencies } from './simulations'
 import { CLASSIFICATION_LABELS, ORIGIN_LABELS, VARIETY_LABELS } from './axis-labels'
 import { pairingImportedSources } from './sources-pairing-import'
 import { pairingBiblioNotes } from './biblio-notes-pairing'
+import { materialYomi } from './material-yomi'
 
 const sourceIds = new Set(sources.map((s) => s.id))
 const materialIds = new Set(materials.map((m) => m.id))
@@ -15,6 +16,14 @@ const compoundIds = new Set(compounds.map((c) => c.id))
 const noteIds = new Set(flavorNotes.map((n) => n.id))
 
 describe('データ整合性（全件検証）', () => {
+  it('全素材に読み（かな検索用）があり、読みのキーが実在の素材だけを指す', () => {
+    for (const m of materials) {
+      const yomi = materialYomi[m.id]
+      expect(typeof yomi === 'string' && yomi.length > 0, `${m.id} の読み`).toBe(true)
+      expect(/^[ぁ-ゖー・]+$/.test(yomi), `${m.id} の読みはひらがなのみ: ${yomi}`).toBe(true)
+    }
+    for (const id of Object.keys(materialYomi)) expect(materialIds.has(id), `読みのキー ${id}`).toBe(true)
+  })
   it('IDに重複がない', () => {
     expect(new Set(materials.map((m) => m.id)).size).toBe(materials.length)
     expect(new Set(compounds.map((c) => c.id)).size).toBe(compounds.length)

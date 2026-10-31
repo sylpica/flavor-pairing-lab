@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Material, Domain, SimulationTendency, Source } from './types'
 import { DOMAIN_LABEL, TIER_LABEL, SENSATION_LABEL } from './types'
 import { materials, materialById, sourceById, sources } from './data'
@@ -11,6 +11,9 @@ import { analyzePairing, validateRatios, defaultShares, type PairingMode } from 
 import { evaluateRoast, evaluateExtraction } from './engine/simulation'
 import { caffeineRateConstantPerMin, caffeineExtractionFraction, CAFFEINE_MODEL_TEMP_MIN_C, CAFFEINE_MODEL_TEMP_MAX_C } from './engine/caffeine-model'
 import { FlavorWheel } from './components/FlavorWheel'
+import { MaterialPicker } from './components/MaterialPicker'
+import { mergeLibrarySources } from './data/library-merge'
+import { materialMatchesName } from './data/material-yomi'
 import { TasteWheel, mergeSensations } from './components/TasteWheel'
 import { SensationChart } from './components/SensationChart'
 
@@ -32,19 +35,41 @@ export function usePersistentState<T>(key: string, initial: T) {
   return [value, set] as const
 }
 
+const scrollPositions = new Map<string, number>()
 function useHashRoute() {
   const [hash, setHash] = useState(() => window.location.hash || '#/pairing')
+  const currentRef = useRef(hash)
   useEffect(() => {
-    const on = () => { setHash(window.location.hash || '#/pairing'); window.scrollTo(0, 0) }
+    const on = () => {
+      // 離れる画面のスクロール位置を控え、戻ってきたら復元する（保持はメモリ内のみ）
+      scrollPositions.set(currentRef.current, window.scrollY)
+      const next = window.location.hash || '#/pairing'
+      currentRef.current = next
+      setHash(next)
+      const y = scrollPositions.get(next) ?? 0
+      requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, y)))
+    }
     window.addEventListener('hashchange', on)
     return () => window.removeEventListener('hashchange', on)
   }, [])
   return hash.replace(/^#\//, '').split('/')
 }
 
+/** 素材詳細の「ペアリングで使う」の受け渡し（1回限り消費される保留素材） */
+const PENDING_PAIRING_KEY = 'pairing:pendingMaterialId'
+export function requestPairingWith(materialId: string) {
+  memoryStore.set(PENDING_PAIRING_KEY, materialId)
+  window.location.hash = '#/pairing'
+}
+
+/** scrollIntoView が無い環境（テスト等）でも落ちない安全なスクロール */
+export function safeScrollIntoView(el: HTMLElement | null | undefined, block: ScrollLogicalPosition = 'start') {
+  if (el && typeof el.scrollIntoView === 'function') el.scrollIntoView({ behavior: 'smooth', block })
+}
+
 /** ルーティングに使う location.hash と競合しないページ内ジャンプ（ボタン＋scrollIntoView） */
 export function scrollToId(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  safeScrollIntoView(document.getElementById(id))
 }
 
 /** 画面見出し：通し番号風の英字キッカーを添える */
@@ -80,6 +105,81 @@ export function SourceLinks({ ids }: { ids: string[] }) {
   )
 }
 
+/** 対象要素へスムーズスクロールし、一時的にハイライトする（モード節・ノート詳細の共通作法） */
+export function flashElement(el: HTMLElement | null) {
+  if (!el) return
+  safeScrollIntoView(el)
+  el.classList.add('flash')
+  window.setTimeout(() => el.classList.remove('flash'), 1700)
+}
+
+const LINK_KIND_LABEL = { contribution: '寄与の根拠あり', composition: '組成', detection: '検出' } as const
+
+/**
+ * ノート詳細パネル（ペアリング／香味化学／素材詳細の3文脈で共通）。
+ * 第1部は文脈素材からそのノートに実際にリンクする化合物だけを素材名・根拠区分つきで列挙し、
+ * 凡例の「化合物 n 種」（文脈内リンク数）と件数・中身が一致するようにする。
+ * 第2部は辞典として全化合物を畳んで置き、文脈の情報と混同しないようにする。
+ */
+export function NoteDetailPanel({ noteId, contextMaterialIds, contextLabel, onClose }: {
+  noteId: string
+  contextMaterialIds: string[]
+  /** 「この組み合わせ」または「この素材」 */
+  contextLabel: string
+  onClose: () => void
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    safeScrollIntoView(el, 'nearest')
+    el.classList.add('flash')
+    const t = window.setTimeout(() => el.classList.remove('flash'), 1700)
+    return () => window.clearTimeout(t)
+  }, [noteId])
+  const note = noteById(noteId)
+  const scoped = useMemo(() => {
+    const byCompound = new Map<string, { materialName: string; kind: string; tier: string }[]>()
+    for (const l of materialCompoundLinks) {
+      if (!contextMaterialIds.includes(l.materialId)) continue
+      const c = compoundById(l.compoundId)
+      if (!c || !c.noteIds.includes(noteId)) continue
+      const arr = byCompound.get(l.compoundId) ?? []
+      arr.push({ materialName: materialById(l.materialId)?.nameJa ?? l.materialId, kind: l.kind, tier: l.tier })
+      byCompound.set(l.compoundId, arr)
+    }
+    return [...byCompound.entries()]
+      .map(([compoundId, entries]) => ({ compound: compoundById(compoundId)!, entries }))
+      .sort((a, b) => a.compound.nameJa.localeCompare(b.compound.nameJa, 'ja'))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [noteId, contextMaterialIds.join(',')])
+  const dictionary = compounds.filter((c) => c.noteIds.includes(noteId))
+  return (
+    <div className="note-detail" ref={ref}>
+      <h4>{categoryById(note?.categoryId ?? '')?.name}：{note?.name}</h4>
+      <p>{note?.example}</p>
+      <h5>{contextLabel}での化合物</h5>
+      {scoped.length ? (
+        <ul>{scoped.map(({ compound, entries }) => (
+          <li key={compound.id}>
+            <a href={`#/compound/${compound.id}`}>{compound.nameJa}</a>
+            <span className="muted">：{entries.map((e) => `${e.materialName}［${LINK_KIND_LABEL[e.kind as keyof typeof LINK_KIND_LABEL]}・${TIER_LABEL[e.tier as keyof typeof TIER_LABEL] ?? e.tier}］`).join('、')}</span>
+          </li>
+        ))}</ul>
+      ) : <p className="muted">{contextLabel}でこの香りに関連づけて報告された化合物は未収録です。</p>}
+      <details className="dict-details">
+        <summary>辞典：この香りに関連する全化合物（{dictionary.length}件）</summary>
+        {dictionary.length ? (
+          <ul>{dictionary.map((c) => (
+            <li key={c.id}><a href={`#/compound/${c.id}`}>{c.nameJa}</a>：{c.sensoryKnowledge}</li>
+          ))}</ul>
+        ) : <p className="muted">この香りに直接関連づけられた化合物は未収録です。</p>}
+      </details>
+      <button type="button" onClick={onClose}>閉じる</button>
+    </div>
+  )
+}
+
 export default function App() {
   const route = useHashRoute()
   const [page, param] = route
@@ -107,57 +207,17 @@ export default function App() {
       </main>
       <footer className="app-footer">
         <p>科学的主張は出典へ追跡できます。化合物の検出と香味への寄与は区別して表示しています。健康効果を保証するものではありません。</p>
+        <p className="data-summary">収録データ：素材 {materials.length} 件／化合物 {compounds.length} 件／出典 {sources.length} 件（再確認済み。台帳転記分を含む総数は文献画面で合算表示）／素材×化合物リンク {materialCompoundLinks.length} 件</p>
       </footer>
     </div>
   )
 }
 
 /* ============ ペアリング ============ */
-/**
- * 素材スロットのピッカー：名前入力で候補を絞り（datalist）、
- * 確定（blur／Enter）時に名前が完全一致する素材へ切り替える。
- * 一致しない入力は元の素材名に戻し、その旨を小さく注記する。
- */
-function MaterialPicker({ index, valueId, selectedIds, onPick }: {
-  index: number
-  valueId: string
-  selectedIds: string[]
-  onPick: (id: string) => void
-}) {
-  const current = materialById(valueId)
-  const [text, setText] = useState(current?.nameJa ?? '')
-  const [note, setNote] = useState<string | null>(null)
-  // スロットの値が外から（追加・削除等で）変わったら表示名を同期する
-  useEffect(() => { setText(materialById(valueId)?.nameJa ?? '') }, [valueId])
-  const candidates = materials.filter((m) => m.id === valueId || !selectedIds.includes(m.id))
-  const commit = () => {
-    const t = text.trim()
-    if (t === (current?.nameJa ?? '')) { setNote(null); return }
-    const hit = materials.find((m) => m.nameJa === t)
-    if (hit && !selectedIds.includes(hit.id)) {
-      onPick(hit.id)
-      setNote(null)
-    } else {
-      setText(current?.nameJa ?? '')
-      setNote(hit ? `「${t}」はすでに他のスロットで選択されています。` : `「${t}」に一致する素材はありませんでした。`)
-    }
-  }
-  const listId = `slot-materials-${index}`
-  return (
-    <span className="slot-picker">
-      <input
-        type="text" list={listId} value={text} aria-label={`素材${index + 1}の選択`}
-        placeholder="素材名を入力"
-        onChange={(e) => { setText(e.target.value); setNote(null) }}
-        onBlur={commit}
-        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); commit(); (e.target as HTMLInputElement).blur() } }}
-      />
-      <datalist id={listId}>
-        {candidates.map((m) => <option key={m.id} value={m.nameJa} label={`${DOMAIN_LABEL[m.domain]}：${m.nameJa}`} />)}
-      </datalist>
-      {note && <span className="slot-note" role="note">{note}</span>}
-    </span>
-  )
+const MODE_NOTES: Record<PairingMode, string> = {
+  harmony: '調和モード：共通する香りノートを先に示します。',
+  contrast: '対比モード：素材ごとに異なる香りノートを先に示します。',
+  complement: '補完モード：他の素材のいずれにも無い香りの系統を、どの素材が補うかを先に示します。',
 }
 
 function PairingView() {
@@ -167,76 +227,119 @@ function PairingView() {
   const [noteId, setNoteId] = useState<string | null>(null)
   const [wheelMode, setWheelMode] = useState<'aroma' | 'taste'>('aroma')
   const [ratioNotice, setRatioNotice] = useState<string | null>(null)
+  const [pairingNotice, setPairingNotice] = useState<string | null>(null)
+  const [canUndo, setCanUndo] = useState(false)
+  const undoSnapshot = useRef<{ ids: string[]; ratios: Record<string, number> } | null>(null)
 
   const selected = selectedIds.map((id) => materialById(id)).filter((m): m is Material => !!m)
-  const analysis = useMemo(() => (selected.length >= 2 ? analyzePairing(selected) : null), [selectedIds.join(',')])
   // 実効比率：未編集の素材は均等配分（合計100になる配分）。常に実効値で検証し、合計も常時表示する
-  // （監査 J1：素材追加直後の 33/33/33=99% が警告も合計表示もなく見逃された問題への対策）
   const effectiveRatios = useMemo(() => {
     const shares = defaultShares(selectedIds.length)
     return Object.fromEntries(selectedIds.map((id, i) => [id, ratios[id] ?? shares[i] ?? 0]))
   }, [ratios, selectedIds])
   const ratioTotal = selectedIds.reduce((acc, id) => acc + (effectiveRatios[id] ?? 0), 0)
   const ratioError = useMemo(() => validateRatios(effectiveRatios, selectedIds), [effectiveRatios, selectedIds])
+  // 比率0%の素材は分析対象外（ホイール・要点件数・相互作用のいずれにも含めない）
+  const activeMaterials = selected.filter((m) => (effectiveRatios[m.id] ?? 0) > 0)
+  const activeIds = activeMaterials.map((m) => m.id)
+  const analysis = useMemo(
+    () => (activeMaterials.length >= 2 ? analyzePairing(selected, effectiveRatios) : null),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [selectedIds.join(','), JSON.stringify(effectiveRatios)],
+  )
 
   // スロット式：各スロットのピッカーで素材を即座に切り替える（スクロール不要）
   const setSlot = (index: number, id: string) => {
     setSelectedIds((prev) => prev.map((x, i) => (i === index ? id : x)))
   }
-  // 比率を均等に再配分して合計100にする（追加・削除時と「均等に戻す」操作で使う）
-  const equalizeRatios = (ids: string[], announce: boolean) => {
+  /** 構成変更（追加・削除・ミルク・受け渡し）の共通処理：直前状態を控え、比率を均等に再配分する */
+  const applyStructuralChange = (ids: string[], notice: string) => {
+    undoSnapshot.current = { ids: selectedIds, ratios: effectiveRatios }
+    setCanUndo(true)
+    setSelectedIds(ids)
     const shares = defaultShares(ids.length)
     setRatios(Object.fromEntries(ids.map((id, i) => [id, shares[i] ?? 0])))
-    if (announce) setRatioNotice('比率を均等に再配分しました（合計100%）。')
+    setRatioNotice(notice)
+  }
+  const undoStructuralChange = () => {
+    const snap = undoSnapshot.current
+    if (!snap) return
+    undoSnapshot.current = null
+    setCanUndo(false)
+    setSelectedIds(snap.ids)
+    setRatios(snap.ratios)
+    setRatioNotice('直前の構成と比率に戻しました。')
   }
   const addSlot = () => {
     if (selectedIds.length >= 4) return
     const next = materials.find((m) => !selectedIds.includes(m.id))
     if (!next) return
-    const ids = [...selectedIds, next.id]
-    setSelectedIds(ids)
-    equalizeRatios(ids, false)
-    setRatioNotice('素材の追加に合わせて、比率を均等に再配分しました（合計100%）。')
+    applyStructuralChange([...selectedIds, next.id], '素材の追加に合わせて、比率を均等に再配分しました（合計100%）。')
   }
   const removeSlot = (index: number) => {
     if (selectedIds.length <= 2) return
-    const ids = selectedIds.filter((_, i) => i !== index)
-    setSelectedIds(ids)
-    equalizeRatios(ids, false)
-    setRatioNotice('素材の削除に合わせて、比率を均等に再配分しました（合計100%）。')
+    applyStructuralChange(selectedIds.filter((_, i) => i !== index), '素材の削除に合わせて、比率を均等に再配分しました（合計100%）。')
+  }
+  const equalizeManually = () => {
+    const shares = defaultShares(selectedIds.length)
+    setRatios(Object.fromEntries(selectedIds.map((id, i) => [id, shares[i] ?? 0])))
+    setCanUndo(false)
+    undoSnapshot.current = null
+    setRatioNotice('比率を均等に再配分しました（合計100%）。')
   }
 
   // 「ミルクを加える」：乳製品ドメインの牛乳を専用ボタンで追加する（生クリームはピッカーから通常選択）。
-  // 追加時は他の追加・削除と同じく比率を均等に再配分して合計100にする。
   const MILK_ID = 'milk-cow'
   const milkAdded = selectedIds.includes(MILK_ID)
   const slotsFull = selectedIds.length >= 4
   const addMilk = () => {
     if (milkAdded || slotsFull) return
-    const ids = [...selectedIds, MILK_ID]
-    setSelectedIds(ids)
-    equalizeRatios(ids, false)
-    setRatioNotice('ミルク（牛乳）の追加に合わせて、比率を均等に再配分しました（合計100%）。')
+    applyStructuralChange([...selectedIds, MILK_ID], 'ミルク（牛乳）の追加に合わせて、比率を均等に再配分しました（合計100%）。')
+  }
+  const milkDisabledReasons: string[] = []
+  if (milkAdded) milkDisabledReasons.push('ミルクは追加済みです')
+  if (slotsFull) milkDisabledReasons.push('素材が4つあるため追加できません（どれか外すと追加できます）')
+
+  // 素材詳細「ペアリングで使う」からの受け渡し（1回限り消費し、結果を必ず表示する）
+  useEffect(() => {
+    const pendingId = memoryStore.get(PENDING_PAIRING_KEY) as string | undefined
+    if (!pendingId) return
+    memoryStore.delete(PENDING_PAIRING_KEY)
+    const pm = materialById(pendingId)
+    if (!pm) return
+    if (selectedIds.includes(pendingId)) {
+      setPairingNotice(`「${pm.nameJa}」はすでに組み合わせに入っています。`)
+    } else if (selectedIds.length < 4) {
+      applyStructuralChange([...selectedIds, pendingId], `「${pm.nameJa}」をペアリングに追加しました。比率を均等に再配分しました（合計100%）。`)
+    } else {
+      setPairingNotice(`素材が4つあるため「${pm.nameJa}」は追加できませんでした。`)
+    }
+    // マウント時に1回だけ消費する
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const changeMode = (mm: PairingMode) => {
+    setMode(mm)
+    window.setTimeout(() => flashElement(document.getElementById('pair-mode')), 60)
   }
 
   const mergedProfile = useMemo(() => {
     const map = new Map<string, { intensity: string; tier: string }>()
     const order = { weak: 1, moderate: 2, strong: 3, unknown: 0 } as const
-    for (const m of selected) for (const e of m.profile) {
+    for (const m of activeMaterials) for (const e of m.profile) {
       const cur = map.get(e.noteId)
       if (!cur || order[e.intensity] > order[cur.intensity as keyof typeof order]) map.set(e.noteId, { intensity: e.intensity, tier: e.tier })
     }
     return [...map.entries()].map(([nId, v]) => ({ noteId: nId, intensity: v.intensity as never, tier: v.tier as never, sourceIds: [] as string[] }))
-  }, [selectedIds.join(',')])
-
-  const noteCompounds = noteId ? compounds.filter((c) => c.noteIds.includes(noteId)) : []
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeIds.join(',')])
 
   // お茶×チョコの2素材では、素材別の表示はチョコレート→お茶の順を基本配置にする（§14.3）
   const orderedUniqueNotes = useMemo(() => {
     if (!analysis) return []
     const list = [...analysis.uniqueNotes]
-    if (selected.length === 2) {
-      const domains = selected.map((m) => m.domain)
+    if (activeMaterials.length === 2) {
+      const domains = activeMaterials.map((m) => m.domain)
       if (domains.includes('tea') && domains.includes('chocolate')) {
         list.sort((a, b) => {
           const da = materialById(a.materialId)?.domain === 'chocolate' ? 0 : 1
@@ -246,27 +349,33 @@ function PairingView() {
       }
     }
     return list
-  }, [analysis, selectedIds.join(',')])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [analysis, activeIds.join(',')])
 
   return (
     <section>
       <SectionHead no="01" en="PAIRING" title="ペアリング（2〜4素材）" />
+      {pairingNotice && <p className="ratio-notice pairing-notice" aria-live="polite">{pairingNotice}</p>}
       <div className="pair-controls">
         <div className="slot-list">
           {selectedIds.map((id, i) => {
             const m = materialById(id)
+            const isMilk = id === MILK_ID
+            const excluded = selectedIds.filter((x) => x !== id)
             return (
               <div key={i} className="slot-row">
                 <label className="slot-label">素材{i + 1}
-                  <MaterialPicker index={i} valueId={id} selectedIds={selectedIds} onPick={(newId) => setSlot(i, newId)} />
+                  <MaterialPicker idPrefix={`slot-${i}`} valueId={id} excludeIds={excluded}
+                    ariaLabel={`素材${i + 1}の選択`} onPick={(newId) => setSlot(i, newId)} />
+                  {(effectiveRatios[id] ?? 0) === 0 && <span className="badge tier-insufficient">比率0%のため分析対象外</span>}
                 </label>
                 <label className="slot-ratio">
                   <input type="number" min={0} max={100} aria-label={`${m?.nameJa ?? ''}の比率（%）`}
                     value={effectiveRatios[id] ?? 0}
-                    onChange={(e) => { setRatios((r) => ({ ...r, [id]: Number(e.target.value) })); setRatioNotice(null) }} />%
+                    onChange={(e) => { setRatios((r) => ({ ...r, [id]: Number(e.target.value) })); setRatioNotice(null); setCanUndo(false); undoSnapshot.current = null }} />%
                 </label>
                 {selectedIds.length > 2
-                  ? <button type="button" className="slot-remove" aria-label={`素材${i + 1}を外す`} onClick={() => removeSlot(i)}>外す</button>
+                  ? <button type="button" className="slot-remove" aria-label={isMilk ? 'ミルクを外す' : `素材${i + 1}を外す`} onClick={() => removeSlot(i)}>{isMilk ? 'ミルクを外す' : '外す'}</button>
                   : <span className="slot-remove-spacer" />}
               </div>
             )
@@ -275,25 +384,31 @@ function PairingView() {
         <div className="pair-controls-foot">
           {selectedIds.length < 4 && <button type="button" className="slot-add" onClick={addSlot}>＋ 素材を追加（最大4）</button>}
           <button type="button" className="milk-add" onClick={addMilk} disabled={milkAdded || slotsFull}>＋ ミルクを加える</button>
-          {milkAdded
-            ? <span className="muted">ミルクは追加済みです</span>
-            : slotsFull
-              ? <span className="muted">素材が4つあるため追加できません（どれか外すと追加できます）</span>
-              : null}
-          <button type="button" className="ratio-equalize" onClick={() => equalizeRatios(selectedIds, true)}>均等に戻す</button>
+          {milkDisabledReasons.length > 0 && <span className="muted">{milkDisabledReasons.join('／')}</span>}
+          <button type="button" className="ratio-equalize" onClick={equalizeManually}>均等に戻す</button>
           <span className="muted">比率＝混合（ブレンド）時の質量比（合計100%）。混ぜずに口中で合わせる食べ合わせには適用しません</span>
-          <span className={ratioTotal === 100 ? 'muted' : 'warning'} aria-live="polite">現在の合計 {ratioTotal}%</span>
+          <span className="ratio-total-group">
+            <span className={ratioTotal === 100 ? 'muted' : 'warning'} aria-live="polite">現在の合計 {ratioTotal}%</span>
+            <button type="button" className="ratio-equalize" onClick={equalizeManually}>均等に戻す</button>
+          </span>
           <div className="mode-tabs" role="tablist" aria-label="分析モード">
             {([['harmony', '調和'], ['contrast', '対比'], ['complement', '補完']] as [PairingMode, string][]).map(([mm, label]) => (
-              <button key={mm} role="tab" aria-selected={mode === mm} className={mode === mm ? 'tab active' : 'tab'} onClick={() => setMode(mm)}>{label}</button>
+              <button key={mm} role="tab" aria-selected={mode === mm} className={mode === mm ? 'tab active' : 'tab'} onClick={() => changeMode(mm)}>{label}</button>
             ))}
           </div>
         </div>
-        <p className="muted mode-note">モードは、共通点（調和）／相違点（対比）／補完関係（補完）のどれを先に示すかが変わります。ホイール・味覚の関係・相互作用は共通の分析です。</p>
-        {ratioNotice && <p className="ratio-notice" aria-live="polite">{ratioNotice}</p>}
+        <p className="muted mode-note">{MODE_NOTES[mode]}ホイール・味覚の関係・相互作用はモード共通の分析です。</p>
+        {ratioNotice && (
+          <p className="ratio-notice" aria-live="polite">{ratioNotice}
+            {canUndo && <button type="button" className="undo-btn" onClick={undoStructuralChange}>元に戻す</button>}
+          </p>
+        )}
         {ratioError && <p className="warning" role="alert">{ratioError}</p>}
       </div>
 
+      {selected.length >= 2 && activeMaterials.length < 2 && (
+        <p className="warning" role="alert">比率が0%でない素材が{activeMaterials.length}つしかないため、分析を表示できません。分析対象外の素材の比率を0%より大きくしてください。</p>
+      )}
       {analysis && (
         <div className="analysis">
           {ratioTotal !== 100 && (
@@ -319,7 +434,7 @@ function PairingView() {
               </div>
               {wheelMode === 'taste' ? (
                 <>
-                  {(() => { const mg = mergeSensations(selected); return (
+                  {(() => { const mg = mergeSensations(activeMaterials); return (
                     <WheelFigure caption="図．味わいホイール（味覚・口腔感覚のみ）。各素材の知見を表示用に重ねたもので、混合物そのものの実測ではありません。香りは含みません。">
                       <TasteWheel sensations={mg.sensations} contributors={mg.contributors} />
                     </WheelFigure>
@@ -328,21 +443,12 @@ function PairingView() {
                 </>
               ) : (
               <>
-              <WheelFigure caption="図．組み合わせの香りホイール（香りのみ）。外側の輪は、選択中の素材で報告された化合物（濃い＝寄与の根拠あり／薄い＝組成・検出のみ）。味覚・口腔感覚は含みません。">
+              <WheelFigure caption="図．組み合わせの香りホイール（香りのみ）。外側の輪は、選択中の素材で報告された化合物（濃い＝寄与の根拠あり／薄い＝組成・検出のみ）。味覚・口腔感覚は含みません。外側の輪の化合物はノート単位で描かれるため、複数ノートに関わる化合物は複数回現れます。">
                 <FlavorWheel entries={mergedProfile} onSelectNote={setNoteId} selectedNoteId={noteId}
-                  compoundMaterialIds={selectedIds} onSelectCompound={(id) => { window.location.hash = `#/compound/${id}` }} />
+                  compoundMaterialIds={activeIds} onSelectCompound={(id) => { window.location.hash = `#/compound/${id}` }} />
               </WheelFigure>
               {noteId && (
-                <div className="note-detail">
-                  <h4>{categoryById(noteById(noteId)?.categoryId ?? '')?.name}：{noteById(noteId)?.name}</h4>
-                  <p>{noteById(noteId)?.example}</p>
-                  {noteCompounds.length > 0 ? (
-                    <ul>{noteCompounds.map((c) => (
-                      <li key={c.id}><a href={`#/compound/${c.id}`}>{c.nameJa}</a>：{c.sensoryKnowledge}</li>
-                    ))}</ul>
-                  ) : <p className="muted">この香りに直接関連づけられた化合物は未収録です。</p>}
-                  <button type="button" onClick={() => setNoteId(null)}>選択を保持したまま閉じる</button>
-                </div>
+                <NoteDetailPanel noteId={noteId} contextMaterialIds={activeIds} contextLabel="この組み合わせ" onClose={() => setNoteId(null)} />
               )}
               </>
               )}
@@ -363,6 +469,19 @@ function PairingView() {
                   {orderedUniqueNotes.map((u) => (
                     <p key={u.materialId}><strong>{materialById(u.materialId)?.nameJa}</strong>：{u.noteIds.length ? u.noteIds.map((id) => noteById(id)?.name).join('、') : '固有の香りノートは未確認'}</p>
                   ))}
+                </>
+              )}
+              {(mode === 'complement') && (
+                <>
+                  <h3>補い合う関係（補完）</h3>
+                  {analysis.complements.length ? (
+                    <ul>{activeMaterials.filter((m) => analysis.complements.some((c) => c.materialId === m.id)).map((m) => (
+                      <li key={m.id}><strong>{m.nameJa}</strong> が補う香りの系統：
+                        {analysis.complements.filter((c) => c.materialId === m.id)
+                          .map((c) => `${c.categoryName}（ノート：${c.noteNames.join('、')}）`).join('／')}
+                      </li>
+                    ))}</ul>
+                  ) : <p className="muted">この組み合わせでは、系統レベルで一方が他方を補う関係は明確には見つかりませんでした。</p>}
                 </>
               )}
               </div>
@@ -421,7 +540,7 @@ function SearchView() {
   const nq = nameQuery.trim().toLowerCase()
   const results = materials.filter((m) => m.domain === domain
     && (!cls || m.classificationId === cls) && (!org || m.originId === org) && (!variety || m.varietyId === variety)
-    && (!nq || `${m.nameJa} ${m.nameEn} ${m.scientificName ?? ''}`.toLowerCase().includes(nq)))
+    && (!nq || materialMatchesName(m, nameQuery) || (m.scientificName ?? '').toLowerCase().includes(nq)))
 
   // 初心者用での指摘「選択を変えても表示が変わらない／ずれる」への対策：
   // 他軸の変更で候補から外れた選択値は自動でリセットし、表示と状態のずれを防ぐ。
@@ -501,6 +620,9 @@ function MaterialDetail({ id }: { id: string }) {
     <section>
       <p><a href="#/search">← 素材検索へ</a></p>
       <h2><span className="h2-kicker" aria-hidden="true">MATERIAL FILE — 素材詳細</span>{m.nameJa} <span className="en-name">{m.nameEn}</span></h2>
+      <div className="detail-top-actions">
+        <button type="button" className="use-in-pairing" onClick={() => requestPairingWith(m.id)}>ペアリングで使う</button>
+      </div>
       <dl className="spec-table">
         {m.scientificName && <div className="spec-cell"><dt>学名</dt><dd><em>{m.scientificName}</em></dd></div>}
         <div className="spec-cell"><dt>分類</dt><dd>{m.classification}</dd></div>
@@ -533,32 +655,12 @@ function MaterialDetail({ id }: { id: string }) {
         </>
       ) : (
       <>
-      <WheelFigure caption="図．香りホイール（香りのみ）。外側の輪は、この素材で報告された化合物（濃い＝寄与の根拠あり／薄い＝組成・検出のみ）。味覚・口腔感覚は含みません。">
+      <WheelFigure caption="図．香りホイール（香りのみ）。外側の輪は、この素材で報告された化合物（濃い＝寄与の根拠あり／薄い＝組成・検出のみ）。味覚・口腔感覚は含みません。外側の輪の化合物はノート単位で描かれるため、複数ノートに関わる化合物は複数回現れます。">
         <FlavorWheel entries={m.profile} onSelectNote={setNoteId} selectedNoteId={noteId}
           compoundMaterialIds={[m.id]} onSelectCompound={(id) => { window.location.hash = `#/compound/${id}` }} />
       </WheelFigure>
       {noteId && (
-        <div className="note-detail">
-          <h4>{categoryById(noteById(noteId)?.categoryId ?? '')?.name}：{noteById(noteId)?.name}</h4>
-          <p>{noteById(noteId)?.example}</p>
-          {/* この素材で実際に報告された化合物だけに絞る（監査 J3：他素材文脈の化合物が混ざって紛らわしい問題への対策） */}
-          {(() => {
-            const scoped = compounds.filter((c) => c.noteIds.includes(noteId) && links.some((l) => l.compoundId === c.id))
-            return scoped.length ? (
-              <>
-                <p className="muted">{m.nameJa}で報告された関連化合物：</p>
-                <ul>
-                  {scoped.map((c) => (
-                    <li key={c.id}><a href={`#/compound/${c.id}`}>{c.nameJa}</a>：{c.sensoryKnowledge}</li>
-                  ))}
-                </ul>
-              </>
-            ) : (
-              <p className="muted">{m.nameJa}でこの香りに関連づけて報告された化合物は未収録です。この香りに関連する化合物（全素材）は<a href="#/chemistry">香味化学</a>で確認できます。</p>
-            )
-          })()}
-          <button type="button" onClick={() => setNoteId(null)}>選択を保持したまま閉じる</button>
-        </div>
+        <NoteDetailPanel noteId={noteId} contextMaterialIds={[m.id]} contextLabel="この素材" onClose={() => setNoteId(null)} />
       )}
       </>
       )}
@@ -595,7 +697,7 @@ function MaterialDetail({ id }: { id: string }) {
       </div>
       <p className="detail-foot-nav">
         <a href="#/search">← 素材検索へ</a>
-        <a href="#/pairing">ペアリングで使う →</a>
+        <button type="button" className="use-in-pairing" onClick={() => requestPairingWith(m.id)}>ペアリングで使う →</button>
       </p>
     </section>
   )
@@ -659,11 +761,14 @@ function CaffeineModelBlock({ tempC, seconds }: { tempC: number; seconds: number
   const current = k !== null ? caffeineExtractionFraction(tempC, seconds / 60) : null
   return (
     <div className="model-block">
-      <h5>モデル計算（紅茶のカフェイン抽出）<span className="badge direct">モデル計算</span></h5>
+      <h5>モデル計算（紅茶のカフェイン抽出）</h5>
       <p>
         定性的な傾向とは別枠で、検証可能なパラメータが公表されている紅茶のカフェインについてのみ数値モデルを表示します。
         Spiro &amp; Jago（1982）の定常状態モデルに基づく一次速度式 f(t)＝1−exp(−k·t) で、
         <strong>平衡濃度に対する抽出割合</strong>を計算します（カフェインの絶対量 mg は出しません）。
+      </p>
+      <p>
+        抽出割合（平衡比）は茶葉の量には依存しないモデルです。量の変更は茶液の濃さ（素材と水の比）にのみ反映されます。
       </p>
       {k === null || current === null ? (
         <p className="warning" role="alert">
@@ -700,12 +805,13 @@ function CaffeineModelBlock({ tempC, seconds }: { tempC: number; seconds: number
 }
 
 function SimulationPanel({ material: m }: { material: Material }) {
-  const [roastTemp, setRoastTemp] = useState(120)
-  const [roastMin, setRoastMin] = useState(15)
-  const [extTemp, setExtTemp] = useState(80)
-  const [extSec, setExtSec] = useState(60)
-  const [dose, setDose] = useState(3)
-  const [water, setWater] = useState(150)
+  // 条件は素材IDごとにメモリ保持し、詳細を開き直しても初期値に戻らないようにする（永続保存はしない）
+  const [roastTemp, setRoastTemp] = usePersistentState(`sim:${m.id}:roastTemp`, 120)
+  const [roastMin, setRoastMin] = usePersistentState(`sim:${m.id}:roastMin`, 15)
+  const [extTemp, setExtTemp] = usePersistentState(`sim:${m.id}:extTemp`, 80)
+  const [extSec, setExtSec] = usePersistentState(`sim:${m.id}:extSec`, 60)
+  const [dose, setDose] = usePersistentState(`sim:${m.id}:dose`, 3)
+  const [water, setWater] = usePersistentState(`sim:${m.id}:water`, 150)
   const roast = evaluateRoast(m, { tempC: roastTemp, minutes: roastMin })
   const ext = evaluateExtraction(m, { tempC: extTemp, seconds: extSec, doseG: dose, waterMl: water })
   return (
@@ -764,8 +870,9 @@ function SimulationPanel({ material: m }: { material: Material }) {
             <p className="sim-summary" aria-live="polite">現在の条件：抽出温度 {extTemp}℃（{extTemp < 70 ? '低温側' : extTemp < 90 ? '中温側' : '高温側'}）・抽出時間 {extSec}秒・素材量 {dose}g／湯量 {water}ml{dose > 0 ? `（約 1:${Math.round(water / dose)}）` : ''}</p>
             <p className="muted">{ext.statusNote}</p>
             {ext.warnings.map((w) => <p key={w} className="warning" role="alert">{w}</p>)}
-            <TendencyGroups tendencies={ext.tendencies} />
             {m.classificationId === 'black-tea' && <CaffeineModelBlock tempC={extTemp} seconds={extSec} />}
+            <p className="scope-note">傾向の根拠には、対象素材以外の茶種・産地の研究も含まれます。各項目の出典で適用範囲を確認してください。</p>
+            <TendencyGroups tendencies={ext.tendencies} />
           </div>
         </div>
       ) : <p className="muted">抽出：{ext.statusNote}</p>}
@@ -776,10 +883,10 @@ function SimulationPanel({ material: m }: { material: Material }) {
 /* ============ 香味化学（双方向連携） ============ */
 function ChemistryView() {
   const [materialId, setMaterialId] = usePersistentState('chemistry:materialId', 'tea-sencha')
-  const [noteId, setNoteId] = useState<string | null>(null)
+  // 選択素材・選択ノートは画面遷移をまたいで保持し、化合物詳細から戻っても復元されるようにする
+  const [noteId, setNoteId] = usePersistentState<string | null>('chemistry:noteId', null)
   const [compoundQuery, setCompoundQuery] = useState('')
   const m = materialById(materialId)
-  const noteCompounds = noteId ? compounds.filter((c) => c.noteIds.includes(noteId)) : []
   const cq = compoundQuery.trim().toLowerCase()
   const filteredCompounds = cq
     ? compounds.filter((c) => `${c.nameJa} ${c.nameEn} ${c.compoundClass}`.toLowerCase().includes(cq))
@@ -788,36 +895,17 @@ function ChemistryView() {
     <section>
       <SectionHead no="03" en="CHEMISTRY" title="香味化学（ホイール ⇄ 化合物 ⇄ 素材）" />
       <label>素材を選ぶ
-        <select value={materialId} onChange={(e) => { setMaterialId(e.target.value); setNoteId(null) }} aria-label="素材">
-          {(['tea', 'chocolate', 'spice', 'herb', 'dairy'] as Domain[]).map((d) => (
-            <optgroup key={d} label={DOMAIN_LABEL[d]}>
-              {materials.filter((x) => x.domain === d).map((x) => <option key={x.id} value={x.id}>{x.nameJa}</option>)}
-            </optgroup>
-          ))}
-        </select>
+        <MaterialPicker idPrefix="chemistry-material" valueId={materialId} ariaLabel="素材"
+          onPick={(id) => { setMaterialId(id); setNoteId(null) }} />
       </label>
       {m && (
-        <WheelFigure caption="図．香りホイール（香りのみ）。外側の輪は、選択中の素材で報告された化合物（濃い＝寄与の根拠あり／薄い＝組成・検出のみ）。">
+        <WheelFigure caption="図．香りホイール（香りのみ）。外側の輪は、選択中の素材で報告された化合物（濃い＝寄与の根拠あり／薄い＝組成・検出のみ）。外側の輪の化合物はノート単位で描かれるため、複数ノートに関わる化合物は複数回現れます。">
           <FlavorWheel entries={m.profile} onSelectNote={setNoteId} selectedNoteId={noteId}
             compoundMaterialIds={[m.id]} onSelectCompound={(id) => { window.location.hash = `#/compound/${id}` }} />
         </WheelFigure>
       )}
-      {noteId && (
-        <div className="note-detail">
-          <h3>{noteById(noteId)?.name} に関連する化合物</h3>
-          {noteCompounds.length ? (
-            <ul>{noteCompounds.map((c) => {
-              const link = linksForMaterial(materialId).find((l) => l.compoundId === c.id)
-              return (
-                <li key={c.id}>
-                  <a href={`#/compound/${c.id}`}>{c.nameJa}</a>：{c.sensoryKnowledge}
-                  {link ? <span> ［この素材との関連：{link.kind === 'contribution' ? '寄与の根拠あり' : link.kind === 'composition' ? '組成' : '検出'}・{TIER_LABEL[link.tier]}］</span>
-                    : <span className="muted"> ［この素材での検出・寄与は未確認（化合物単体の知見のみ）］</span>}
-                </li>
-              )
-            })}</ul>
-          ) : <p className="muted">関連化合物は未収録です。</p>}
-        </div>
+      {noteId && m && (
+        <NoteDetailPanel noteId={noteId} contextMaterialIds={[m.id]} contextLabel="この素材" onClose={() => setNoteId(null)} />
       )}
       {m && (
         <>
@@ -921,6 +1009,24 @@ const GLOSSARY: { term: string; body: string }[] = [
   { term: 'Purús 集団', body: '10集団の一つ（プルス川流域の集団名）。Motilal et al. 2026 はペルーの新系統 Chuncho 1 が本集団に関連すると提案した（提案段階）。集団レベルの香味実測はない。' },
 ]
 
+/** 段階表示の操作（対象を明記し、「残りを全て表示」も併設。一覧の上下両方に置く） */
+function ShowMoreControls({ shown, total, moreLabel, onMore, onAll }: {
+  shown: number
+  total: number
+  moreLabel: string
+  onMore: () => void
+  onAll: () => void
+}) {
+  if (shown >= total) return null
+  const remaining = total - shown
+  return (
+    <div className="show-more-row">
+      <button type="button" className="show-more" onClick={onMore}>{moreLabel}（+{Math.min(LIBRARY_PAGE_SIZE, remaining)}件）</button>
+      <button type="button" className="show-more secondary" onClick={onAll}>残りを全て表示（あと{remaining}件）</button>
+    </div>
+  )
+}
+
 const LIBRARY_PAGE_SIZE = 60
 
 /**
@@ -931,6 +1037,7 @@ const LIBRARY_PAGE_SIZE = 60
 function LibraryView() {
   const [sourceQuery, setSourceQuery] = useState('')
   const [noteQuery, setNoteQuery] = useState('')
+  const [glossaryQuery, setGlossaryQuery] = useState('')
   const [sourceShown, setSourceShown] = useState(LIBRARY_PAGE_SIZE)
   const [noteShown, setNoteShown] = useState(LIBRARY_PAGE_SIZE)
   const [ledger, setLedger] = useState<{ sources: Source[]; notes: PairingBiblioNote[] } | null>(null)
@@ -946,7 +1053,9 @@ function LibraryView() {
     return () => { alive = false }
   }, [])
 
-  const allSources = ledger ? [...sources, ...ledger.sources] : sources
+  // 台帳と再確認済みに同一論文が両方載る場合は、正規化タイトル＋年で重複を除去し台帳側を落とす
+  const merged = ledger ? mergeLibrarySources(sources, ledger.sources) : null
+  const allSources = merged ? merged.sources : sources
   const counts = {
     tea: materials.filter((m) => m.domain === 'tea').length,
     chocolate: materials.filter((m) => m.domain === 'chocolate').length,
@@ -967,7 +1076,7 @@ function LibraryView() {
   const filteredSources = q
     ? allSources.filter((s) => `${s.title} ${s.authors} ${s.journal ?? ''}`.toLowerCase().includes(q))
     : allSources
-  const pairingSourceCount = ledger ? ledger.sources.length : 0
+  const pairingSourceCount = merged ? merged.ledgerKept.length : 0
   const allNotes = ledger ? ledger.notes : []
   const nq = noteQuery.trim().toLowerCase()
   const filteredNotes = nq
@@ -986,7 +1095,7 @@ function LibraryView() {
       <div className="stat-grid">
         <div className="stat-card"><div className="stat-num">{counts.tea + counts.chocolate + counts.spice + counts.herb + counts.dairy}</div><div className="stat-label">素材（お茶 {counts.tea}／チョコ {counts.chocolate}／スパイス {counts.spice}／ハーブ {counts.herb}／乳製品 {counts.dairy}）</div></div>
         <div className="stat-card"><div className="stat-num">{counts.compounds}</div><div className="stat-label">化合物</div></div>
-        <div className="stat-card"><div className="stat-num">{ledger ? counts.sources : '…'}</div><div className="stat-label">出典</div></div>
+        <div className="stat-card"><div className="stat-num">{counts.sources}</div><div className="stat-label">出典{ledger ? '' : '（台帳読み込み中）'}</div></div>
         <div className="stat-card"><div className="stat-num">{counts.links}</div><div className="stat-label">素材×化合物リンク</div></div>
         <div className="stat-card"><div className="stat-num">{counts.varieties}</div><div className="stat-label">品種・系統（種類数）</div></div>
         <div className="stat-card"><div className="stat-num">{counts.origins}</div><div className="stat-label">産地（種類数）</div></div>
@@ -1000,11 +1109,25 @@ function LibraryView() {
       </div>
       <div id="lib-glossary" className="anchor-block">
       <h3>用語辞典</h3>
-      <dl className="glossary">
-        {GLOSSARY.map((g) => (
-          <div key={g.term}><dt>{g.term}</dt><dd>{g.body}</dd></div>
-        ))}
-      </dl>
+      <label>用語を絞り込む（用語・説明）
+        <input type="search" value={glossaryQuery} onChange={(e) => setGlossaryQuery(e.target.value)} aria-label="用語辞典の絞り込み" placeholder="例：GC-O" />
+      </label>
+      {(() => {
+        const gq = glossaryQuery.trim().toLowerCase()
+        const filtered = gq ? GLOSSARY.filter((g) => `${g.term} ${g.body}`.toLowerCase().includes(gq)) : GLOSSARY
+        return (
+          <>
+            <p className="muted">{filtered.length}件／全{GLOSSARY.length}件</p>
+            {filtered.length ? (
+              <dl className="glossary">
+                {filtered.map((g) => (
+                  <div key={g.term}><dt>{g.term}</dt><dd>{g.body}</dd></div>
+                ))}
+              </dl>
+            ) : <p className="muted">条件に合う用語はありません。</p>}
+          </>
+        )
+      })()}
       </div>
       <div id="lib-sources" className="anchor-block">
       <h3>出典一覧</h3>
@@ -1014,6 +1137,8 @@ function LibraryView() {
       <p className="muted">{filteredSources.length}件／全{counts.sources}件（{Math.min(sourceShown, filteredSources.length)}件を表示中）</p>
       {filteredSources.length ? (
         <>
+          <ShowMoreControls shown={Math.min(sourceShown, filteredSources.length)} total={filteredSources.length} moreLabel="出典の続きを表示"
+            onMore={() => setSourceShown((v) => v + LIBRARY_PAGE_SIZE)} onAll={() => setSourceShown(filteredSources.length)} />
           <ul className="source-list lib-source-list">
             {filteredSources.slice(0, sourceShown).map((s) => (
               <li key={s.id} className="lib-source">
@@ -1030,12 +1155,14 @@ function LibraryView() {
               </li>
             ))}
           </ul>
-          {sourceShown < filteredSources.length && (
-            <button type="button" className="show-more" onClick={() => setSourceShown((v) => v + LIBRARY_PAGE_SIZE)}>さらに表示（+{LIBRARY_PAGE_SIZE}件）</button>
-          )}
+          <ShowMoreControls shown={Math.min(sourceShown, filteredSources.length)} total={filteredSources.length} moreLabel="出典の続きを表示"
+            onMore={() => setSourceShown((v) => v + LIBRARY_PAGE_SIZE)} onAll={() => setSourceShown(filteredSources.length)} />
         </>
       ) : <p className="muted">条件に合う出典はありません。</p>}
-      <p className="muted">出典の内訳：再確認済み {sources.length}件／pairing 由来の台帳転記（書誌レベル・再確認待ち）{ledger ? pairingSourceCount : '…'}件。台帳転記分は素材×化合物リンク等の主張の根拠には使っていません。</p>
+      <p className="muted">出典の内訳：再確認済み {sources.length}件／pairing 由来の台帳転記 {ledger ? pairingSourceCount : '…'}件。台帳転記分は素材×化合物リンク等の主張の根拠には使っていません。</p>
+      {merged && merged.removedCount > 0 && (
+        <p className="muted">台帳と重複する {merged.removedCount} 件は再確認済みとして統合表示しています。</p>
+      )}
       </div>
       <div id="lib-notes" className="anchor-block">
       <h3>書誌未同定メモ（pairing 由来）</h3>
@@ -1050,6 +1177,8 @@ function LibraryView() {
           <p className="muted">{filteredNotes.length}件／全{allNotes.length}件（{Math.min(noteShown, filteredNotes.length)}件を表示中）</p>
           {filteredNotes.length ? (
             <>
+              <ShowMoreControls shown={Math.min(noteShown, filteredNotes.length)} total={filteredNotes.length} moreLabel="メモの続きを表示"
+                onMore={() => setNoteShown((v) => v + LIBRARY_PAGE_SIZE)} onAll={() => setNoteShown(filteredNotes.length)} />
               <ul className="source-list">
                 {filteredNotes.slice(0, noteShown).map((n) => (
                   <li key={n.id}>
@@ -1063,9 +1192,8 @@ function LibraryView() {
                   </li>
                 ))}
               </ul>
-              {noteShown < filteredNotes.length && (
-                <button type="button" className="show-more" onClick={() => setNoteShown((v) => v + LIBRARY_PAGE_SIZE)}>さらに表示（+{LIBRARY_PAGE_SIZE}件）</button>
-              )}
+              <ShowMoreControls shown={Math.min(noteShown, filteredNotes.length)} total={filteredNotes.length} moreLabel="メモの続きを表示"
+                onMore={() => setNoteShown((v) => v + LIBRARY_PAGE_SIZE)} onAll={() => setNoteShown(filteredNotes.length)} />
             </>
           ) : <p className="muted">条件に合うメモはありません。</p>}
         </>

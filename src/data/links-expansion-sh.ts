@@ -254,7 +254,7 @@ export const expansionShNewMaterialLinks: MaterialCompoundLink[] = [
 
 // ===== 茶・チョコレート素材への新規リンク（深化タスク4の判定）=====
 export const expansionShTeaChocoLinks: MaterialCompoundLink[] = [
-  { materialId: 'choco-dark-roasted', compoundId: 'guaiacol', kind: 'contribution', tier: 'measured', conditions: '焙煎ココア試料の AEDA で高 FD。焙煎で生成する', sourceIds: ['frauendorfer-2006-cocoa-powder-aroma', 'frauendorfer-2008-criollo-roasting', 'deuscher-2020-dark-chocolate-gco'] },
+  { materialId: 'choco-dark-roasted', compoundId: 'guaiacol', kind: 'contribution', tier: 'measured', conditions: '焙煎ココア試料の AEDA で高 FD。焙煎で生成する', sourceIds: ['frauendorfer-2006-cocoa-powder', 'frauendorfer-2008-criollo-roasting', 'deuscher-2020-dark-chocolate-gco'] },
   { materialId: 'tea-hojicha', compoundId: 'guaiacol', kind: 'detection', tier: 'general', conditions: '焙煎緑茶での検出報告のみ。寄与は主張しない', sourceIds: ['mizukami-2012-roasted-green-tea'] },
   { materialId: 'tea-sencha', compoundId: 'citric-acid', kind: 'composition', tier: 'general', sourceIds: ['zhang-2022-tea-organic-acids'] },
   { materialId: 'tea-black-general', compoundId: 'citric-acid', kind: 'composition', tier: 'general', sourceIds: ['zhang-2022-tea-organic-acids'] },

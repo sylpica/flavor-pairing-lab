@@ -249,3 +249,43 @@ button { transition: border-color .15s ease, background-color .15s ease, color .
 .model-table th, .model-table td { border: 1px solid var(--line); padding: 3px 10px; font-size: 0.88rem; }
 .model-table th { font-weight: normal; color: var(--ink-soft); text-align: left; }
 .model-table td { text-align: right; }
+
+/* ===== 素材ピッカー（カスタムコンボボックス） ===== */
+.mp { position: relative; display: block; min-width: 0; }
+.mp input { font-size: 1rem; padding: 9px 10px; border: 1px solid var(--line); border-radius: 9px; background: var(--bg-raise); color: var(--ink); min-height: 44px; width: 100%; min-width: 0; }
+.mp-dropdown { position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 60; max-height: 320px; overflow-y: auto; background: var(--card); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); padding: 4px; margin: 0; list-style: none; }
+.mp-group { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; color: var(--muted); padding: 7px 9px 2px; }
+.mp-option { padding: 8px 10px; border-radius: 7px; cursor: pointer; font-size: 0.95rem; color: var(--ink); min-height: 40px; display: flex; align-items: center; font-weight: 400; letter-spacing: normal; }
+.mp-option:hover, .mp-option.active { background: var(--warn-bg); }
+.mp-option.current { font-weight: 700; }
+.mp-empty { padding: 8px 10px; color: var(--muted); font-size: 0.88rem; font-weight: 400; letter-spacing: normal; }
+
+/* ===== ミルク追加ボタン（「素材を追加」と同じ格の accent 枠線ボタン） ===== */
+.milk-add { min-height: 44px; padding: 8px 14px; border-radius: 999px; border: 1px dashed var(--accent); background: transparent; color: var(--accent); cursor: pointer; font-size: 0.92rem; font-weight: 700; }
+.milk-add:hover:not(:disabled) { background: var(--warn-bg); }
+.milk-add:disabled { border-color: var(--line); color: var(--muted); cursor: not-allowed; opacity: 0.6; }
+
+/* ===== 一時ハイライト（モード節・ノート詳細へ視線を誘導） ===== */
+.flash { animation: flash-highlight 1.6s ease-out; border-radius: 8px; }
+@keyframes flash-highlight {
+  0%, 35% { box-shadow: 0 0 0 3px var(--accent); background-color: var(--warn-bg); }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* ===== その他（第8ラウンド） ===== */
+.ratio-notice .undo-btn { margin-left: 12px; min-height: 36px; padding: 5px 14px; border-radius: 999px; border: 1px solid var(--accent); background: var(--card); color: var(--accent-deep); cursor: pointer; font-size: 0.85rem; font-weight: 700; }
+.ratio-notice .undo-btn:hover { background: var(--warn-bg); }
+.pairing-notice { margin: 0 0 12px; }
+.ratio-total-group { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.note-detail h5 { margin: 12px 0 4px; font-size: 0.93rem; font-weight: 700; }
+.note-detail .dict-details { margin-top: 10px; }
+.note-detail .dict-details summary { cursor: pointer; color: var(--accent); font-size: 0.9rem; padding: 4px 0; }
+.show-more-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 12px 0; }
+.show-more-row .show-more { margin-top: 0; }
+.show-more.secondary { border-color: var(--line); color: var(--ink-soft); font-weight: 400; }
+.detail-top-actions { margin: 2px 0 6px; }
+.use-in-pairing { min-height: 44px; padding: 8px 18px; border-radius: 999px; border: 1px solid var(--accent); background: var(--card); color: var(--accent-deep); cursor: pointer; font-size: 0.92rem; font-weight: 700; }
+.use-in-pairing:hover { background: var(--warn-bg); }
+.detail-foot-nav .use-in-pairing { border: none; background: none; padding: 8px 0; min-height: 0; color: var(--accent); font-weight: 400; }
+.detail-foot-nav .use-in-pairing:hover { background: none; color: var(--accent-deep); text-decoration: underline; }
+.app-footer .data-summary { margin-top: 6px; font-variant-numeric: tabular-nums; }

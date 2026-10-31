@@ -2,10 +2,12 @@ import { describe, it, expect } from 'vitest'
 import { analyzePairing, validateRatios, defaultShares } from './pairing'
 import { evaluateRoast, evaluateExtraction } from './simulation'
 import { materialById } from '../data'
+import { noteById } from '../data/flavors'
 
 const sencha = materialById('tea-sencha')!
 const dark = materialById('choco-dark-roasted')!
 const hojicha = materialById('tea-hojicha')!
+const gyokuro = materialById('tea-gyokuro')!
 
 describe('比率の初期配分', () => {
   it('2〜4素材で必ず合計100になる（99%のような初期不一致を作らない）', () => {
@@ -41,6 +43,41 @@ describe('ペアリングエンジン', () => {
     expect(validateRatios({ a: 50, b: 40 }, ['a', 'b'])).not.toBeNull()
     expect(validateRatios({ a: -1, b: 101 }, ['a', 'b'])).not.toBeNull()
     expect(validateRatios({ a: Number.NaN, b: 100 }, ['a', 'b'])).not.toBeNull()
+  })
+})
+
+describe('比率0%の素材の除外', () => {
+  it('比率0%の素材は分析対象にならない（固有ノート・共通ノート・相互作用）', () => {
+    const a = analyzePairing([sencha, dark, gyokuro], { 'tea-sencha': 50, 'choco-dark-roasted': 50, 'tea-gyokuro': 0 })
+    expect(a.uniqueNotes.map((u) => u.materialId)).toEqual(['tea-sencha', 'choco-dark-roasted'])
+    for (const n of a.sharedNotes) expect(n.materialIds).not.toContain('tea-gyokuro')
+    // 有効な素材同士（お茶×チョコ）では直接研究ルールが発火する
+    expect(a.interactions.some((i) => i.ruleId === 'direct-tea-chocolate-study')).toBe(true)
+  })
+  it('比率0%を除いて2素材未満になるとエラー', () => {
+    expect(() => analyzePairing([sencha, dark], { 'tea-sencha': 100, 'choco-dark-roasted': 0 })).toThrow()
+  })
+  it('比率を指定しなければ全素材が対象（従来どおり）', () => {
+    const a = analyzePairing([sencha, dark, gyokuro])
+    expect(a.uniqueNotes.map((u) => u.materialId)).toContain('tea-gyokuro')
+  })
+})
+
+describe('補完モードの導出', () => {
+  it('他の素材のいずれにも無いカテゴリだけが補完として返る', () => {
+    const pair = [sencha, dark]
+    const a = analyzePairing(pair)
+    expect(a.complements.length).toBeGreaterThan(0)
+    for (const c of a.complements) {
+      expect(pair.map((m) => m.id)).toContain(c.materialId)
+      expect(c.noteNames.length).toBeGreaterThan(0)
+      const other = pair.find((m) => m.id !== c.materialId)!
+      const otherCategories = new Set(other.profile.map((e) => noteById(e.noteId)?.categoryId))
+      expect(otherCategories.has(c.categoryId)).toBe(false)
+      const mine = pair.find((m) => m.id === c.materialId)!
+      const myCategories = new Set(mine.profile.map((e) => noteById(e.noteId)?.categoryId))
+      expect(myCategories.has(c.categoryId)).toBe(true)
+    }
   })
 })
 
