@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import type { Material, ProfileEntry, SensationEntry, SensationKey } from '../types'
 import { SENSATION_LABEL, TIER_LABEL, INTENSITY_LABEL } from '../types'
-import { weightPercents, polar, arcPath, compoundsForNoteInContext } from './FlavorWheel'
+import { weightPercents, polar, arcPath, compoundsForNoteInContext, evidenceStrokeProps } from './FlavorWheel'
 import { noteById } from '../data/flavors'
 import { compoundById } from '../data/compounds'
 import { tasteMappingsForNote, type TasteMapTier } from '../data/taste-note-map'
@@ -17,6 +17,8 @@ import { tasteMappingsForNote, type TasteMapTier } from '../data/taste-note-map'
 // 逆に、感覚データにある味で対応ノートが無い場合は第1階層のみとし、具体名を創作しない。
 // 推測の区別：対応づけが inferred の具体名と導出セグメントは、破線・薄色・文字ラベルで示す
 //   （色のみで区別しない）。
+// 根拠区分の輪郭（横展開第21弾）：第1階層は実測＝特別な輪郭なし／一般的知見＝実線／推測＝破線とし、
+//   色の濃さだけに頼らない（evidenceStrokeProps、FlavorWheel と共通）。
 // 副対応の区別（第15ラウンド）：主対応とは別の味への副対応（role: 'secondary'）の具体名も
 //   第2階層に含め、破線・薄色に加えて凡例・ツールチップで「副対応」と文字で明示する。
 //   感覚データに無い味が副対応だけで立つ場合も、導出セグメントとして推測明記する。
@@ -236,8 +238,7 @@ export function TasteWheel({ sensations, contributors, profileEntries, compoundM
           return (
             <path key={s.key} d={arcPath(C, C, 70, 44, s.start, s.end)}
               fill={COLOR[s.key]} opacity={0.92}
-              stroke={segInferred ? '#333' : '#fff'} strokeWidth={segInferred ? 1.6 : 1}
-              strokeDasharray={segInferred ? '4 2' : undefined}>
+              {...evidenceStrokeProps(segInferred ? 'inferred' : (s.entry?.tier ?? 'inferred'))}>
               <title>{s.derived
                 ? `${SENSATION_LABEL[s.key]}（推測：感覚データに無く、対応する香味ノートから導出・${s.pct}%：重みに基づく目安）`
                 : `${SENSATION_LABEL[s.key]}（${INTENSITY_LABEL[s.entry!.intensity]}・${TIER_LABEL[s.entry!.tier]}・${s.pct}%：重みに基づく目安）`}</title>
@@ -250,8 +251,9 @@ export function TasteWheel({ sensations, contributors, profileEntries, compoundM
           return (
           <path key={`note-${s.key}-${n.noteId}`} d={arcPath(C, C, 94, 70, n.start, n.end)}
             fill={COLOR[s.key]} opacity={n.inferred ? 0.34 : n.secondary ? 0.42 : 0.55}
-            stroke={distinguished ? '#333' : '#fff'} strokeWidth={distinguished ? 1.4 : 0.8}
-            strokeDasharray={distinguished ? '4 2' : undefined}
+            {...(distinguished
+              ? { stroke: '#333', strokeWidth: 1.4, strokeDasharray: '4 2' }
+              : evidenceStrokeProps('general'))}
             onMouseEnter={() => setHover(n.noteId)} onMouseLeave={() => setHover(null)}
             onClick={() => onSelectNote?.(n.noteId)} style={{ cursor: onSelectNote ? 'pointer' : undefined }}>
             <title>{noteById(n.noteId)?.name}（{SENSATION_LABEL[s.key]}に対応づけられた具体名{n.secondary ? '・副対応' : ''}・対応の根拠：{n.mappingTier === 'inferred' ? '推測' : '一般的知見'}／ノート自体：{TIER_LABEL[n.noteTier]}）</title>
@@ -312,6 +314,7 @@ export function TasteWheel({ sensations, contributors, profileEntries, compoundM
         <text x={C} y={C + 12} textAnchor="middle" className="wheel-center-sub">ホイール</text>
       </svg>
       <p className="muted wheel-pct-note">％は強さ区分（弱い・中程度・強い）の重みから計算した目安で、実測の割合ではありません（合計100%になるよう調整）。</p>
+      <p className="muted wheel-evidence-note">セグメントの輪郭は根拠区分を示します：第1階層は実測＝特別な輪郭なし／一般的知見＝実線の輪郭／推測＝破線の輪郭。第2階層の具体名は、対応づけが一般的知見なら実線、推測または副対応なら破線で示します。色の濃さだけに頼らず、凡例の文字表記とあわせて区別できます。</p>
       {hasNotes && (
         <p className="muted wheel-compound-note">第2階層の具体名は、その味に対応づけられた香味ノートです（対応の根拠はデータで保持し、推測の対応は破線と「推測」表記で区別します）。{hasSecondary ? '「副対応」と付いた具体名は、そのノートの主対応とは別の味への副次的な対応づけで、破線と「副対応」表記で主対応と区別します。' : ''}{hasDerived ? '感覚データに無い味は、対応ノートの強さから導出した推測として第1階層に破線で示します。' : ''}</p>
       )}

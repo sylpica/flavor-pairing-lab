@@ -28,6 +28,19 @@ export function weightPercents(weights: number[]): number[] {
   for (let k = 0; rest > 0 && order.length > 0; k = (k + 1) % order.length) { base[order[k].i] += 1; rest -= 1 }
   return base
 }
+/** 根拠区分の輪郭（横展開第21弾：pairing seq 28363／28379／28381／28566）。
+ *  根拠の区別を色の濃さだけに頼らない：実測＝特別な輪郭なし（白い区切りのみ）、
+ *  一般的知見＝実線の輪郭、推測＝破線の輪郭。味わいホイールでも同じ作法を使う。 */
+export function evidenceStrokeProps(tier: string): { stroke: string; strokeWidth: number; strokeDasharray?: string } {
+  switch (tier) {
+    case 'measured': return { stroke: '#fff', strokeWidth: 1 }
+    case 'general': return { stroke: '#333', strokeWidth: 1.4 }
+    case 'inferred': return { stroke: '#333', strokeWidth: 1.6, strokeDasharray: '4 2' }
+    case 'insufficient': return { stroke: '#333', strokeWidth: 1, strokeDasharray: '1 3' }
+    default: return { stroke: '#fff', strokeWidth: 1 }
+  }
+}
+
 interface CSeg { compoundId: string; name: string; kind: string; start: number; end: number }
 
 export function polar(cx: number, cy: number, r: number, rad: number) {
@@ -124,8 +137,7 @@ export function FlavorWheel({ entries, onSelectNote, selectedNoteId, compoundMat
         {segs.map((s) => (
           <path key={s.noteId} d={arcPath(C, C, 100, 60, s.start, s.end)}
             fill={s.color} opacity={active && active !== s.noteId ? 0.35 : 0.92}
-            stroke={s.tier === 'inferred' ? '#333' : '#fff'} strokeWidth={s.tier === 'inferred' ? 1.6 : 1}
-            strokeDasharray={s.tier === 'inferred' ? '4 2' : undefined}
+            {...evidenceStrokeProps(s.tier)}
             onMouseEnter={() => setHover(s.noteId)} onMouseLeave={() => setHover(null)}
             onClick={() => onSelectNote?.(s.noteId)} style={{ cursor: 'pointer' }}>
             <title>{noteById(s.noteId)?.name}（{s.pct}%・重みに基づく目安）</title>
@@ -178,6 +190,7 @@ export function FlavorWheel({ entries, onSelectNote, selectedNoteId, compoundMat
         <text x={C} y={C + 12} textAnchor="middle" className="wheel-center-sub">ホイール</text>
       </svg>
       <p className="muted wheel-pct-note">％は強さ区分（弱い・中程度・強い）の重みから計算した目安で、実測の割合ではありません（合計100%になるよう調整）。</p>
+      <p className="muted wheel-evidence-note">セグメントの輪郭は根拠区分を示します：実測＝特別な輪郭なし／一般的知見＝実線の輪郭／推測＝破線の輪郭。色の濃さだけに頼らず、凡例の文字表記とあわせて区別できます。</p>
       {csegs.length > 0 && (
         <p className="muted wheel-compound-note">外側の輪：表示中の素材で報告された化合物（濃い＝寄与の根拠あり／薄い＝組成・検出のみ）。クリックで化合物の詳細へ。名前が入りきらない化合物は、凡例でノートを選ぶと詳細に全件表示されます。</p>
       )}

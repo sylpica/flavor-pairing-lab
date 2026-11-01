@@ -2,6 +2,7 @@
 import { describe, it, expect } from 'vitest'
 import { render } from '@testing-library/react'
 import { TasteWheel, buildTasteWheelModel, tasteWheelSignature } from './TasteWheel'
+import { FlavorWheel } from './FlavorWheel'
 import { materialById, materials } from '../data'
 import type { ProfileEntry, SensationEntry } from '../types'
 
@@ -145,6 +146,48 @@ describe('TasteWheel の描画（3階層）', () => {
     const noteButtons = [...legend.querySelectorAll('.taste-note-list button')]
     expect(noteButtons.filter((b) => b.textContent?.includes('カカオ')).length).toBe(2)
     expect(noteButtons.some((b) => b.textContent?.includes('カカオ') && b.textContent?.includes('副対応'))).toBe(true)
+  })
+
+  it('根拠区分は輪郭でも区別する：実測＝輪郭なし／一般的知見＝実線／推測＝破線（R21-1）', () => {
+    // 味わいホイール第1階層：区分の異なる3セグメントだけを描く（具体名・化合物なし）
+    const { container } = render(
+      <TasteWheel sensations={{
+        sweet: sen('moderate', 'measured'),
+        bitter: sen('moderate', 'general'),
+        umami: sen('moderate', 'inferred'),
+      }} profileEntries={[]} />,
+    )
+    const paths = [...container.querySelectorAll('svg.wheel path')]
+    expect(paths).toHaveLength(3)
+    // SENSATION_ORDER 順（甘味＝実測、苦味＝一般的知見、うま味＝推測）
+    expect(paths[0].getAttribute('stroke')).toBe('#fff')
+    expect(paths[0].getAttribute('stroke-dasharray')).toBeNull()
+    expect(paths[1].getAttribute('stroke')).toBe('#333')
+    expect(paths[1].getAttribute('stroke-width')).toBe('1.4')
+    expect(paths[1].getAttribute('stroke-dasharray')).toBeNull()
+    expect(paths[2].getAttribute('stroke')).toBe('#333')
+    expect(paths[2].getAttribute('stroke-dasharray')).toBe('4 2')
+    // 輪郭の凡例説明が文字でも出る
+    expect(container.textContent).toContain('実測＝特別な輪郭なし')
+    expect(container.textContent).toContain('一般的知見＝実線の輪郭')
+    expect(container.textContent).toContain('推測＝破線の輪郭')
+
+    // 香りホイールも同じ作法
+    const aroma = render(
+      <FlavorWheel entries={[
+        note('berry', 'moderate', 'measured'),
+        note('citrus', 'moderate', 'general'),
+        note('minty', 'moderate', 'inferred'),
+      ]} />,
+    )
+    const apaths = [...aroma.container.querySelectorAll('svg.wheel path')]
+    expect(apaths).toHaveLength(3)
+    expect(apaths[0].getAttribute('stroke')).toBe('#fff')
+    expect(apaths[0].getAttribute('stroke-dasharray')).toBeNull()
+    expect(apaths[1].getAttribute('stroke')).toBe('#333')
+    expect(apaths[1].getAttribute('stroke-dasharray')).toBeNull()
+    expect(apaths[2].getAttribute('stroke-dasharray')).toBe('4 2')
+    expect(aroma.container.textContent).toContain('一般的知見＝実線の輪郭')
   })
 
   it('ホイールの文字ラベルは、別ノートが選択されていても薄くならない（R19-1：文字は常に不透明で最前面）', () => {
