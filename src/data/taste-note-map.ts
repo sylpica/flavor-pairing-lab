@@ -6,9 +6,16 @@ import { flavorNotes } from './flavors'
 // これは「表示構造」の対応づけであり、感覚データ（SensationEntry）の創作・改変ではない。
 // データ層では香りノートと感覚を分離したまま保持し、ホイール表示でのみ本対応づけで結ぶ。
 //
-// 方式（第12ラウンドで確定し、監査記録にも残す）:
-// - 主対応1つ方式：1つのノートは最大で1つの味カテゴリにのみ対応づける（複数の味に分散させない）。
-//   これにより第2階層の重み（ノートの強さ）が二重計上されず、第1階層の％（目安）が保たれる。
+// 方式（第12ラウンドで確定し、第15ラウンドで副対応を導入。監査記録にも残す）:
+// - 主対応＋副対応方式（ユーザー判断 2026-11-01）：1つのノートの主対応は最大で1つの味カテゴリのみ
+//   （主対応の唯一性は維持する）。これにより主対応側では第2階層の重み（ノートの強さ）が
+//   二重計上されず、第1階層の％（目安）が保たれる。
+// - 副対応：根拠がある場合に限り、主対応とは別の味カテゴリへの対応を追加できる。
+//   データ上は role: 'secondary' で区別し、根拠（basis）と出典（sourceIds）を必須とする。
+//   表示でも破線・薄色に加えて「副対応」と文字で明示し、主対応と区別する（色のみで区別しない）。
+//   第1階層の重み・％は感覚データ由来であり、対応づけ（主・副とも）では変えない。
+//   感覚データに無い味が副対応ノートだけで立つ場合は、従来どおり導出セグメント（推測）と
+//   して区別表示する。
 // - tier の意味：
 //   general = (a) 呈味成分に基づく対応（代表食品・代表化合物群に実際の呈味物質が含まれる）、
 //             または (b) 味覚―嗅覚相互作用の原著に基づく対応。
@@ -24,6 +31,8 @@ export interface TasteNoteMapping {
   noteId: string
   tasteKey: SensationKey
   tier: TasteMapTier
+  /** 主対応か副対応か。省略時は主対応（'primary'）。主対応は各ノート最大1つ */
+  role?: 'primary' | 'secondary'
   /** 対応づけの根拠。(a) 呈味成分 / (b) 味覚―嗅覚相互作用 / (c) 推測 の別を含む説明文 */
   basis: string
   sourceIds?: string[]
@@ -34,7 +43,7 @@ export const tasteNoteMappings: TasteNoteMapping[] = [
   { noteId: 'citrus', tasteKey: 'sour', tier: 'general',
     basis: '(a) 呈味成分：代表食品（レモン・ゆず等の柑橘果実）の支配的な呈味成分はクエン酸を主とする有機酸であり、化合物データでもクエン酸・リンゴ酸は酸味の呈味成分。香り成分（リモネン等）自体は呈味しないため、対応は果実の呈味に基づく。' },
   { noteId: 'apple-pear', tasteKey: 'sour', tier: 'general',
-    basis: '(a) 呈味成分：リンゴの特徴的な呈味成分はリンゴ酸（化合物データで酸味の呈味成分）。甘味も伴う食品だが、ノート名が示す果実の識別的な味として酸味を主対応に置く（主対応1つ方式）。' },
+    basis: '(a) 呈味成分：リンゴの特徴的な呈味成分はリンゴ酸（化合物データで酸味の呈味成分）。甘味も伴う食品だが、ノート名が示す果実の識別的な味として酸味を主対応に置く。' },
   { noteId: 'dried-fruit', tasteKey: 'sweet', tier: 'general',
     basis: '(a) 呈味成分：干しぶどう・干し杏等は乾燥により糖（スクロース・グルコース・果糖）が濃縮された食品であり、呈味物質である糖そのものに基づく対応。' },
   { noteId: 'honey', tasteKey: 'sweet', tier: 'general',
@@ -59,7 +68,7 @@ export const tasteNoteMappings: TasteNoteMapping[] = [
   { noteId: 'coffee', tasteKey: 'bitter', tier: 'general',
     basis: '(a) 呈味成分：コーヒーの代表呈味成分カフェイン（およびクロロゲン酸類）は苦味を持ち、化合物データでもカフェインは苦味（tasteKeys: bitter）の成分。' },
   { noteId: 'cacao-note', tasteKey: 'bitter', tier: 'general',
-    basis: '(a) 呈味成分：カカオの代表呈味成分テオブロミン・カフェインは苦味を持ち、焙煎カカオニブの呈味研究でも定量・官能評価されている。ポリフェノール由来の渋味も伴うが主対応は苦味（主対応1つ方式）。',
+    basis: '(a) 呈味成分：カカオの代表呈味成分テオブロミン・カフェインは苦味を持ち、焙煎カカオニブの呈味研究でも定量・官能評価されている。ポリフェノール由来の渋味も伴うが主対応は苦味。発酵由来の酸味については副対応を別に持つ。',
     sourceIds: ['stark-2006-cocoa-nibs-taste'] },
   { noteId: 'caramelized', tasteKey: 'sweet', tier: 'general',
     basis: '(a) 呈味成分：「焦がし」は砂糖（スクロース＝甘味の呈味成分）を焦がしたものという物質由来のノートであり、甘味が主調。焦げの苦味も伴うが主対応は甘味に置く。' },
@@ -77,7 +86,7 @@ export const tasteNoteMappings: TasteNoteMapping[] = [
   { noteId: 'stone-fruit', tasteKey: 'sweet', tier: 'inferred',
     basis: '(c) 推測：桃・杏等の核果は糖による甘味が支配的な果実であることからの連想。呈味成分としての直接の対応づけ根拠には届かない。' },
   { noteId: 'tropical', tasteKey: 'sweet', tier: 'inferred',
-    basis: '(c) 推測：マンゴー・パイナップル等の熱帯果実は糖の甘味が支配的であることからの連想。パイナップルは酸も強いが、主対応1つ方式のため甘味に置く。' },
+    basis: '(c) 推測：マンゴー・パイナップル等の熱帯果実は糖の甘味が支配的であることからの連想。パイナップルは酸も強いが、主対応は甘味に置く。' },
   { noteId: 'fruit-general', tasteKey: 'sweet', tier: 'inferred',
     basis: '(c) 推測：果実全般の支配的な味は概して糖の甘味であることからの連想。種類を特定しないノートであるため推測にとどめる。' },
   { noteId: 'cardamom-note', tasteKey: 'cooling', tier: 'inferred',
@@ -90,6 +99,11 @@ export const tasteNoteMappings: TasteNoteMapping[] = [
     basis: '(c) 推測：キャラメルは砂糖の加熱物で、その香りは甘味への連想が強い。バニラのような直接の原著が本データの再確認済み出典にないため、推測として対応づける（物質由来の「焦がし」とは扱いを分ける）。' },
   { noteId: 'cream-note', tasteKey: 'sweet', tier: 'inferred',
     basis: '(c) 推測：生クリームの香りを担うラクトン類は甘い香りを持ち、乳脂肪のまろやかさと併せて甘味への連想が成り立つが、呈味成分としての直接の対応ではないため推測とする。' },
+
+  // ===== 副対応（第15ラウンド追加。ユーザー判断 2026-11-01。根拠がある場合に限り追加する）=====
+  { noteId: 'cacao-note', tasteKey: 'sour', tier: 'general', role: 'secondary',
+    basis: '(a) 呈味成分（副対応）：発酵カカオ豆には発酵由来の酢酸・乳酸が含まれ、いずれも化合物データで酸味の呈味成分（tasteKeys: sour）であり、チョコレート素材への寄与リンク（実測）も化合物データ側にある。原著 Holm et al. 1993 は、発酵乾燥カカオ54試料の有機酸定量と、その豆で作ったチョコレートの官能評価・有機酸添加試験から、高い酸味スコアの主因が乳酸・酢酸の高濃度であることを示した。総説 Afoakwa et al. 2008 も、発酵豆の酸味の高さが乳酸・酢酸の濃度と結びつくことを整理している（同総説は Holm 1993 を引用）。カカオの主対応は苦味のままとし、酸味は副対応として併記する。',
+    sourceIds: ['afoakwa-2008-cocoa-flavour-review', 'holm-1993-cocoa-organic-acids'] },
 ]
 
 /** 対応づけなかったノートと、その理由（監査記録と対応させる） */
@@ -112,16 +126,27 @@ export const unmappedTasteNotes: { noteId: string; reason: string }[] = [
   { noteId: 'earth', reason: '土の香りに対応する呈味がない。' },
 ]
 
-const mappingByNoteId = new Map(tasteNoteMappings.map((m) => [m.noteId, m]))
+const primaryByNoteId = new Map(
+  tasteNoteMappings.filter((m) => m.role !== 'secondary').map((m) => [m.noteId, m]),
+)
+const mappingsByNoteId = new Map<string, TasteNoteMapping[]>()
+for (const m of tasteNoteMappings) {
+  const arr = mappingsByNoteId.get(m.noteId) ?? []
+  arr.push(m)
+  mappingsByNoteId.set(m.noteId, arr)
+}
 
-/** ノートの主対応（なければ undefined） */
-export const tasteMappingForNote = (noteId: string): TasteNoteMapping | undefined => mappingByNoteId.get(noteId)
+/** ノートの主対応（なければ undefined）。副対応は返さない */
+export const tasteMappingForNote = (noteId: string): TasteNoteMapping | undefined => primaryByNoteId.get(noteId)
 
-/** 味カテゴリに対応づけられたノートの対応一覧 */
+/** ノートの全対応（主対応＋副対応）。なければ空配列 */
+export const tasteMappingsForNote = (noteId: string): TasteNoteMapping[] => mappingsByNoteId.get(noteId) ?? []
+
+/** 味カテゴリに対応づけられたノートの対応一覧（主対応・副対応の両方を含む） */
 export const tasteMappingsForKey = (tasteKey: SensationKey): TasteNoteMapping[] =>
   tasteNoteMappings.filter((m) => m.tasteKey === tasteKey)
 
 /** 全ノートが「対応あり」か「対応なし（理由つき）」のどちらかで尽くされているかの自己点検用 */
 export const unmappedNoteIds = new Set(unmappedTasteNotes.map((u) => u.noteId))
 export const unaccountedNoteIds = (): string[] =>
-  flavorNotes.map((n) => n.id).filter((id) => !mappingByNoteId.has(id) && !unmappedNoteIds.has(id))
+  flavorNotes.map((n) => n.id).filter((id) => !mappingsByNoteId.has(id) && !unmappedNoteIds.has(id))

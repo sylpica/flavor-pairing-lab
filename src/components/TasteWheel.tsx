@@ -4,7 +4,7 @@ import { SENSATION_LABEL, TIER_LABEL, INTENSITY_LABEL } from '../types'
 import { weightPercents, polar, arcPath, compoundsForNoteInContext } from './FlavorWheel'
 import { noteById } from '../data/flavors'
 import { compoundById } from '../data/compounds'
-import { tasteMappingForNote, type TasteMapTier } from '../data/taste-note-map'
+import { tasteMappingsForNote, type TasteMapTier } from '../data/taste-note-map'
 
 // 味わいホイール（第12ラウンドで3階層化）。
 // 第1階層＝味そのもの（味覚・口腔感覚）。重みは感覚データ（SensationEntry）の強さ区分から取る。
@@ -17,6 +17,9 @@ import { tasteMappingForNote, type TasteMapTier } from '../data/taste-note-map'
 // 逆に、感覚データにある味で対応ノートが無い場合は第1階層のみとし、具体名を創作しない。
 // 推測の区別：対応づけが inferred の具体名と導出セグメントは、破線・薄色・文字ラベルで示す
 //   （色のみで区別しない）。
+// 副対応の区別（第15ラウンド）：主対応とは別の味への副対応（role: 'secondary'）の具体名も
+//   第2階層に含め、破線・薄色に加えて凡例・ツールチップで「副対応」と文字で明示する。
+//   感覚データに無い味が副対応だけで立つ場合も、導出セグメントとして推測明記する。
 // セグメントの大きさは強さ区分（弱い=1/中程度=2/強い=3）の視覚化であり、精密な数値ではない。
 const WEIGHT = { weak: 1, moderate: 2, strong: 3, unknown: 0 } as const
 const LEVEL = { unknown: 0, weak: 1, moderate: 2, strong: 3 } as const
@@ -44,6 +47,8 @@ export interface TasteNoteSlice {
   noteTier: ProfileEntry['tier']
   /** 味への対応づけの根拠区分 */
   mappingTier: TasteMapTier
+  /** 副対応（主対応とは別の味への対応づけ）かどうか */
+  secondary: boolean
   /** 推測として区別表示すべきか（対応が推測、またはノート自体が推測の場合） */
   inferred: boolean
   start: number
@@ -71,15 +76,15 @@ export function buildTasteWheelModel(
   sensations: Partial<Record<SensationKey, SensationEntry>>,
   profile: ProfileEntry[],
 ): TasteSegment[] {
-  // ノートを対応先の味ごとに集める
-  const notesByKey = new Map<SensationKey, { entry: ProfileEntry; mappingTier: TasteMapTier }[]>()
+  // ノートを対応先の味ごとに集める（主対応・副対応の両方を対象とする）
+  const notesByKey = new Map<SensationKey, { entry: ProfileEntry; mappingTier: TasteMapTier; secondary: boolean }[]>()
   for (const e of profile) {
     if (WEIGHT[e.intensity] === 0) continue
-    const m = tasteMappingForNote(e.noteId)
-    if (!m) continue
-    const arr = notesByKey.get(m.tasteKey) ?? []
-    arr.push({ entry: e, mappingTier: m.tier })
-    notesByKey.set(m.tasteKey, arr)
+    for (const m of tasteMappingsForNote(e.noteId)) {
+      const arr = notesByKey.get(m.tasteKey) ?? []
+      arr.push({ entry: e, mappingTier: m.tier, secondary: m.role === 'secondary' })
+      notesByKey.set(m.tasteKey, arr)
+    }
   }
   const presentKeys = SENSATION_ORDER.filter((k) => {
     const e = sensations[k]
@@ -113,6 +118,7 @@ export function buildTasteWheelModel(
         weight: WEIGHT[n.entry.intensity],
         noteTier: n.entry.tier,
         mappingTier: n.mappingTier,
+        secondary: n.secondary,
         inferred: n.mappingTier === 'inferred' || n.entry.tier === 'inferred',
         start: nAngle,
         end: nAngle + Math.max(nSpan - 0.015, 0.03),
@@ -218,6 +224,7 @@ export function TasteWheel({ sensations, contributors, profileEntries, compoundM
   const C = 120
   const hasDerived = segs.some((s) => s.derived)
   const hasNotes = segs.some((s) => s.notes.length > 0)
+  const hasSecondary = segs.some((s) => s.notes.some((n) => n.secondary))
   return (
     <div className="wheel-wrap">
       <svg viewBox="0 0 240 240" className="wheel" role="img" aria-label="味わいホイール（第1階層：味覚・口腔感覚、第2階層：その味に対応づけられた香味の具体名、第3階層：化合物）">
@@ -234,16 +241,20 @@ export function TasteWheel({ sensations, contributors, profileEntries, compoundM
             </path>
           )
         })}
-        {segs.flatMap((s) => s.notes.map((n) => (
-          <path key={`note-${n.noteId}`} d={arcPath(C, C, 94, 70, n.start, n.end)}
-            fill={COLOR[s.key]} opacity={n.inferred ? 0.34 : 0.55}
-            stroke={n.inferred ? '#333' : '#fff'} strokeWidth={n.inferred ? 1.4 : 0.8}
-            strokeDasharray={n.inferred ? '4 2' : undefined}
+        {segs.flatMap((s) => s.notes.map((n) => {
+          // 副対応は推測でなくても主対応と区別する（破線・薄色＋「副対応」の文字）
+          const distinguished = n.inferred || n.secondary
+          return (
+          <path key={`note-${s.key}-${n.noteId}`} d={arcPath(C, C, 94, 70, n.start, n.end)}
+            fill={COLOR[s.key]} opacity={n.inferred ? 0.34 : n.secondary ? 0.42 : 0.55}
+            stroke={distinguished ? '#333' : '#fff'} strokeWidth={distinguished ? 1.4 : 0.8}
+            strokeDasharray={distinguished ? '4 2' : undefined}
             onMouseEnter={() => setHover(n.noteId)} onMouseLeave={() => setHover(null)}
             onClick={() => onSelectNote?.(n.noteId)} style={{ cursor: onSelectNote ? 'pointer' : undefined }}>
-            <title>{noteById(n.noteId)?.name}（{SENSATION_LABEL[s.key]}に対応づけられた具体名・対応の根拠：{n.mappingTier === 'inferred' ? '推測' : '一般的知見'}／ノート自体：{TIER_LABEL[n.noteTier]}）</title>
+            <title>{noteById(n.noteId)?.name}（{SENSATION_LABEL[s.key]}に対応づけられた具体名{n.secondary ? '・副対応' : ''}・対応の根拠：{n.mappingTier === 'inferred' ? '推測' : '一般的知見'}／ノート自体：{TIER_LABEL[n.noteTier]}）</title>
           </path>
-        )))}
+          )
+        }))}
         {segs.map((s) => {
           const name = SENSATION_LABEL[s.key]
           const mid = (s.start + s.end) / 2
@@ -267,7 +278,7 @@ export function TasteWheel({ sensations, contributors, profileEntries, compoundM
           const size = [7.5, 6.8, 6.2, 5.6].find((fs) => name.length * fs * 1.02 <= arcLen)
           if (!size) return null
           return (
-            <text key={`nlabel-${n.noteId}`} x={lx} y={ly + size * 0.35} textAnchor="middle"
+            <text key={`nlabel-${s.key}-${n.noteId}`} x={lx} y={ly + size * 0.35} textAnchor="middle"
               className="wheel-note-label" style={{ fontSize: size, opacity: active && active !== n.noteId ? 0.35 : 1 }}>{name}</text>
           )
         }))}
@@ -299,7 +310,7 @@ export function TasteWheel({ sensations, contributors, profileEntries, compoundM
       </svg>
       <p className="muted wheel-pct-note">％は強さ区分（弱い・中程度・強い）の重みから計算した目安で、実測の割合ではありません（合計100%になるよう調整）。</p>
       {hasNotes && (
-        <p className="muted wheel-compound-note">第2階層の具体名は、その味に対応づけられた香味ノートです（対応の根拠はデータで保持し、推測の対応は破線と「推測」表記で区別します）。{hasDerived ? '感覚データに無い味は、対応ノートの強さから導出した推測として第1階層に破線で示します。' : ''}</p>
+        <p className="muted wheel-compound-note">第2階層の具体名は、その味に対応づけられた香味ノートです（対応の根拠はデータで保持し、推測の対応は破線と「推測」表記で区別します）。{hasSecondary ? '「副対応」と付いた具体名は、そのノートの主対応とは別の味への副次的な対応づけで、破線と「副対応」表記で主対応と区別します。' : ''}{hasDerived ? '感覚データに無い味は、対応ノートの強さから導出した推測として第1階層に破線で示します。' : ''}</p>
       )}
       {csegs.length > 0 && (
         <p className="muted wheel-compound-note">第3階層（外側の輪）：表示中の素材で報告された化合物（濃い＝寄与の根拠あり／薄い＝組成・検出のみ）。クリックで化合物の詳細へ。名前が入りきらない化合物は、凡例でノートを選ぶと詳細に全件表示されます。</p>
@@ -325,6 +336,7 @@ export function TasteWheel({ sensations, contributors, profileEntries, compoundM
                         onClick={() => onSelectNote?.(n.noteId)}>
                         {note?.name}
                         {n.inferred ? '（推測）' : n.noteTier === 'measured' ? '（実測）' : n.noteTier === 'general' ? '（一般的知見）' : '（情報不足）'}
+                        {n.secondary ? '（副対応）' : ''}
                         {names.length > 0 && (
                           <span className="legend-compounds">・化合物：{names.slice(0, 3).join('、')}{names.length > 3 ? ` ほか${names.length - 3}種` : ''}</span>
                         )}

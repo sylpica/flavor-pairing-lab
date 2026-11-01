@@ -46,6 +46,34 @@ describe('buildTasteWheelModel（味わいホイール3階層の表示モデル�
     expect(model[0].notes).toEqual([])
   })
 
+  it('副対応：カカオは苦味（主対応）と酸味（副対応）の両方の具体名に現れる（第15ラウンド）', () => {
+    const model = buildTasteWheelModel(
+      { bitter: sen('strong'), sour: sen('moderate') },
+      [note('cacao-note', 'strong')],
+    )
+    const bitter = model.find((s) => s.key === 'bitter')!
+    expect(bitter.notes.map((n) => n.noteId)).toEqual(['cacao-note'])
+    expect(bitter.notes[0].secondary).toBe(false)
+    const sour = model.find((s) => s.key === 'sour')!
+    expect(sour.derived).toBe(false)
+    expect(sour.notes.map((n) => n.noteId)).toEqual(['cacao-note'])
+    expect(sour.notes[0].secondary).toBe(true)
+    expect(sour.notes[0].mappingTier).toBe('general')
+  })
+
+  it('副対応だけで立つ味は導出セグメント（推測）になる（第15ラウンド）', () => {
+    const model = buildTasteWheelModel(
+      { bitter: sen('strong') },
+      [note('cacao-note', 'strong')],
+    )
+    const sour = model.find((s) => s.key === 'sour')!
+    expect(sour).toBeTruthy()
+    expect(sour.derived).toBe(true)
+    expect(sour.entry).toBeUndefined()
+    expect(sour.notes.map((n) => n.noteId)).toEqual(['cacao-note'])
+    expect(sour.notes[0].secondary).toBe(true)
+  })
+
   it('対応づけが推測のノートは inferred フラグが立つ（ノート自体が実測でも）', () => {
     const model = buildTasteWheelModel({ sweet: sen('weak') }, [note('berry', 'strong', 'measured')])
     const sweet = model.find((s) => s.key === 'sweet')!
@@ -100,6 +128,23 @@ describe('TasteWheel の描画（3階層）', () => {
     expect(dashed.length).toBeGreaterThan(0)
     expect(container.textContent).toContain('推測')
     expect(container.textContent).toContain('導出')
+  })
+
+  it('副対応の具体名は「副対応」と文字で区別して描かれる（チョコレート素材詳細）', () => {
+    const m = materialById('choco-dark-unroasted')! // 酸味の感覚データあり＋カカオノートを持つ
+    const { container } = render(
+      <TasteWheel sensations={m.sensations} profileEntries={m.profile} compoundMaterialIds={[m.id]} />,
+    )
+    const svg = container.querySelector('svg.wheel')!
+    // 副対応スライスのツールチップに「副対応」と明示される
+    const titles = [...svg.querySelectorAll('title')].map((t) => t.textContent ?? '')
+    expect(titles.some((t) => t.includes('カカオ') && t.includes('副対応'))).toBe(true)
+    // 凡例でも「副対応」と文字で区別され、カカオは苦味・酸味の両グループに現れる
+    const legend = container.querySelector('.wheel-legend')!
+    expect(legend.textContent).toContain('副対応')
+    const noteButtons = [...legend.querySelectorAll('.taste-note-list button')]
+    expect(noteButtons.filter((b) => b.textContent?.includes('カカオ')).length).toBe(2)
+    expect(noteButtons.some((b) => b.textContent?.includes('カカオ') && b.textContent?.includes('副対応'))).toBe(true)
   })
 
   it('感覚データも対応ノートも無ければ未収録メッセージ', () => {
