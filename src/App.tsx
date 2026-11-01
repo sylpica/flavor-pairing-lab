@@ -241,7 +241,7 @@ function PairingView() {
   const [mode, setMode] = usePersistentState<PairingMode>('pairing:mode', 'harmony')
   const [ratios, setRatios] = usePersistentState<Record<string, number>>('pairing:ratios', {})
   const [noteId, setNoteId] = useState<string | null>(null)
-  const [wheelMode, setWheelMode] = useState<'aroma' | 'taste'>('taste')
+  const [wheelMode, setWheelMode] = useState<'aroma' | 'taste'>('aroma')
   const [ratioNotice, setRatioNotice] = useState<string | null>(null)
   const [pairingNotice, setPairingNotice] = useState<string | null>(null)
   const [canUndo, setCanUndo] = useState(false)
@@ -468,7 +468,7 @@ function PairingView() {
             <div>
               <h3>組み合わせのホイール</h3>
               <div className="mode-tabs" role="tablist" aria-label="ホイールの表示モード">
-                {([['taste', '味わい'], ['aroma', '香り']] as const).map(([wm, label]) => (
+                {([['aroma', '香り'], ['taste', '味わい']] as const).map(([wm, label]) => (
                   <button key={wm} role="tab" aria-selected={wheelMode === wm} className={wheelMode === wm ? 'tab active' : 'tab'} onClick={() => setWheelMode(wm)}>{label}</button>
                 ))}
               </div>
@@ -688,7 +688,7 @@ function SearchView() {
 function MaterialDetail({ id }: { id: string }) {
   const m = materialById(id)
   const [noteId, setNoteId] = useState<string | null>(null)
-  const [wheelMode, setWheelMode] = useState<'aroma' | 'taste'>('taste')
+  const [wheelMode, setWheelMode] = useState<'aroma' | 'taste'>('aroma')
   // 別の素材へ遷移したら、前の素材で開いたノート詳細パネルを引き継がない（監査 K-03）
   useEffect(() => { setNoteId(null) }, [id])
   if (!m) return <p>素材が見つかりません。</p>
@@ -721,7 +721,7 @@ function MaterialDetail({ id }: { id: string }) {
       <div id="mat-wheel" className="anchor-block">
       <h3>ホイール（香り／味わい）</h3>
       <div className="mode-tabs" role="tablist" aria-label="ホイールの表示モード">
-        {([['taste', '味わい'], ['aroma', '香り']] as const).map(([wm, label]) => (
+        {([['aroma', '香り'], ['taste', '味わい']] as const).map(([wm, label]) => (
           <button key={wm} role="tab" aria-selected={wheelMode === wm} className={wheelMode === wm ? 'tab active' : 'tab'} onClick={() => setWheelMode(wm)}>{label}</button>
         ))}
       </div>

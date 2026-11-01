@@ -57,23 +57,22 @@ describe('画面レンダリング', () => {
     window.location.hash = '#/material/tea-sencha'
     const { container } = render(<App />)
     const svgText = () => container.querySelector('svg')?.textContent ?? ''
-    // デフォルトは味わいモード（R12-1：味を先に出す）。味わいホイールが出ている
-    expect(svgText()).toContain('味わい')
-    expect(svgText()).toContain('うま味')
-    // 香りモードへ切替：ノート名がホイール上に描かれる（無地セグメントを作らない）
-    fireEvent.click(screen.getByRole('tab', { name: '香り' }))
+    // デフォルトは香りモード（R20-1：香りを先に出す。R12-1 の味デフォルトをユーザーが覆した）。香りホイールが出ている
     expect(svgText()).toContain('香り')
     expect(svgText().length).toBeGreaterThan(10)
-    // 味わいに戻せる
+    // 味わいモードへ切替：味わいホイールが出る
     fireEvent.click(screen.getByRole('tab', { name: '味わい' }))
+    expect(svgText()).toContain('味わい')
+    expect(svgText()).toContain('うま味')
+    // 香りに戻せる
+    fireEvent.click(screen.getByRole('tab', { name: '香り' }))
     expect(svgText()).toContain('ホイール')
   })
 
   it('素材詳細のホイール外側の輪に、その素材で報告された化合物名が描かれる', () => {
     window.location.hash = '#/material/tea-sencha'
     const { container } = render(<App />)
-    // デフォルトは味わいなので、香りモードへ切り替えてから確認する
-    fireEvent.click(screen.getByRole('tab', { name: '香り' }))
+    // デフォルトは香りモード（R20-1）なので、そのまま確認する
     const svgText = container.querySelector('svg')?.textContent ?? ''
     // 煎茶で寄与が報告されたリナロールが、ホイール（SVG）の中に化合物として現れる
     expect(svgText).toContain('リナロール')
@@ -352,8 +351,7 @@ describe('画面レンダリング', () => {
   it('ホイールの凡例に％（目安）が出て、合計が100になる（R10-1）', () => {
     window.location.hash = '#/material/tea-sencha'
     const { container } = render(<App />)
-    // デフォルトは味わい（R12-1）なので、香りホイールの確認は香りモードへ切り替えてから
-    fireEvent.click(screen.getByRole('tab', { name: '香り' }))
+    // デフォルトは香り（R20-1）なので、香りホイールはそのまま確認する
     // 香りホイール：凡例の各項目に％があり、抽出できる％の合計が100
     const legendText = [...container.querySelectorAll('.wheel-legend .legend-btn')]
       .map((el) => el.textContent ?? '').join(' ')
@@ -382,31 +380,33 @@ describe('画面レンダリング', () => {
     expect(resetBtn.disabled).toBe(true)
   })
 
-  /* ===== 横展開ウォッチ第12弾：味デフォルト＋凡例の化合物名 ===== */
+  /* ===== 横展開ウォッチ第12弾：凡例の化合物名／第20弾：香りデフォルトへの入替 ===== */
 
-  it('ホイールの切替は味わいが左・デフォルトで、香りが右（R12-1）', () => {
+  it('ホイールの切替は香りが左・デフォルトで、味わいが右（R20-1）', () => {
     window.location.hash = '#/material/tea-sencha'
     render(<App />)
     const tasteTab = screen.getByRole('tab', { name: '味わい' })
     const aromaTab = screen.getByRole('tab', { name: '香り' })
-    // デフォルトで味わいが選択されている
-    expect(tasteTab.getAttribute('aria-selected')).toBe('true')
-    expect(aromaTab.getAttribute('aria-selected')).toBe('false')
-    // 並び順：味わいボタンが香りボタンより前（左）にある
-    expect(tasteTab.compareDocumentPosition(aromaTab) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    // デフォルトで香りが選択されている（R12-1 の味デフォルトは pairing seq 27776 のユーザー指示で置き換え）
+    expect(aromaTab.getAttribute('aria-selected')).toBe('true')
+    expect(tasteTab.getAttribute('aria-selected')).toBe('false')
+    // 並び順：香りボタンが味わいボタンより前（左）にある
+    expect(aromaTab.compareDocumentPosition(tasteTab) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
     // ペアリング画面でも同じ並び・デフォルト
     cleanup()
     window.location.hash = '#/pairing'
     render(<App />)
     const pTaste = screen.getByRole('tab', { name: '味わい' })
     const pAroma = screen.getByRole('tab', { name: '香り' })
-    expect(pTaste.getAttribute('aria-selected')).toBe('true')
-    expect(pTaste.compareDocumentPosition(pAroma) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(pAroma.getAttribute('aria-selected')).toBe('true')
+    expect(pAroma.compareDocumentPosition(pTaste) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   })
 
   it('素材詳細の味わいホイールが3階層になる（R12-3：第2階層の具体名が図と凡例に出る）', () => {
     window.location.hash = '#/material/tea-sencha'
     const { container } = render(<App />)
+    // デフォルトは香り（R20-1）のため、味わいモードへ切り替えてから確認する
+    fireEvent.click(screen.getByRole('tab', { name: '味わい' }))
     const figure = container.querySelector('figure.wheel-figure')!
     const svg = figure.querySelector('svg.wheel')!
     // 第1階層：味＋％
