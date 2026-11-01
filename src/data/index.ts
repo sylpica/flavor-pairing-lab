@@ -9,6 +9,7 @@ import { expansionShSources } from './sources-expansion-sh'
 import { expansionDairySources } from './sources-expansion-dairy'
 import { round10Sources } from './sources-expansion-round10'
 import { round11Sources } from './sources-expansion-round11'
+import { round16Sources } from './sources-expansion-round16'
 import { teaMaterials, chocolateMaterials } from './materials-tea-chocolate'
 import { spiceMaterials, herbMaterials } from './materials-spice-herb'
 import { expansionTeaMaterials } from './materials-expansion-tea'
@@ -27,7 +28,7 @@ import { axisLabel } from './axis-labels'
 export const sources: Source[] = [
   ...teaChocolateSources, ...spiceHerbSources,
   ...expansionTeaSources, ...expansionTea2Sources, ...expansionTea3Sources, ...expansionCacaoSources, ...expansionShSources,
-  ...expansionDairySources, ...round10Sources, ...round11Sources,
+  ...expansionDairySources, ...round10Sources, ...round11Sources, ...round16Sources,
 ]
 export const materials: Material[] = [
   ...teaMaterials, ...chocolateMaterials, ...spiceMaterials, ...herbMaterials,

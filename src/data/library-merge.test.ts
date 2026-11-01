@@ -28,18 +28,19 @@ describe('文献画面の出典マージ（台帳と再確認済みの重複除�
     expect(m.ledgerKept.map((s) => s.id)).toEqual(['l2'])
   })
 
-  it('実データ：台帳と重複する14件が除去され、総数は793件になる', () => {
+  it('実データ：台帳と重複する14件が除去され、総数は798件になる', () => {
     const m = mergeLibrarySources(sources, pairingImportedSources)
-    // 第14ラウンド後の実測値（2026-11-01）：再確認済み335件（第13ラウンド後の334件に、
-    // 文献取り込みラウンドで saitama-pref-tea-cultivars を新規登録。あわせて eu-2022 の
-    // verified 格上げ bibliographic→abstract を含むが件数は不変）。
-    // 台帳472件（件数不変。Panda 2022 の誌名への巻号・ページ補完を含む）。重複除去は14件のまま
-    // （新規登録した題名は台帳側と一致しない）。
-    // 総数 = 335 + 472 − 14 = 793。
-    expect(sources.length).toBe(335)
+    // 第16ラウンド後の実測値（2026-11-01）：再確認済み340件（第15ラウンド後の335件に、
+    // 文献取り込み第2回で horie-2018-matcha-composition、unno-2026-green-tea-composition、
+    // zheng-2025-baimudan-cultivars、wang-2022-oolong-regions、wang-2025-ancient-ripe-puerh
+    // の5件を新規登録。あわせて zhang-2022-tea-organic-acids の verified 格上げ
+    // abstract→full を含むが件数は不変）。
+    // 台帳472件（件数不変）。重複除去は14件のまま（新規登録した題名は台帳側と一致しない）。
+    // 総数 = 340 + 472 − 14 = 798。
+    expect(sources.length).toBe(340)
     expect(pairingImportedSources.length).toBe(472)
     expect(m.removedCount).toBe(14)
-    expect(m.sources.length).toBe(793)
+    expect(m.sources.length).toBe(798)
     // 除去後は、台帳側に残った出典が再確認済みとタイトル＋年で重複していない
     const verifiedKeys = new Set(sources.map((s) => sourceMatchKey(s.title, s.year)))
     for (const s of m.ledgerKept) expect(verifiedKeys.has(sourceMatchKey(s.title, s.year))).toBe(false)

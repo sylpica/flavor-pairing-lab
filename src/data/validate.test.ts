@@ -142,3 +142,54 @@ describe('監査（第13ラウンド）修正の回帰防止', () => {
     expect(sourceIds.has(CAPSAICIN_MODEL_SOURCE_ID), CAPSAICIN_MODEL_SOURCE_ID).toBe(true)
   })
 })
+
+describe('第16ラウンド（文献取り込み第2回）の回帰防止', () => {
+  const mat = (id: string) => materials.find((m) => m.id === id)!
+  const src = (id: string) => sources.find((s) => s.id === id)
+
+  it('新規登録5件が一次情報で確認した書誌・格付けで存在する', () => {
+    expect(src('horie-2018-matcha-composition')?.verified).toBe('abstract')
+    expect(src('unno-2026-green-tea-composition')?.verified).toBe('full')
+    expect(src('unno-2026-green-tea-composition')?.doi).toBe('10.3390/molecules31162934')
+    expect(src('zheng-2025-baimudan-cultivars')?.verified).toBe('full')
+    expect(src('wang-2022-oolong-regions')?.verified).toBe('full')
+    expect(src('wang-2025-ancient-ripe-puerh')?.verified).toBe('full')
+    // Zhang 2022 は PMC 全文で官能評価値を確認し full に格上げした
+    expect(src('zhang-2022-tea-organic-acids')?.verified).toBe('full')
+  })
+  it('Q-07：抹茶の渋味は moderate のまま原著2件で補強され、玉露の weak には手を付けない', () => {
+    const matcha = mat('tea-matcha')
+    expect(matcha.sensations.astringent?.intensity).toBe('moderate')
+    expect(matcha.sensations.astringent?.sourceIds).toContain('horie-2018-matcha-composition')
+    expect(matcha.sensations.astringent?.sourceIds).toContain('unno-2026-green-tea-composition')
+    const gyokuro = mat('tea-gyokuro')
+    expect(gyokuro.sensations.astringent?.intensity).toBe('weak')
+    expect(gyokuro.sensations.astringent?.sourceIds).toEqual(['ye-2022-bitterness-astringency'])
+  })
+  it('Q-08：紅茶の甘味は moderate に改められ酸味 weak が付き、試料留保が備考に残る', () => {
+    const black = mat('tea-black-general')
+    expect(black.sensations.sweet?.intensity).toBe('moderate')
+    expect(black.sensations.sour?.intensity).toBe('weak')
+    expect(black.sensations.sour?.note).toContain('TAV')
+  })
+  it('Q-08：黒茶（プーアル）の感覚値は熟茶専用データで書き換えない', () => {
+    const puer = mat('tea-dark-puer')
+    expect(puer.sensations.sweet?.intensity).toBe('weak')
+    expect(puer.sensations.sour).toBeUndefined()
+    expect(puer.sourceIds).toContain('wang-2025-ancient-ripe-puerh')
+    expect(puer.scopeNote).toContain('反映していない')
+  })
+  it('Q-08：単叢に甘味 weak が付き、ミルクチョコに酸味 weak（未確認の明記つき）が付く', () => {
+    const dancong = mat('tea-dancong')
+    expect(dancong.sensations.sweet?.intensity).toBe('weak')
+    expect(dancong.sensations.sweet?.note).toContain('単独実測ではない')
+    const milk = mat('choco-milk')
+    expect(milk.sensations.sour?.intensity).toBe('weak')
+    expect(milk.sensations.sour?.sourceIds).toEqual(['afoakwa-2008-cocoa-flavour-review'])
+    expect(milk.sensations.sour?.note).toContain('未確認')
+  })
+  it('Q-08：遺伝集団素材（クリオロ・ナシオナル）には味を付けない設計を維持する', () => {
+    expect(Object.keys(mat('cacao-gen-criollo').sensations)).toHaveLength(0)
+    expect(Object.keys(mat('cacao-gen-nacional').sensations)).toHaveLength(0)
+  })
+})
