@@ -147,6 +147,26 @@ describe('TasteWheel の描画（3階層）', () => {
     expect(noteButtons.some((b) => b.textContent?.includes('カカオ') && b.textContent?.includes('副対応'))).toBe(true)
   })
 
+  it('ホイールの文字ラベルは、別ノートが選択されていても薄くならない（R19-1：文字は常に不透明で最前面）', () => {
+    const m = materialById('tea-sencha')!
+    const { container } = render(
+      <TasteWheel sensations={m.sensations} profileEntries={m.profile} compoundMaterialIds={[m.id]} selectedNoteId="seaweed" />,
+    )
+    const labels = [...container.querySelectorAll('.wheel-note-label')]
+    expect(labels.length).toBeGreaterThan(1)
+    for (const l of labels) {
+      const op = (l as HTMLElement).style.opacity
+      expect(op === '' || op === '1').toBe(true)
+    }
+    // ラベルはセグメントのパスより後（＝手前）に描かれる
+    const svg = container.querySelector('svg.wheel')!
+    const children = [...svg.children]
+    const firstLabelIdx = children.findIndex((c) => c.classList.contains('wheel-note-label'))
+    const lastPathIdx = children.map((c, i) => (c.tagName === 'path' ? i : -1)).filter((i) => i >= 0).pop()!
+    expect(lastPathIdx).toBeGreaterThanOrEqual(0)
+    expect(firstLabelIdx).toBeGreaterThan(lastPathIdx)
+  })
+
   it('感覚データも対応ノートも無ければ未収録メッセージ', () => {
     const { container } = render(<TasteWheel sensations={{}} profileEntries={[]} />)
     expect(container.textContent).toContain('未収録')

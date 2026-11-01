@@ -21,6 +21,8 @@ import { tasteMappingsForNote, type TasteMapTier } from '../data/taste-note-map'
 //   第2階層に含め、破線・薄色に加えて凡例・ツールチップで「副対応」と文字で明示する。
 //   感覚データに無い味が副対応だけで立つ場合も、導出セグメントとして推測明記する。
 // セグメントの大きさは強さ区分（弱い=1/中程度=2/強い=3）の視覚化であり、精密な数値ではない。
+// 文字ラベルは全セグメントより後に（＝手前に）不透明の黒で描き、セグメントの色や選択状態で
+//   薄くならない（初心者用 pairing でのユーザー指示「黒い文字を前に、色の後ろに隠れて薄くならないように」を適用）。
 const WEIGHT = { weak: 1, moderate: 2, strong: 3, unknown: 0 } as const
 const LEVEL = { unknown: 0, weak: 1, moderate: 2, strong: 3 } as const
 const TIER_STRENGTH = { measured: 3, general: 2, inferred: 1, insufficient: 0 } as const
@@ -179,7 +181,9 @@ export function TasteWheel({ sensations, contributors, profileEntries, compoundM
   selectedNoteId?: string | null
   onSelectCompound?: (compoundId: string) => void
 }) {
-  const [hover, setHover] = useState<string | null>(null)
+  // ホバー状態は保持するが、文字ラベルを薄くするためには使わない
+  // （文字は常に不透明の黒で最前面に描く。初心者用 pairing でのユーザー指示を適用）。
+  const [, setHover] = useState<string | null>(null)
   const segs = useMemo(
     () => buildTasteWheelModel(sensations, profileEntries ?? []),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -220,7 +224,6 @@ export function TasteWheel({ sensations, contributors, profileEntries, compoundM
   }, [segs, compoundMaterialIds?.join(',')])
 
   if (segs.length === 0) return <p className="muted">味覚・口腔感覚のデータは未収録です。</p>
-  const active = hover ?? selectedNoteId
   const C = 120
   const hasDerived = segs.some((s) => s.derived)
   const hasNotes = segs.some((s) => s.notes.length > 0)
@@ -279,7 +282,7 @@ export function TasteWheel({ sensations, contributors, profileEntries, compoundM
           if (!size) return null
           return (
             <text key={`nlabel-${s.key}-${n.noteId}`} x={lx} y={ly + size * 0.35} textAnchor="middle"
-              className="wheel-note-label" style={{ fontSize: size, opacity: active && active !== n.noteId ? 0.35 : 1 }}>{name}</text>
+              className="wheel-note-label" style={{ fontSize: size }}>{name}</text>
           )
         }))}
         {csegs.map((c) => {
