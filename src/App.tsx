@@ -178,7 +178,7 @@ export function NoteDetailPanel({ noteId, contextMaterialIds, contextLabel, onCl
       {scoped.length ? (
         <ul>{scoped.map(({ compound, entries }) => (
           <li key={compound.id}>
-            <a href={`#/compound/${compound.id}`}>{compound.nameJa}</a>
+            <a className="compound-name" href={`#/compound/${compound.id}`}>{compound.nameJa}</a>
             <span className="muted">：{entries.map((e) => `${e.materialName}［${LINK_KIND_LABEL[e.kind as keyof typeof LINK_KIND_LABEL]}・${TIER_LABEL[e.tier as keyof typeof TIER_LABEL] ?? e.tier}］`).join('、')}</span>
           </li>
         ))}</ul>
@@ -187,7 +187,7 @@ export function NoteDetailPanel({ noteId, contextMaterialIds, contextLabel, onCl
         <summary>辞典：この香りに関連する全化合物（{dictionary.length}件）</summary>
         {dictionary.length ? (
           <ul>{dictionary.map((c) => (
-            <li key={c.id}><a href={`#/compound/${c.id}`}>{c.nameJa}</a>：{c.sensoryKnowledge}</li>
+            <li key={c.id}><a className="compound-name" href={`#/compound/${c.id}`}>{c.nameJa}</a>：{c.sensoryKnowledge}</li>
           ))}</ul>
         ) : <p className="muted">この香りに直接関連づけられた化合物は未収録です。</p>}
       </details>
@@ -545,7 +545,7 @@ function PairingView() {
               {analysis.sharedCompounds.length ? (
                 <>
                   <ul>{analysis.sharedCompounds.map((c) => (
-                    <li key={c.compoundId}><a href={`#/compound/${c.compoundId}`}>{c.compoundName}</a></li>
+                    <li key={c.compoundId}><a className="compound-name" href={`#/compound/${c.compoundId}`}>{c.compoundName}</a></li>
                   ))}</ul>
                   <p className="scope-note footnote">※ {analysis.sharedCompounds[0].caution}</p>
                 </>
@@ -768,7 +768,7 @@ function MaterialDetail({ id }: { id: string }) {
           const c = compoundById(l.compoundId)
           return (
             <li key={l.compoundId + l.kind}>
-              <a href={`#/compound/${l.compoundId}`}>{c?.nameJa}</a>
+              <a className="compound-name" href={`#/compound/${l.compoundId}`}>{c?.nameJa}</a>
               <span className="badge">{l.kind === 'contribution' ? '寄与の根拠あり' : l.kind === 'composition' ? '組成' : '検出'}</span>
               <TierBadge tier={l.tier} />
               {l.conditions && <span className="muted"> {l.conditions}</span>}
@@ -1149,7 +1149,7 @@ function ChemistryView() {
                 const c = compoundById(l.compoundId)
                 return (
                   <li key={l.compoundId + l.kind}>
-                    <a href={`#/compound/${l.compoundId}`}>{c?.nameJa}</a>
+                    <a className="compound-name" href={`#/compound/${l.compoundId}`}>{c?.nameJa}</a>
                     <span className="muted"> {l.kind === 'contribution' ? '寄与の根拠あり' : l.kind === 'composition' ? '組成として報告' : '検出の報告'}・{TIER_LABEL[l.tier]}</span>
                   </li>
                 )
@@ -1166,7 +1166,7 @@ function ChemistryView() {
       {filteredCompounds.length ? (
         <ul className="compound-list">
           {filteredCompounds.map((c) => (
-            <li key={c.id}><a href={`#/compound/${c.id}`}>{c.nameJa}</a><span className="muted"> {c.compoundClass}</span></li>
+            <li key={c.id}><a className="compound-name" href={`#/compound/${c.id}`}>{c.nameJa}</a><span className="muted"> {c.compoundClass}</span></li>
           ))}
         </ul>
       ) : <p className="muted">条件に合う化合物はありません。</p>}
@@ -1181,7 +1181,7 @@ function CompoundDetail({ id }: { id: string }) {
   return (
     <section>
       <p><a href="#/chemistry">← 香味化学へ</a></p>
-      <h2><span className="h2-kicker" aria-hidden="true">COMPOUND FILE — 化合物詳細</span>{c.nameJa} <span className="en-name">{c.nameEn}</span></h2>
+      <h2><span className="h2-kicker" aria-hidden="true">COMPOUND FILE — 化合物詳細</span><span className="compound-name">{c.nameJa}</span> <span className="en-name">{c.nameEn}</span></h2>
       <dl className="spec-table">
         <div className="spec-cell"><dt>分類</dt><dd>{c.compoundClass}</dd></div>
         <div className="spec-cell"><dt>揮発性</dt><dd>{c.volatile ? '揮発性' : '非揮発性'}</dd></div>

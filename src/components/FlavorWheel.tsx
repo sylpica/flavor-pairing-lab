@@ -199,7 +199,7 @@ export function FlavorWheel({ entries, onSelectNote, selectedNoteId, compoundMat
                         {cat.name}：{note?.name} {s.pct}%
                         {s.tier === 'inferred' ? '（推測）' : s.tier === 'measured' ? '（実測）' : '（一般的知見）'}
                         {(() => { const names = legendCompoundNames.get(s.noteId) ?? []; return names.length > 0 && (
-                          <span className="legend-compounds">・化合物：{names.slice(0, 3).join('、')}{names.length > 3 ? ` ほか${names.length - 3}種` : ''}</span>
+                          <span className="legend-compounds">・化合物：{names.slice(0, 3).map((n, i) => (<span key={n}>{i > 0 ? '、' : ''}<span className="compound-name">{n}</span></span>))}{names.length > 3 ? ` ほか${names.length - 3}種` : ''}</span>
                         ) })()}
                       </button>
                     </li>

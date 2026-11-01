@@ -338,7 +338,7 @@ export function TasteWheel({ sensations, contributors, profileEntries, compoundM
                         {n.inferred ? '（推測）' : n.noteTier === 'measured' ? '（実測）' : n.noteTier === 'general' ? '（一般的知見）' : '（情報不足）'}
                         {n.secondary ? '（副対応）' : ''}
                         {names.length > 0 && (
-                          <span className="legend-compounds">・化合物：{names.slice(0, 3).join('、')}{names.length > 3 ? ` ほか${names.length - 3}種` : ''}</span>
+                          <span className="legend-compounds">・化合物：{names.slice(0, 3).map((n, i) => (<span key={n}>{i > 0 ? '、' : ''}<span className="compound-name">{n}</span></span>))}{names.length > 3 ? ` ほか${names.length - 3}種` : ''}</span>
                         )}
                       </button>
                     </li>

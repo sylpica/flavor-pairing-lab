@@ -465,6 +465,27 @@ describe('画面レンダリング', () => {
     expect(container.querySelectorAll('.material-card').length).toBeGreaterThan(0)
   })
 
+  it('化合物名は1単位として描かれ、途中で割れない構造になっている（R18-1）', () => {
+    window.location.hash = '#/material/tea-sencha'
+    const { container } = render(<App />)
+    fireEvent.click(screen.getByRole('tab', { name: '香り' }))
+    // 凡例の化合物名は各名が .compound-name の塊で描かれ、連結した表示文字列は変わらない
+    const legendCompounds = [...container.querySelectorAll('.legend-compounds')]
+    expect(legendCompounds.length).toBeGreaterThan(0)
+    const units = [...container.querySelectorAll('.legend-compounds .compound-name')].map((el) => el.textContent)
+    expect(units).toContain('リナロール')
+    expect(units.every((u) => u && u.length >= 2)).toBe(true)
+    const joined = legendCompounds.map((el) => el.textContent ?? '').join(' ')
+    expect(joined).toContain('化合物：')
+    expect(joined).toContain('リナロール')
+    // 化合物リストのリンクも化合物名が1単位（.compound-name）で描かれる
+    window.location.hash = '#/chemistry'
+    const chem = render(<App />)
+    const listLinks = [...chem.container.querySelectorAll('.compound-list a.compound-name')]
+    expect(listLinks.length).toBeGreaterThan(0)
+    expect(listLinks.some((a) => a.textContent === 'リナロール')).toBe(true)
+  })
+
   it('素材詳細で開いたノート詳細パネルは、別の素材へ遷移したら閉じる（監査 K-03）', () => {
     window.location.hash = '#/material/tea-sencha'
     const { container } = render(<App />)
