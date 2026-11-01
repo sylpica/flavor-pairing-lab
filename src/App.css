@@ -173,6 +173,7 @@ button { transition: border-color .15s ease, background-color .15s ease, color .
 .material-card { border: 1px solid var(--line); border-radius: 12px; background: var(--card); padding: 16px 18px; box-shadow: var(--shadow); transition: transform .15s ease, box-shadow .15s ease; min-width: 0; overflow-wrap: break-word; }
 .material-card:hover { transform: translateY(-2px); }
 .material-card h3 { margin: 0 0 6px; }
+.material-card .name-qual { display: inline-block; max-width: 100%; vertical-align: bottom; word-break: keep-all; overflow-wrap: break-word; }
 .material-meta { color: var(--muted); font-size: 0.86rem; display: block; line-height: 1.6; }
 .en-name { color: var(--muted); font-size: 0.85rem; font-weight: 400; font-family: var(--serif); font-style: italic; }
 

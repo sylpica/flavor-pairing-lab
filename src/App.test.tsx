@@ -448,6 +448,23 @@ describe('画面レンダリング', () => {
     expect(legendText).toContain('リナロール')
   })
 
+  it('素材カードの名前は「本体＋（修飾）」の修飾部が意味の塊として分かれる（R17-1）', () => {
+    window.location.hash = '#/search'
+    const { container } = render(<App />)
+    fireEvent.click(screen.getByRole('tab', { name: 'チョコレート' }))
+    const link = screen.getByRole('link', { name: /ダークチョコレート（現代Nacional系・エクアドル）/ })
+    // リンクの全文（名前データそのもの）は変わらない
+    expect(link.textContent).toBe('ダークチョコレート（現代Nacional系・エクアドル）')
+    // 修飾部が独立した塊（.name-qual）になり、改行はその境界でのみ起きる
+    const qual = link.querySelector('.name-qual')
+    expect(qual?.textContent).toBe('（現代Nacional系・エクアドル）')
+    // 括弧書きのない名前は塊に分かれない
+    fireEvent.click(screen.getByRole('tab', { name: 'お茶' }))
+    const sencha = screen.getByRole('link', { name: '煎茶' })
+    expect(sencha.querySelector('.name-qual')).toBeNull()
+    expect(container.querySelectorAll('.material-card').length).toBeGreaterThan(0)
+  })
+
   it('素材詳細で開いたノート詳細パネルは、別の素材へ遷移したら閉じる（監査 K-03）', () => {
     window.location.hash = '#/material/tea-sencha'
     const { container } = render(<App />)

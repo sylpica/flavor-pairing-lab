@@ -570,6 +570,28 @@ function PairingView() {
   )
 }
 
+/* カード名の表示：名前が2行になるときは意味の切れ目で改行させる（pairing seq 27124 の横展開）。
+   「本体＋（修飾）」型の名前では修飾部を1つの塊（inline-block）として描き、行に収まらない場合は
+   丸ごと次の行へ送る。これにより「エクアドル」「ブラジル」等、地名・品種名の途中で切れる改行を防ぐ。
+   修飾部自体が1行幅を超える狭幅では、塊の内側で通常の折り返しにフォールバックする。 */
+function CardName({ name }: { name: string }) {
+  const idx = name.indexOf('（')
+  if (idx <= 0) return <strong>{name}</strong>
+  // 修飾部の内側の改行機会は「・」の直後だけに置く（修飾部自体が1行幅を超える狭幅でも、
+  // 地名・品種名の途中では切れず、意味の区切りで割れるようにするため）
+  const qualParts = name.slice(idx).split('・')
+  return (
+    <strong>
+      {name.slice(0, idx)}
+      <span className="name-qual">
+        {qualParts.map((part, i) => (
+          <span key={i}>{i > 0 && <>・<wbr /></>}{part}</span>
+        ))}
+      </span>
+    </strong>
+  )
+}
+
 /* ============ 素材検索（三軸） ============ */
 function SearchView() {
   const [domain, setDomain] = usePersistentState<Domain>('search:domain', 'tea')
@@ -650,7 +672,7 @@ function SearchView() {
       <ul className="material-list">
         {results.map((m) => (
           <li key={m.id} className="material-card">
-            <a href={`#/material/${m.id}`}><strong>{m.nameJa}</strong></a>
+            <a href={`#/material/${m.id}`}><CardName name={m.nameJa} /></a>
             <span className="material-meta">{m.classification}｜{m.origin}｜{m.variety}</span>
             <TierBadge tier={m.evidenceTier} />
             <p>{m.description}</p>
