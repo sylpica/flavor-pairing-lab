@@ -10,7 +10,7 @@ import {
 // ピンは原著（Arifin & Djaeni 2018, Bull Chem React Eng Catal 13(2):365–372）の
 // Table 3 の k（前処理系列、(µg/g)⁻¹·h⁻¹）と、C₀ = 1491.37 µg/g を用いた
 // 二次モデル予測（70℃・8時間で保持率 ≈73.6%）に置く。
-// 原著の実測保持率 75.7% は一次反応フィットの値であり、混用しない。
+// 原著 Table 2 の実測保持率は約 75.7%（1129.30／1491.37 µg/g）。二次モデルの予測とは別物で、混用しない。
 describe('カプサイシン乾燥分解モデル（Arifin & Djaeni 2018, Table 3、二次反応）', () => {
   it('アンカー温度では Table 3 の k をそのまま返す', () => {
     for (const a of CAPSAICIN_MODEL_ANCHORS) {

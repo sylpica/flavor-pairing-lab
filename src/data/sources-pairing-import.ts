@@ -1732,7 +1732,7 @@ export const pairingImportedSources: Source[] = [
   {
     id: 'pairing-matsuo-2024-taste-solution-mixture', kind: 'article',
     title: '3種の味覚溶液の混合作用に関する官能評価について',
-    authors: '松尾栞奈、平井智美、飯田文子', year: 2024,
+    authors: '松尾栞奈、平井智美、飯田文子', year: 2025,
     doi: '10.9763/jjsse.29.149',
     url: 'https://doi.org/10.9763/jjsse.29.149',
     scope: 'チョコの甘味（スクロース）・苦味（カフェイン）・渋味（テオブロミン）に相当する溶液をカカオ分70%チョコ相当濃度で調製し、単体を基準に混合時の強度変化を評価（研究室学生17名、各2回・計34回）。結果：甘味×苦味、甘味×渋味の混合ではそれぞれの強度が弱まる、渋味には苦味を強める作用が示唆される、カカオ分濃度（60/70/80%相当）でも強度差が生じる。',
@@ -2731,10 +2731,9 @@ export const pairingImportedSources: Source[] = [
     title: 'Influence de souches sélectionnées de Saccharomyces cerevisiae inoculées et des conditions de fermentation sur la qualité aromatique du cacao marchand',
     authors: 'Brice J. Assi-Clair, Mathurin K. Yao, Kra Brou D. Kédjébo, Tagro S. Guéhi', year: 2024,
     journal: 'Journal of Applied Biosciences 200',
-    doi: '10.35759/JABs.200.7',
-    url: 'https://doi.org/10.35759/JABs.200.7',
+    url: 'https://www.m.elewa.org/journals/journal-of-applied-biosciences-about-jab/',
     scope: 'ワイン発酵由来の芳香性S. cerevisiae選抜株2株（A・B、0.5 g/kg）をスターターとして発酵条件（密閉・開放）を変えて接種し、商品カカオの香気を実測した研究。36香気成分（6化学族、1.48〜315.75 µg/g）が同定され、株Aはエステル・アルデヒド・ケトン形成を、株Bはアルコール高含量をもたらした。',
-    limits: '評価は乾燥豆の揮発成分であり、チョコレートの官能は含まれない。同著者らの濃度比較研究（別誌）とは別論文である。',
+    limits: '評価は乾燥豆の揮発成分であり、チョコレートの官能は含まれない。同著者らの濃度比較研究（別誌）とは別論文である。DOI 10.35759/JABs.200.7 は表記されているが doi.org で未登録（2026-11-03 の監査で 404 を確認）のため DOI を削除し、リンク先を誌の公式ページに変更した。',
     verified: 'abstract',
   },
   {
@@ -2786,10 +2785,9 @@ export const pairingImportedSources: Source[] = [
     title: 'Impact of new fermentation supports on the physico-chemical quality of Mercedes cocoa beans (Theobroma cacao L.) grown at Soubré in the NAWA region',
     authors: 'Kouakou Ahossi Konan, Ibourahema Coulibaly, Anauma Casimir Koko, Kra Athanase Kouassi, Ibrahim Konate', year: 2024,
     journal: 'Journal of Applied Biosciences 200: 21125–21137',
-    doi: '10.35759/JABs.200.2',
-    url: 'https://doi.org/10.35759/JABs.200.2',
+    url: 'https://www.m.elewa.org/journals/journal-of-applied-biosciences-about-jab/',
     scope: 'Mercedes種カカオの発酵担体6種（バナナ葉対照・ヤシ葉・ポッド・タープ・ポリプロピレン袋・ジュート袋）を6日発酵で比較した実測。ポッド内発酵はカビ・発芽豆が3%超で不良だった一方、ヤシ葉とジュート袋はバナナ葉と同等の理化学組成を示し代替担体として提示された。',
-    limits: '単一生産者の圃場での1回の発酵比較。評価は温度・pHと乾燥後の理化学指標で、香気・官能は含まれない。',
+    limits: '単一生産者の圃場での1回の発酵比較。評価は温度・pHと乾燥後の理化学指標で、香気・官能は含まれない。DOI 10.35759/JABs.200.2 は表記されているが doi.org で未登録（2026-11-03 の監査で 404 を確認）のため DOI を削除し、リンク先を誌の公式ページに変更した。',
     verified: 'abstract',
   },
   {
@@ -2982,10 +2980,9 @@ export const pairingImportedSources: Source[] = [
     title: 'Paramètres de qualité des fèves de cacao (Theobroma cacao L.) dans la région du Guemon (Duékoué) en Côte d\'Ivoire',
     authors: 'N\'Goran Haddad Patricia, Assi Attiapo Pépin, Guiraud Brigitte S., Yapi Eric, Assemien Aimé Fabrice, Adiko Cho Evelyne, Deffan Prudence Diomandé, Tahi Gnion Mathias', year: 2026,
     journal: 'Journal of Applied Biosciences 217: 24122–24133',
-    doi: '10.35759/JABs.217.7',
-    url: 'https://doi.org/10.35759/JABs.217.7',
+    url: 'https://www.m.elewa.org/journals/journal-of-applied-biosciences-about-jab/',
     scope: 'コートジボワールGuémon（Duékoué）の農家5区画の商品カカオ豆について、形態・技術パラメータ（ポッド重・生豆数等）と生化学成分（テオブロミン・カフェイン・繊維・タンパク質・ポリフェノール・フラボノイド）を実測した研究。DG4区画（Gbapleu-Binao）が全パラメータで最良だった。',
-    limits: '5区画のみの地域調査で、官能評価は含まれない。2026年掲載の新しい報告であり追試はない。',
+    limits: '5区画のみの地域調査で、官能評価は含まれない。2026年掲載の新しい報告であり追試はない。DOI 10.35759/JABs.217.7 は表記されているが doi.org で未登録（2026-11-03 の監査で 404 を確認）のため DOI を削除し、リンク先を誌の公式ページに変更した。',
     verified: 'abstract',
   },
   {
@@ -3944,7 +3941,7 @@ export const pairingImportedSources: Source[] = [
   // ── literature-expansion-g-asia.md 由来 ──
   {
     id: 'pairing-zhu-2021-laoshan-green-tea-key-aroma', kind: 'original',
-    title: 'Characterization of key aroma compounds in Laoshan green teas by HS-SPME-GC-MS-O, OAVs and S-curve methods',
+    title: 'Characterization of the key aroma compounds in Laoshan green teas by application of odour activity value (OAV), gas chromatography-mass spectrometry-olfactometry (GC-MS-O) and comprehensive two-dimensional gas chromatography mass spectrometry (GC × GC-qMS)',
     authors: 'Zhu JianCai, Niu Yunwei, Xiao ZuoBing', year: 2021,
     journal: 'Food Chemistry',
     doi: '10.1016/j.foodchem.2020.128136',
@@ -3966,7 +3963,7 @@ export const pairingImportedSources: Source[] = [
   },
   {
     id: 'pairing-gui-2024-enshi-yulu-volatile-metabolites', kind: 'original',
-    title: 'Analysis of Changes in Volatile Metabolites in Enshi Yulu during Processing Based on Untargeted Metabolomics',
+    title: 'Analysis of the Changes in Volatile Components During the Processing of Enshi Yulu Tea',
     authors: 'Gui Anhui et al.', year: 2024,
     journal: 'Foods',
     doi: '10.3390/foods13233968',

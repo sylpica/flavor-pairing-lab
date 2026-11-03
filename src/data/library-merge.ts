@@ -24,12 +24,34 @@ export interface MergedLibrarySources {
   removedCount: number
 }
 
+/** DOI の正規化（大文字小文字・前後空白・doi.org 接頭辞の差を吸収） */
+export function normalizeDoi(doi: string | undefined): string | null {
+  if (!doi) return null
+  const d = doi.trim().toLowerCase().replace(/^https?:\/\/(dx\.)?doi\.org\//, '')
+  return d === '' ? null : d
+}
+
 export function mergeLibrarySources(verified: Source[], ledger: Source[]): MergedLibrarySources {
-  const verifiedKeys = new Set(verified.map((s) => sourceMatchKey(s.title, s.year)))
+  // 一致判定は「正規化タイトル＋年」を基本とし、加えて DOI の一致でも同一文献とみなす
+  // （題名の表記ゆれ・誤記で取りこぼす重複を拾うため。監査 2026-11-03）。
+  // 題名と年が同じでも DOI が互いに異なる場合は、同名・同年の別論文として統合しない。
+  const verifiedByKey = new Map<string, Source[]>()
+  for (const v of verified) {
+    const k = sourceMatchKey(v.title, v.year)
+    verifiedByKey.set(k, [...(verifiedByKey.get(k) ?? []), v])
+  }
+  const verifiedDois = new Set(verified.map((v) => normalizeDoi(v.doi)).filter((d): d is string => d !== null))
   const ledgerKept: Source[] = []
   let removedCount = 0
   for (const s of ledger) {
-    if (verifiedKeys.has(sourceMatchKey(s.title, s.year))) removedCount++
+    const doi = normalizeDoi(s.doi)
+    const sameKey = verifiedByKey.get(sourceMatchKey(s.title, s.year)) ?? []
+    const titleMatch = sameKey.some((v) => {
+      const vd = normalizeDoi(v.doi)
+      return doi === null || vd === null || vd === doi
+    })
+    const doiMatch = doi !== null && verifiedDois.has(doi)
+    if (titleMatch || doiMatch) removedCount++
     else ledgerKept.push(s)
   }
   return { sources: [...verified, ...ledgerKept], ledgerKept, removedCount }

@@ -63,8 +63,14 @@ a:hover { color: var(--accent-deep); }
 .tier-inferred { border-style: dashed; }
 .tier-insufficient { opacity: 0.7; border-style: dotted; }
 
-/* ===== ペアリング操作パネル（画面上部に吸着し、スクロールせず切り替える） ===== */
-.pair-controls { position: sticky; top: var(--header-offset); z-index: 30; background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px 10px; box-shadow: var(--shadow); margin-bottom: 18px; }
+/* ===== ペアリング操作パネル =====
+   吸着（sticky）は、パネルが画面に収まる広く高い画面でだけ行う。
+   スマートフォン幅・低い画面では、吸着したパネルがビューポートの高さを超えて分析結果を完全に覆うため
+   （監査 2026-11-03：375×667 で2素材でも結果の表示域が 0px）、通常配置にする。 */
+@media (min-width: 761px) and (min-height: 720px) {
+  .pair-controls { position: sticky; top: var(--header-offset); z-index: 30; }
+}
+.pair-controls { position: static; background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px 10px; box-shadow: var(--shadow); margin-bottom: 18px; }
 .slot-list { display: grid; gap: 8px; }
 @media (min-width: 760px) { .slot-list { grid-template-columns: 1fr 1fr; } }
 .slot-row { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: end; }
@@ -193,7 +199,8 @@ button { transition: border-color .15s ease, background-color .15s ease, color .
 .jump-chip { min-height: 44px; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--ink-soft); cursor: pointer; font-size: 0.88rem; }
 .jump-chip:hover { border-color: var(--accent); color: var(--ink); }
 .anchor-block, .anchor-h { scroll-margin-top: calc(var(--header-offset) + 16px); }
-.analysis .anchor-block, .analysis .anchor-h { scroll-margin-top: calc(var(--header-offset) + 260px); }
+.analysis .anchor-block, .analysis .anchor-h { scroll-margin-top: calc(var(--header-offset) + 16px); }
+@media (min-width: 761px) and (min-height: 720px) { .analysis .anchor-block, .analysis .anchor-h { scroll-margin-top: calc(var(--header-offset) + 260px); } }
 .detail-foot-nav { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; border-top: 1px solid var(--line); margin-top: 36px; padding-top: 14px; }
 .lib-source-list { list-style: none; padding-left: 0; }
 .lib-source { border-bottom: 1px solid var(--line-soft); padding: 10px 0 12px; margin: 0 !important; }
@@ -227,7 +234,7 @@ button { transition: border-color .15s ease, background-color .15s ease, color .
   .mode-tabs, .domain-tabs { width: 100%; } .tab { flex: 1; padding: 8px 6px; }
 }
 @media (max-width: 640px) {
-  :root { --header-offset: 118px; }
+  :root { --header-offset: 146px; }
   .app { padding: 0 12px 44px; }
   .app-header { padding: 8px 0 4px; gap: 2px 16px; }
   .app-header h1 { font-size: 1.12rem; }
@@ -247,7 +254,7 @@ button { transition: border-color .15s ease, background-color .15s ease, color .
   .spec-table { grid-template-columns: 1fr 1fr; }
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
   .stat-num { font-size: 2.1rem; }
-  .analysis .anchor-block, .analysis .anchor-h { scroll-margin-top: calc(var(--header-offset) + 320px); }
+  .analysis .anchor-block, .analysis .anchor-h { scroll-margin-top: calc(var(--header-offset) + 16px); }
   .source-list, .compound-list { padding-left: 1em; }
   input[type="search"] { margin-left: 0; }
 }

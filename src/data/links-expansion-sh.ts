@@ -14,7 +14,7 @@ export const expansionShLinkUpgrades: MaterialCompoundLink[] = [
   { materialId: 'spice-coriander-seed', compoundId: 'linalool', kind: 'contribution', tier: 'measured', conditions: 'コリアンダー種子自体の GC-O 研究に基づく格上げ', sourceIds: ['pater-2024-coriander-gco'] },
   // フェンネル種子×trans-アネトール: Zeller 2006 の AEDA+OAV+官能評価で impact 化合物とされたため composition→contribution
   { materialId: 'spice-fennel-seed', compoundId: 'anethole', kind: 'contribution', tier: 'measured', conditions: 'AEDA・OAV・官能評価を組み合わせた原著に基づく格上げ', sourceIds: ['zeller-2006-fennel-impact'] },
-  // クローブ×ユージノール: Yu 2025 全文でクローブ粉末の OAV>1 かつ FD≥64 の交差集合に入ったため composition→contribution
+  // クローブ×ユージノール: Qiang et al. 2025 全文でクローブ粉末の OAV>1 かつ FD≥64 の交差集合に入ったため composition→contribution
   { materialId: 'spice-clove', compoundId: 'eugenol', kind: 'contribution', tier: 'measured', conditions: 'クローブ粉末自体の OAV と AEDA の交差評価に基づく格上げ（全文確認済み）', sourceIds: ['yu-2025-clove-endowment'] },
   // スターアニス×trans-アネトール: Zhang 2015 の AEDA/FD で寄与が確認されたため composition→contribution
   { materialId: 'spice-star-anise', compoundId: 'anethole', kind: 'contribution', tier: 'measured', conditions: 'スターアニス自体の AEDA に基づく格上げ', sourceIds: ['zhang-2015-star-anise-volatiles'] },
@@ -69,10 +69,10 @@ export const expansionShLinks: MaterialCompoundLink[] = [
   // 旧リンク spice-fennel-seed × octen-3-ol-1 は全件照合（round7）で削除：Zeller & Rychlik 2006 の
   // 高 FD 群・OAV 上位のいずれにも含まれず、別素材・別出典の結果の付け替えが疑われたため。
   { materialId: 'spice-fennel-seed', compoundId: 'estragole', kind: 'contribution', tier: 'measured', conditions: '種子・精油系での寄与評価。フェンネル茶（浸出液）では官能 impact が認められなかった報告があり、形態で結論が異なる', sourceIds: ['zeller-2006-fennel-impact'] },
-  // ===== クローブ（Yu 2025 全文：粉末で OAV>1 かつ FD≥64 の交差集合）=====
+  // ===== クローブ（Qiang et al. 2025 全文：粉末で OAV>1 かつ FD≥64 の交差集合）=====
   { materialId: 'spice-clove', compoundId: 'beta-caryophyllene', kind: 'contribution', tier: 'measured', conditions: 'クローブ粉末の OAV・AEDA 交差集合', sourceIds: ['yu-2025-clove-endowment'] },
   // 旧リンク spice-clove × anethole / estragole は全件照合（round7）で削除：いずれもフェンネル／
-  // バジル／タラゴン等の標識的フェニルプロパノイドで、Yu 2025 の要旨にもクローブ蕾油の組成文献にも
+  // バジル／タラゴン等の標識的フェニルプロパノイドで、Qiang et al. 2025 の要旨にもクローブ蕾油の組成文献にも
   // 構成成分としての裏付けがなく、フェンネル側化合物の混入と判断した。
   { materialId: 'spice-clove', compoundId: 'methoxy-4-methylphenol-2', kind: 'contribution', tier: 'measured', conditions: '同上（2-メトキシ-4-メチルフェノール）', sourceIds: ['yu-2025-clove-endowment'] },
   { materialId: 'spice-clove', compoundId: 'cineole', kind: 'contribution', tier: 'measured', conditions: '同上', sourceIds: ['yu-2025-clove-endowment'] },

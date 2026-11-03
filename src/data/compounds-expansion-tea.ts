@@ -212,21 +212,21 @@ export const expansionTeaCompounds: Compound[] = [
   {
     id: 'egcg', nameJa: 'エピガロカテキンガレート', nameEn: 'Epigallocatechin gallate', aliases: ['EGCG'], cas: '989-51-5', formula: 'C22H18O11', pubchemCid: 65064,
     compoundClass: 'フラバン-3-オール（カテキン）', volatile: false,
-    sensoryKnowledge: 'ガレート型カテキン。安茶での DoT は 1.19–1.43（Huang 2025、試料・乾燥法で1を跨ぐ）。紅茶浸出液の再構成・除去実験でフラボノール配糖体とともに渋みの主要寄与群とされた（Scharbert 2005）。既存の「カテキン類（群）」から個別化した化合物。',
+    sensoryKnowledge: 'ガレート型カテキン。安茶での DoT は 1.19–1.43（Ye et al. 2025、試料・乾燥法で1を跨ぐ）。紅茶浸出液の再構成・除去実験でフラボノール配糖体とともに渋みの主要寄与群とされた（Scharbert 2005）。既存の「カテキン類（群）」から個別化した化合物。',
     noteIds: [], tasteKeys: ['bitter', 'astringent'],
     sourceIds: ['huang-2025-ancha-dot', SCHARBERT05],
   },
   {
     id: 'ecg', nameJa: 'エピカテキンガレート', nameEn: 'Epicatechin gallate', aliases: ['ECG'], cas: '1257-08-5', formula: 'C22H18O10', pubchemCid: 107905,
     compoundClass: 'フラバン-3-オール（カテキン）', volatile: false,
-    sensoryKnowledge: 'ガレート型カテキン。安茶での DoT は 0.88–1.02（Huang 2025）。紅茶浸出液の再構成・除去実験で渋みの主要寄与群の一員（Scharbert 2005）。',
+    sensoryKnowledge: 'ガレート型カテキン。安茶での DoT は 0.88–1.02（Ye et al. 2025）。紅茶浸出液の再構成・除去実験で渋みの主要寄与群の一員（Scharbert 2005）。',
     noteIds: [], tasteKeys: ['bitter', 'astringent'],
     sourceIds: ['huang-2025-ancha-dot', SCHARBERT05],
   },
   {
     id: 'egc', nameJa: 'エピガロカテキン', nameEn: 'Epigallocatechin', aliases: ['EGC'], cas: '970-74-1', formula: 'C15H14O7', pubchemCid: 72277,
     compoundClass: 'フラバン-3-オール（カテキン）', volatile: false,
-    sensoryKnowledge: '非ガレート型カテキン。安茶での DoT は 0.52–0.69 で、直接の呈味寄与は小さい（Huang 2025）。含有量が多いことと寄与が大きいことは別であり、過大表示を避けるため寄与が小さいことを明記して登録する。',
+    sensoryKnowledge: '非ガレート型カテキン。安茶での DoT は 0.52–0.69 で、直接の呈味寄与は小さい（Ye et al. 2025）。含有量が多いことと寄与が大きいことは別であり、過大表示を避けるため寄与が小さいことを明記して登録する。',
     noteIds: [], tasteKeys: ['astringent'],
     sourceIds: ['huang-2025-ancha-dot'],
   },
@@ -264,7 +264,7 @@ export const expansionTeaCompounds: Compound[] = [
   {
     id: 'flavonol-glycosides', nameJa: 'フラボノール配糖体', nameEn: 'Flavonol glycosides', aliases: ['フラバン-3-オール配糖体を含む配糖体群'],
     compoundClass: 'フラボノール配糖体（群）', volatile: false,
-    sensoryKnowledge: '味覚希釈分析で紅茶浸出液の渋みの主役と同定された配糖体群（Scharbert, Holzmann & Hofmann 2004、14種、渋み閾値 0.001–19.8 µmol/L）。安茶でも DoT 最高群（Huang 2025）。カフェインの苦味を増強することも報告されている（Scharbert 2005）。',
+    sensoryKnowledge: '味覚希釈分析で紅茶浸出液の渋みの主役と同定された配糖体群（Scharbert, Holzmann & Hofmann 2004、14種、渋み閾値 0.001–19.8 µmol/L）。安茶でも DoT 最高群（Ye et al. 2025）。カフェインの苦味を増強することも報告されている（Scharbert 2005）。',
     noteIds: [], tasteKeys: ['astringent', 'bitter'],
     sourceIds: ['scharbert-2004-astringent-compounds', 'huang-2025-ancha-dot', SCHARBERT05],
   },

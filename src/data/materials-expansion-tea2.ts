@@ -6,7 +6,7 @@ import type { Material, ProfileEntry, SensationEntry } from '../types'
 // 文書化されている品種のみを対象にした。
 // プロファイルの作り方（素材ごとに scopeNote に明記）:
 // - 品種固有の文書化された所見（官能記述・検出レベル）に基づくノート
-// - 交配親の香味から一段弱めた合成
+// - 交配親の香味からの合成（強さは弱い［weak］を上限とする。確定仕様 2.4／EVIDENCE_POLICY「足し算による合成」）
 // - 交配親の香味の足し算による合成
 // いずれも推測（inferred）区分とし、素材自体の香気成分の寄与研究があるとは扱わない。
 // 化合物リンクは作らない（親からの化合物の継承主張はしない）。
@@ -38,10 +38,10 @@ export const expansionTea2Materials: Material[] = [
     classification: '緑茶', classificationId: 'green-tea', origin: '日本', originId: 'japan',
     variety: 'おくみどり（茶農林32号）', varietyId: 'okumidori',
     processing: '蒸青・不発酵', description: 'やぶきた×静在16の交配で育成された晩生の煎茶用品種。鹿児島の品種別官能評価では「上品な・やさしい・フルーティー」と記述された。',
-    profile: [pi('green-leaf', 'moderate', [KINOSHITA]), pi('seaweed', 'weak', [KINOSHITA]), pi('fruit-general', 'weak', [KINOSHITA])],
+    profile: [pi('green-leaf', 'weak', [KINOSHITA]), pi('seaweed', 'weak', [KINOSHITA]), pi('fruit-general', 'weak', [KINOSHITA])],
     sensations: {},
     evidenceTier: 'inferred',
-    scopeNote: '果実のノートは木下 2015 の官能記述子（鹿児島・一番茶・煎茶標準製法、45名パネル）に基づく推測。青草・海藻のノートは交配親（やぶきた）の香味から一段弱めた合成（推測）で、来歴は茶農林登録品種一覧表・農研機構ハンドブックによる。おくみどり自体の香気成分の実測・寄与研究は未確認。',
+    scopeNote: '果実のノートは木下 2015 の官能記述子（鹿児島・一番茶・煎茶標準製法、45名パネル）に基づく推測。青草・海藻のノートは交配親（やぶきた）の香味からの足し算による合成（推測。合成結果は弱いを上限とする規則により、強さは弱いに留める）で、来歴は茶農林登録品種一覧表・農研機構ハンドブックによる。おくみどり自体の香気成分の実測・寄与研究は未確認。',
     sourceIds: [KINOSHITA], roastable: false, extractable: true,
   },
   {
@@ -49,10 +49,10 @@ export const expansionTea2Materials: Material[] = [
     classification: '緑茶', classificationId: 'green-tea', origin: '日本', originId: 'japan',
     variety: 'さえみどり（茶農林40号）', varietyId: 'saemidori',
     processing: '蒸青・不発酵', description: 'やぶきた×あさつゆの交配で育成された早生の煎茶用品種。鹿児島の品種別官能評価では「甘さ・なめらかな・さつま芋」と記述された。',
-    profile: [pi('caramel', 'weak', [KINOSHITA]), pi('green-leaf', 'moderate', [KINOSHITA])],
+    profile: [pi('caramel', 'weak', [KINOSHITA]), pi('green-leaf', 'weak', [KINOSHITA])],
     sensations: { umami: si('moderate', ['pairing-saemidori-okumidori-2006-cultivar-breeding', 'naro-2022-tea-cultivar-handbook']) },
     evidenceTier: 'inferred',
-    scopeNote: 'キャラメルのノートは木下 2015 の官能記述子「さつま芋」を甘い香りの方向として読み替えた推測。青草のノートは交配親（やぶきた）の香味から一段弱めた合成（推測）。ケルセチン配糖体が多いことは含有の知見であり、香味の根拠にはしていない。うま味の感覚は第11ラウンドで追加したもので、育成報告（2006）の「アミノ酸含量が高いためうま味に富む」と農研機構『茶品種ハンドブック第6版』の品種解説に基づく推測（評価レベルの記述であり、呈味の定量データではない）。',
+    scopeNote: 'キャラメルのノートは木下 2015 の官能記述子「さつま芋」を甘い香りの方向として読み替えた推測。青草のノートは交配親（やぶきた）の香味からの足し算による合成（推測。合成結果は弱いを上限とする規則により、強さは弱いに留める）。ケルセチン配糖体が多いことは含有の知見であり、香味の根拠にはしていない。うま味の感覚は第11ラウンドで追加したもので、育成報告（2006）の「アミノ酸含量が高いためうま味に富む」と農研機構『茶品種ハンドブック第6版』の品種解説に基づく推測（評価レベルの記述であり、呈味の定量データではない）。',
     sourceIds: [KINOSHITA, 'pairing-saemidori-okumidori-2006-cultivar-breeding', 'naro-2022-tea-cultivar-handbook'], roastable: false, extractable: true,
   },
   {
@@ -148,10 +148,10 @@ export const expansionTea2Materials: Material[] = [
     classification: '緑茶', classificationId: 'green-tea', origin: '日本', originId: 'japan',
     variety: '藤かおり（静印雑131×やぶきたの交配系統）', varietyId: 'fujikaori',
     processing: '蒸青・不発酵', description: '静印雑131×やぶきたの交配系統。そうふうと同じ花粉親由来で、品種特異的な香気成分アントラニル酸メチルを含むことが確認されている。',
-    profile: [pi('floral-general', 'weak', [SAWAI]), pi('green-leaf', 'moderate', [SAWAI])],
+    profile: [pi('floral-general', 'weak', [SAWAI]), pi('green-leaf', 'weak', [SAWAI])],
     sensations: {},
     evidenceTier: 'inferred',
-    scopeNote: '花様のノートは Sawai et al. 2004（アントラニル酸メチルの同定）に基づく推測。青草のノートは交配親（やぶきた）の香味から一段弱めた合成（推測）。品種登録の詳細は継承調査でも未確認であり、交配系統としての記録に基づく。',
+    scopeNote: '花様のノートは Sawai et al. 2004（アントラニル酸メチルの同定）に基づく推測。青草のノートは交配親（やぶきた）の香味からの足し算による合成（推測。合成結果は弱いを上限とする規則により、強さは弱いに留める）。品種登録の詳細は継承調査でも未確認であり、交配系統としての記録に基づく。',
     sourceIds: [SAWAI], roastable: false, extractable: true,
   },
   {
@@ -159,10 +159,10 @@ export const expansionTea2Materials: Material[] = [
     classification: '緑茶', classificationId: 'green-tea', origin: '日本', originId: 'japan',
     variety: 'めいりょく（茶農林35号）', varietyId: 'meiryoku',
     processing: '蒸青・不発酵', description: 'やぶきた×Z1の交配で育成された煎茶用品種。育成時評価では香気・滋味とも良好で清涼感があるとされた。',
-    profile: [pi('floral-general', 'weak', [NARO95]), pi('green-leaf', 'moderate', [NARO95])],
+    profile: [pi('floral-general', 'weak', [NARO95]), pi('green-leaf', 'weak', [NARO95])],
     sensations: { cooling: si('weak', [NARO95], '育成時評価の「清涼感がある」に基づく') },
     evidenceTier: 'inferred',
-    scopeNote: '花様のノートと冷感は農研機構の育成時評価（1995）の官能記述に基づく推測。青草のノートは交配親（やぶきた）の香味から一段弱めた合成（推測）。萎凋処理時に花香が強く感じられた品種群に含まれるが、花香成分量の多さは本品種では確認されていない。',
+    scopeNote: '花様のノートと冷感は農研機構の育成時評価（1995）の官能記述に基づく推測。青草のノートは交配親（やぶきた）の香味からの足し算による合成（推測。合成結果は弱いを上限とする規則により、強さは弱いに留める）。萎凋処理時に花香が強く感じられた品種群に含まれるが、花香成分量の多さは本品種では確認されていない。',
     sourceIds: [NARO95], roastable: false, extractable: true,
   },
   {
@@ -195,7 +195,7 @@ export const expansionTea2Materials: Material[] = [
     profile: [pi('jasmine', 'weak', [SHIRATORI]), pi('floral-general', 'weak', [SHIRATORI]), pi('cream-note', 'weak', [SHIRATORI])],
     sensations: {},
     evidenceTier: 'inferred',
-    scopeNote: 'ジャスミン・花様のノートは白鳥ら 2022（香気発揚処理条件での成分の品種間差と官能）に基づく推測。クリームのノートは交配親（かなやみどり）の香味から一段弱めた合成（推測）。萎凋によりバラ様の甘い花香が発揚することは農研機構の成果情報の記述の範囲であり、通常煎茶への一般化はしていない。',
+    scopeNote: 'ジャスミン・花様のノートは白鳥ら 2022（香気発揚処理条件での成分の品種間差と官能）に基づく推測。クリームのノートは交配親（かなやみどり）の香味からの足し算による合成（推測。合成結果は弱いを上限とする規則により、強さは弱いに留める）。萎凋によりバラ様の甘い花香が発揚することは農研機構の成果情報の記述の範囲であり、通常煎茶への一般化はしていない。',
     sourceIds: [SHIRATORI], roastable: false, extractable: true,
   },
   {

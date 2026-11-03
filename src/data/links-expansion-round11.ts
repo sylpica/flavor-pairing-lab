@@ -42,6 +42,5 @@ export const round11Links: MaterialCompoundLink[] = [
   { materialId: 'spice-ceylon-cinnamon', compoundId: 'coumarin', kind: 'composition', tier: 'general', conditions: 'EU PGI の申請時 Single Document に基づく参考情報。クマリンの上限は 0.004% 未満（カシアとの区別点とされる規格値であり、個別試料の実測ではない）', sourceIds: ['eu-2022-ceylon-cinnamon-pgi-spec'] },
   { materialId: 'spice-ceylon-cinnamon', compoundId: 'eugenol', kind: 'composition', tier: 'general', conditions: '査読つき総説に基づく参考情報。樹皮油の主成分の一つとされる（樹皮油の組成であり、使用部位により組成は異なる。含量の数値は未確認のため収録しない）', sourceIds: ['suriyagoda-2021-ceylon-cinnamon-review'] },
   { materialId: 'spice-mace', compoundId: 'sabinene', kind: 'composition', tier: 'general', conditions: '精油組成データに基づく参考情報。Western Ghats 産メース精油でサビネン 38.37% が主成分（GC-MS による精油組成であり、食品中での香気寄与ではない）', sourceIds: ['ashokkumar-2020-nutmeg-parts-oil'] },
-  { materialId: 'spice-mace', compoundId: 'myristicin', kind: 'composition', tier: 'general', conditions: '精油組成データに基づく参考情報。同研究のメース精油中でミリスチシン 5.90%（GC-MS による精油組成）', sourceIds: ['ashokkumar-2020-nutmeg-parts-oil'] },
   { materialId: 'herb-dill-weed', compoundId: 'alpha-phellandrene', kind: 'composition', tier: 'general', conditions: '精油組成データに基づく参考情報。ルーマニア産ディル葉油で α-フェランドレン 62.71% が主成分（葉油の組成は産地で大きく変動する）', sourceIds: ['radulescu-2010-dill-parts-oil'] },
 ]
