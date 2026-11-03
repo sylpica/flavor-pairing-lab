@@ -162,3 +162,20 @@ export function materialMatchesName(
   const yomi = materialYomi[m.id]
   return yomi !== undefined && toHiragana(yomi).includes(hq)
 }
+
+/**
+ * 素材の検索一致判定（素材名・読みに加えて、学名と第3軸の品種・系統・植物種の表記にも一致させる）。
+ * 例：「やぶきた」は素材名ではなく煎茶の品種軸として収録されているため、
+ * 名前だけの照合では 0 件になっていた（監査 2026-11-03）。
+ */
+export function materialMatchesQuery(
+  m: Pick<Material, 'id' | 'nameJa' | 'nameEn' | 'scientificName' | 'variety' | 'varietyId'>,
+  rawQuery: string,
+): boolean {
+  if (materialMatchesName(m, rawQuery)) return true
+  const q = rawQuery.trim().toLowerCase()
+  const hq = toHiragana(q)
+  if ((m.scientificName ?? '').toLowerCase().includes(q)) return true
+  if (m.variety.toLowerCase().includes(q) || toHiragana(m.variety).includes(hq)) return true
+  return m.varietyId.toLowerCase().includes(q)
+}

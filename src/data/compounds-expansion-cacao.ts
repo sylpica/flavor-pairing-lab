@@ -119,7 +119,7 @@ export const expansionCacaoCompounds: Compound[] = [
     id: 'epicatechin', nameJa: '(−)-エピカテキン', nameEn: '(−)-Epicatechin',
     aliases: ['EC', 'Epicatechin'], cas: '490-46-0', formula: 'C15H14O6', pubchemCid: 72276,
     compoundClass: 'ポリフェノール（フラバン-3-オール）', volatile: false,
-    sensoryKnowledge: 'カカオの主要フラバン-3-オール。製品ダークで渋味・花様側の高 DoT。カテキン類（群）とは役割を分けて個別登録する。なお種子含有量には遺伝型間の遺伝的決定差が認められなかった（Elwers et al. 2009）ため、系統差の根拠にはしない。非ガレート型カテキンであり、茶（安茶）での DoT は 0.02–0.03 で直接の呈味寄与はごく小さい（Huang 2025）。',
+    sensoryKnowledge: 'カカオの主要フラバン-3-オール。製品ダークで渋味・花様側の高 DoT。カテキン類（群）とは役割を分けて個別登録する。なお種子含有量には遺伝型間の遺伝的決定差が認められなかった（Elwers et al. 2009）ため、系統差の根拠にはしない。非ガレート型カテキンであり、茶（安茶）での DoT は 0.02–0.03 で直接の呈味寄与はごく小さい（Ye et al. 2025）。',
     noteIds: [], tasteKeys: ['bitter', 'astringent'], sourceIds: [ULLRICH22, 'elwers-2009-phenolics-genotypes', 'huang-2025-ancha-dot'],
   },
   {

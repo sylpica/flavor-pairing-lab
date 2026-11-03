@@ -15,7 +15,7 @@ import { capsaicinRateConstant, capsaicinRetentionFraction, CAPSAICIN_MODEL_TEMP
 import { FlavorWheel } from './components/FlavorWheel'
 import { MaterialPicker } from './components/MaterialPicker'
 import { mergeLibrarySources } from './data/library-merge'
-import { materialMatchesName } from './data/material-yomi'
+import { materialMatchesQuery } from './data/material-yomi'
 import { TasteWheel, mergeSensations } from './components/TasteWheel'
 import { SensationChart } from './components/SensationChart'
 
@@ -196,6 +196,8 @@ export function NoteDetailPanel({ noteId, contextMaterialIds, contextLabel, onCl
   )
 }
 
+const KNOWN_PAGES = new Set(['pairing', 'search', 'material', 'chemistry', 'compound', 'library'])
+
 export default function App() {
   const route = useHashRoute()
   const [page, param] = route
@@ -220,6 +222,12 @@ export default function App() {
         {page === 'chemistry' && <ChemistryView />}
         {page === 'compound' && param && <CompoundDetail id={param} />}
         {page === 'library' && <LibraryView />}
+        {(!KNOWN_PAGES.has(page) || ((page === 'material' || page === 'compound') && !param)) && (
+          <section>
+            <p>このページは見つかりません。</p>
+            <p><a href="#/pairing">ペアリング画面へ</a></p>
+          </section>
+        )}
       </main>
       <footer className="app-footer">
         <p>科学的主張は出典へ追跡できます。化合物の検出と香味への寄与は区別して表示しています。健康効果を保証するものではありません。</p>
@@ -424,7 +432,6 @@ function PairingView() {
           {selectedIds.length < 4 && <button type="button" className="slot-add" onClick={addSlot}>＋ 素材を追加（最大4）</button>}
           <button type="button" className="milk-add" onClick={addMilk} disabled={milkAdded || slotsFull}>＋ ミルクを加える</button>
           {milkDisabledReasons.length > 0 && <span className="muted">{milkDisabledReasons.join('／')}</span>}
-          <button type="button" className="ratio-equalize" onClick={equalizeManually}>均等に戻す</button>
           <button type="button" className="pairing-reset" onClick={resetPairing} disabled={isPairingDefault}>リセット</button>
           <span className="muted">比率＝混合（ブレンド）時の質量比（合計100%）。混ぜずに口中で合わせる食べ合わせには適用しません</span>
           <span className="ratio-total-group">
@@ -611,7 +618,7 @@ function SearchView() {
   const nq = nameQuery.trim().toLowerCase()
   const results = materials.filter((m) => m.domain === domain
     && (!cls || m.classificationId === cls) && (!org || m.originId === org) && (!variety || m.varietyId === variety)
-    && (!nq || materialMatchesName(m, nameQuery) || (m.scientificName ?? '').toLowerCase().includes(nq)))
+    && (!nq || materialMatchesQuery(m, nameQuery)))
 
   // 初心者用での指摘「選択を変えても表示が変わらない／ずれる」への対策：
   // 他軸の変更で候補から外れた選択値は自動でリセットし、表示と状態のずれを防ぐ。
@@ -885,12 +892,12 @@ function CaffeineModelBlock({ tempC, seconds }: { tempC: number; seconds: number
         </>
       )}
       <p className="scope-note">
-        パラメータ：k（80℃）＝0.99 min⁻¹、活性化エネルギー 40.3 kJ/mol は、南アフリカ産紅茶（粒度 1.40–2.00 mm、水抽出、HPLC 測定）の実測報告値（Price）です。
+        パラメータ：k（80℃）＝0.99 min⁻¹、活性化エネルギー 40.3 kJ/mol は、南アフリカ産紅茶（粒度 1.40–2.00 mm、水抽出、HPLC 測定）の実測報告値（Price &amp; Spitzer 1993）です。
         アッサム紅茶では活性化エネルギー 45±2 kJ/mol（ルース）と報告されており（Jaganyi &amp; Mdletshe 2000）、産地・粒度・製法の異なる紅茶への適用は目安です。
         ティーバッグでは速度定数が約29%小さいとの報告があります。適用温度範囲は {CAFFEINE_MODEL_TEMP_MIN_C}–{CAFFEINE_MODEL_TEMP_MAX_C}℃
         （基準温度 80℃の近傍に限定したもので、原著の実測温度範囲の詳細は未確認のため、80℃から離れるほど目安の度合いが強まります）。
       </p>
-      <SourceLinks ids={['spiro-jago-1982-tea-infusion-model', 'jaganyi-mdletshe-2000-assam-caffeine-kinetics']} />
+      <SourceLinks ids={['price-spitzer-1993', 'spiro-jago-1982-tea-infusion-model', 'jaganyi-mdletshe-2000-assam-caffeine-kinetics']} />
     </div>
   )
 }
@@ -921,17 +928,21 @@ function GingerolModelBlock({ materialId }: { materialId: string }) {
       </p>
       <div className="sim-control">
         <span className="sim-control-label">温度</span>
-        <input type="range" min={GINGEROL_MODEL_TEMP_MIN_C} max={GINGEROL_MODEL_TEMP_MAX_C} value={tempC} onChange={(e) => setTempC(Number(e.target.value))} aria-label="ジンゲロールモデルの温度" />
-        <span className="sim-value"><input type="number" value={tempC} onChange={(e) => setTempC(Number(e.target.value))} aria-label="ジンゲロールモデルの温度（数値）" /><span aria-hidden="true">℃</span></span>
+        <input type="range" min={GINGEROL_MODEL_TEMP_MIN_C} max={GINGEROL_MODEL_TEMP_MAX_C} value={Number.isNaN(tempC) ? GINGEROL_MODEL_TEMP_MIN_C : tempC} onChange={(e) => setTempC(Number(e.target.value))} aria-label="ジンゲロールモデルの温度" />
+        <span className="sim-value"><input type="number" value={numInputValue(tempC)} onChange={(e) => setTempC(parseNumInput(e.target.value))} aria-label="ジンゲロールモデルの温度（数値）" /><span aria-hidden="true">℃</span></span>
       </div>
       <div className="sim-control">
         <span className="sim-control-label">加熱時間</span>
-        <input type="range" min={0} max={48} step={0.5} value={hours} onChange={(e) => setHours(Number(e.target.value))} aria-label="ジンゲロールモデルの加熱時間" />
-        <span className="sim-value"><input type="number" value={hours} onChange={(e) => setHours(Number(e.target.value))} aria-label="ジンゲロールモデルの加熱時間（数値）" /><span aria-hidden="true">時間</span></span>
+        <input type="range" min={0} max={48} step={0.5} value={Number.isNaN(hours) ? 0 : hours} onChange={(e) => setHours(Number(e.target.value))} aria-label="ジンゲロールモデルの加熱時間" />
+        <span className="sim-value"><input type="number" value={numInputValue(hours)} onChange={(e) => setHours(parseNumInput(e.target.value))} aria-label="ジンゲロールモデルの加熱時間（数値）" /><span aria-hidden="true">時間</span></span>
       </div>
       {rates === null || eq === null || remaining === null ? (
         <p className="warning" role="alert">
-          温度がモデルの適用範囲（{GINGEROL_MODEL_TEMP_MIN_C}–{GINGEROL_MODEL_TEMP_MAX_C}℃）の外のため、モデル計算は行いません。範囲外への外挿はしません。
+          {Number.isNaN(tempC) || Number.isNaN(hours)
+            ? <>数値が入力されていません</>
+            : rates === null
+            ? <>温度がモデルの適用範囲（{GINGEROL_MODEL_TEMP_MIN_C}–{GINGEROL_MODEL_TEMP_MAX_C}℃）の外のため、モデル計算は行いません。範囲外への外挿はしません。</>
+            : <>加熱時間は0以上の数値で入力してください。</>}
         </p>
       ) : (
         <>
@@ -958,7 +969,9 @@ function GingerolModelBlock({ materialId }: { materialId: string }) {
         パラメータ：Bhattarai, Tran &amp; Duke 2001（J Pharm Sci 90(10):1658–1664）の Table 1
         （pH 1 = 0.1 M HCl 水溶液、エタノール5%共存、合成 [6]-ジンゲロール／[6]-ショウガオールの希薄水溶液）。
         活性化エネルギーは正反応 76±4・逆反応 52±5 kJ/mol。アンカー温度の間は Arrhenius 型に内挿し、
-        頻度因子の導出値は使っていません。原著本文の一部叙述は Table 1 の定数と整合しないため採用していません。
+        頻度因子の導出値は使っていません。平衡組成（K＝Kf/Kr）は Table 1 の比から直接決まりますが、時間経過の値は目安です：
+        原著の要旨は「100℃・pH 1 では2時間以内に平衡に達した」と述べる一方、Table 1 の定数（Kf＋Kr＝0.272 h⁻¹）からは
+        平衡への接近の時定数が約3.7時間となり、両者は整合しません（未解決。本アプリは表の値を用います）。
       </p>
       <SourceLinks ids={['bhattarai-2001-gingerol-shogaol-kinetics']} />
     </div>
@@ -992,17 +1005,21 @@ function CapsaicinModelBlock({ materialId }: { materialId: string }) {
       </p>
       <div className="sim-control">
         <span className="sim-control-label">乾燥温度</span>
-        <input type="range" min={CAPSAICIN_MODEL_TEMP_MIN_C} max={CAPSAICIN_MODEL_TEMP_MAX_C} value={tempC} onChange={(e) => setTempC(Number(e.target.value))} aria-label="カプサイシンモデルの乾燥温度" />
-        <span className="sim-value"><input type="number" value={tempC} onChange={(e) => setTempC(Number(e.target.value))} aria-label="カプサイシンモデルの乾燥温度（数値）" /><span aria-hidden="true">℃</span></span>
+        <input type="range" min={CAPSAICIN_MODEL_TEMP_MIN_C} max={CAPSAICIN_MODEL_TEMP_MAX_C} value={Number.isNaN(tempC) ? CAPSAICIN_MODEL_TEMP_MIN_C : tempC} onChange={(e) => setTempC(Number(e.target.value))} aria-label="カプサイシンモデルの乾燥温度" />
+        <span className="sim-value"><input type="number" value={numInputValue(tempC)} onChange={(e) => setTempC(parseNumInput(e.target.value))} aria-label="カプサイシンモデルの乾燥温度（数値）" /><span aria-hidden="true">℃</span></span>
       </div>
       <div className="sim-control">
         <span className="sim-control-label">乾燥時間</span>
-        <input type="range" min={0} max={24} step={0.5} value={hours} onChange={(e) => setHours(Number(e.target.value))} aria-label="カプサイシンモデルの乾燥時間" />
-        <span className="sim-value"><input type="number" value={hours} onChange={(e) => setHours(Number(e.target.value))} aria-label="カプサイシンモデルの乾燥時間（数値）" /><span aria-hidden="true">時間</span></span>
+        <input type="range" min={0} max={24} step={0.5} value={Number.isNaN(hours) ? 0 : hours} onChange={(e) => setHours(Number(e.target.value))} aria-label="カプサイシンモデルの乾燥時間" />
+        <span className="sim-value"><input type="number" value={numInputValue(hours)} onChange={(e) => setHours(parseNumInput(e.target.value))} aria-label="カプサイシンモデルの乾燥時間（数値）" /><span aria-hidden="true">時間</span></span>
       </div>
       {k === null || retention === null ? (
         <p className="warning" role="alert">
-          乾燥温度がモデルの適用範囲（{CAPSAICIN_MODEL_TEMP_MIN_C}–{CAPSAICIN_MODEL_TEMP_MAX_C}℃）の外のため、モデル計算は行いません。範囲外への外挿はしません。
+          {Number.isNaN(tempC) || Number.isNaN(hours)
+            ? <>数値が入力されていません</>
+            : k === null
+            ? <>乾燥温度がモデルの適用範囲（{CAPSAICIN_MODEL_TEMP_MIN_C}–{CAPSAICIN_MODEL_TEMP_MAX_C}℃）の外のため、モデル計算は行いません。範囲外への外挿はしません。</>
+            : <>乾燥時間は0以上の数値で入力してください。</>}
         </p>
       ) : (
         <>
@@ -1028,7 +1045,7 @@ function CapsaicinModelBlock({ materialId }: { materialId: string }) {
         （前処理＝ブランチング＋食塩水＋CaCl₂ 処理をした赤唐辛子のトレイ乾燥）。
         二次反応のため保持率は初期含量に依存し、原著試料の C₀＝1491.37 µg/g を用いて計算しています。
         活性化エネルギーは 45.10367 kJ/mol。アンカー温度の間は Arrhenius 型に内挿します。
-        照合値：70℃・8時間のモデル予測保持率は約73.6%です。
+        照合値：70℃・8時間のモデル予測保持率は約73.6%です（原著の実測値は 1129.30／1491.37 µg/g＝約75.7%、Table 2）。
       </p>
       <SourceLinks ids={['arifin-djaeni-2018-capsaicin-drying-kinetics']} />
     </div>
@@ -1054,12 +1071,12 @@ function SimulationPanel({ material: m }: { material: Material }) {
           <h4>焙煎</h4>
           <div className="sim-control">
             <span className="sim-control-label">焙煎温度</span>
-            <input type="range" min={60} max={260} value={roastTemp} onChange={(e) => setRoastTemp(Number(e.target.value))} aria-label="焙煎温度" />
+            <input type="range" min={60} max={260} value={Number.isNaN(roastTemp) ? 60 : roastTemp} onChange={(e) => setRoastTemp(Number(e.target.value))} aria-label="焙煎温度" />
             <span className="sim-value"><input type="number" value={numInputValue(roastTemp)} onChange={(e) => setRoastTemp(parseNumInput(e.target.value))} aria-label="焙煎温度（数値）" /><span aria-hidden="true">℃</span></span>
           </div>
           <div className="sim-control">
             <span className="sim-control-label">焙煎時間</span>
-            <input type="range" min={1} max={120} value={roastMin} onChange={(e) => setRoastMin(Number(e.target.value))} aria-label="焙煎時間" />
+            <input type="range" min={1} max={120} value={Number.isNaN(roastMin) ? 1 : roastMin} onChange={(e) => setRoastMin(Number(e.target.value))} aria-label="焙煎時間" />
             <span className="sim-value"><input type="number" value={numInputValue(roastMin)} onChange={(e) => setRoastMin(parseNumInput(e.target.value))} aria-label="焙煎時間（数値）" /><span aria-hidden="true">分</span></span>
           </div>
           <div className="sim-result">
@@ -1081,12 +1098,12 @@ function SimulationPanel({ material: m }: { material: Material }) {
           </div>
           <div className="sim-control">
             <span className="sim-control-label">抽出温度</span>
-            <input type="range" min={20} max={100} value={extTemp} onChange={(e) => setExtTemp(Number(e.target.value))} aria-label="抽出温度" />
+            <input type="range" min={20} max={100} value={Number.isNaN(extTemp) ? 20 : extTemp} onChange={(e) => setExtTemp(Number(e.target.value))} aria-label="抽出温度" />
             <span className="sim-value"><input type="number" value={numInputValue(extTemp)} onChange={(e) => setExtTemp(parseNumInput(e.target.value))} aria-label="抽出温度（数値）" /><span aria-hidden="true">℃</span></span>
           </div>
           <div className="sim-control">
             <span className="sim-control-label">抽出時間</span>
-            <input type="range" min={5} max={600} step={5} value={extSec} onChange={(e) => setExtSec(Number(e.target.value))} aria-label="抽出時間" />
+            <input type="range" min={5} max={600} step={5} value={Number.isNaN(extSec) ? 5 : extSec} onChange={(e) => setExtSec(Number(e.target.value))} aria-label="抽出時間" />
             <span className="sim-value"><input type="number" value={numInputValue(extSec)} onChange={(e) => setExtSec(parseNumInput(e.target.value))} aria-label="抽出時間（数値）" /><span aria-hidden="true">秒</span></span>
           </div>
           <div className="sim-control">

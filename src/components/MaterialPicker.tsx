@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { DOMAIN_LABEL, type Domain } from '../types'
 import { materials, materialById } from '../data'
-import { materialMatchesName } from '../data/material-yomi'
+import { materialMatchesQuery } from '../data/material-yomi'
 
 const DOMAIN_ORDER: Domain[] = ['tea', 'chocolate', 'spice', 'herb', 'dairy']
 
@@ -38,7 +38,7 @@ export function MaterialPicker({ valueId, onPick, excludeIds = [], ariaLabel, id
     const pool = materials.filter((m) => m.id === valueId || !excludeIds.includes(m.id))
     const matched = query === ''
       ? pool
-      : pool.filter((m) => materialMatchesName(m, query))
+      : pool.filter((m) => materialMatchesQuery(m, query))
     return DOMAIN_ORDER
       .map((d) => ({ domain: d, items: matched.filter((m) => m.domain === d) }))
       .filter((g) => g.items.length > 0)

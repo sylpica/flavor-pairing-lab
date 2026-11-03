@@ -61,10 +61,10 @@ export const expansionTeaLinks: MaterialCompoundLink[] = [
   { materialId: 'tea-black-general', compoundId: 'methyl-salicylate', kind: 'contribution', tier: 'general', conditions: '四大紅茶横断の GC-O 最強群（Kang 2019、茶種別ではセイロンで最も決定的）と四川工夫紅茶の再構成系3位（Wang 2025）に基づく茶類レベルの知見', sourceIds: [KANG, 'wang-2025-sichuan-congou'] },
   { materialId: 'tea-black-general', compoundId: 'hotrienol', kind: 'contribution', tier: 'general', conditions: '四大紅茶横断の GC-O 最強群（Kang 2019）に基づく茶類レベルの知見。4 茶種横断の GC-O 最強群という位置づけであり、個別茶種での寄与度は異なる', sourceIds: [KANG] },
   { materialId: 'tea-black-general', compoundId: 'flavonol-glycosides', kind: 'contribution', tier: 'measured', conditions: '味覚希釈分析で紅茶浸出液の渋みの主役と同定（Scharbert 2004）。再構成・除去でも主要寄与群（Scharbert 2005）', sourceIds: ['scharbert-2004-astringent-compounds', SCHARBERT05] },
-  { materialId: 'tea-black-general', compoundId: 'egcg', kind: 'contribution', tier: 'measured', conditions: '紅茶浸出液の再構成・除去で渋み寄与群（Scharbert 2005）。DoT 1.19–1.43 は安茶試料の値（Huang 2025）', sourceIds: [SCHARBERT05, 'huang-2025-ancha-dot'] },
-  { materialId: 'tea-black-general', compoundId: 'ecg', kind: 'contribution', tier: 'measured', conditions: 'ECG は Scharbert 2005 で定量・DoT 評価されたガレート型カテキンの一つだが、欠落試験で確定した主要 12 成分には含まれない。DoT 0.88–1.02 は安茶試料（Huang 2025）の値で閾値前後の境界域であり、紅茶浸出液での単独寄与の実証ではない', sourceIds: [SCHARBERT05, 'huang-2025-ancha-dot'] },
+  { materialId: 'tea-black-general', compoundId: 'egcg', kind: 'contribution', tier: 'measured', conditions: '紅茶浸出液の再構成・除去で渋み寄与群（Scharbert 2005）。DoT 1.19–1.43 は安茶試料の値（Ye et al. 2025）', sourceIds: [SCHARBERT05, 'huang-2025-ancha-dot'] },
+  { materialId: 'tea-black-general', compoundId: 'ecg', kind: 'contribution', tier: 'measured', conditions: 'ECG は Scharbert 2005 で定量・DoT 評価されたガレート型カテキンの一つだが、欠落試験で確定した主要 12 成分には含まれない。DoT 0.88–1.02 は安茶試料（Ye et al. 2025）の値で閾値前後の境界域であり、紅茶浸出液での単独寄与の実証ではない', sourceIds: [SCHARBERT05, 'huang-2025-ancha-dot'] },
   // 旧リンク tea-black-general × egc / ec（contribution）は全件照合（round7）で削除：唯一の出典
-  // Huang 2025（安茶試料）で EGC は DoT 0.52–0.69、EC は DoT 0.02–0.03 といずれも閾値未満であり、
+  // Ye et al. 2025（安茶試料）で EGC は DoT 0.52–0.69、EC は DoT 0.02–0.03 といずれも閾値未満であり、
   // 同論文の寄与成分6種にも含まれない（出典の基準では「寄与しない」側）。試料も紅茶ではない。
   { materialId: 'tea-black-general', compoundId: 'theaflavin', kind: 'composition', tier: 'measured', conditions: '浸出液中濃度と閾値（0.016 mmol/L）から taste activity を評価。実寄与は渋み全体の 0.1% 未満と結論されたため寄与ではなく組成として扱う（Scharbert 2004）', sourceIds: ['scharbert-2004-theaflavin-taste'] },
   { materialId: 'tea-black-general', compoundId: 'theaflavin-3-gallate', kind: 'composition', tier: 'measured', conditions: '閾値は実測されたが、テアフラビン類全体の実寄与は渋みの 0.1% 未満（Scharbert 2004）。組成として扱う', sourceIds: ['scharbert-2004-theaflavin-taste'] },

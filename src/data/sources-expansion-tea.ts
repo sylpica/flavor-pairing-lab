@@ -3,7 +3,7 @@ import type { Source } from '../types'
 // お茶の成分文献拡充（調査: dev/flavor-pairing-lab-research/tea-compounds-expansion.md、2026-10-31）で
 // 追加する出典。verified の付け方:
 // - 調査ラウンドで一次レコード（PubMed/PMC/ACS/Springer/J-STAGE/JARQ/NIST）により要旨の具体的内容まで
-//   確認されたものは 'abstract'、全文確認が明記されたもの（Huang 2025）だけ 'full'。
+//   確認されたものは 'abstract'、全文確認が明記されたもの（Ye et al. 2025）だけ 'full'。
 // - pairing 記録ベースで内容が再確認されていないものは 'bibliographic' とし、limits にその旨を書く。
 // - Li 2026 / Wang 2025 / Sasaki 2020 / He 2023 は統合時に PubMed・PMC・J-STAGE の一次レコードで
 //   書誌（タイトル等）を確認した。内容の根拠は調査ファイルの記述による。
@@ -299,7 +299,7 @@ export const expansionTeaSources: Source[] = [
   {
     id: 'huang-2025-ancha-dot', kind: 'original',
     title: 'Sensomics evaluation of sun drying for reducing the bitterness and astringency of crude Ancha tea',
-    authors: 'Huang W, et al.', year: 2025,
+    authors: 'Ye Z, Huang W, Chen Z, Zhang J, Hu C, Zhou H, Xu Q, Ning J', year: 2025,
     journal: 'npj Science of Food 9: 171',
     doi: '10.1038/s41538-025-00543-3',
     url: 'https://doi.org/10.1038/s41538-025-00543-3',

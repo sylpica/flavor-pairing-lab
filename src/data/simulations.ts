@@ -21,10 +21,10 @@ export const simulationTendencies: SimulationTendency[] = [
   },
   {
     id: 'extract-temp-perception', parameter: 'extract-temp',
-    text: '日本緑茶の温度別呈示の官能研究では、高温で香り・甘味・うま味・渋味をより強く知覚しました。温度は成分の抽出量だけでなく、知覚そのものにも影響します。',
+    text: '同じ緑茶を 5℃・25℃・65℃で呈示した官能研究（CATA）では、18の官能属性の選ばれ方が温度で有意に変わりました。65℃では花様・ハーブ様・焙煎の香り、まろやかさ、甘味と結びつき、5℃では渋味・酸味・刺激的な香りと結びつきました。温度は成分の抽出量だけでなく、飲むときの温度として知覚そのものにも影響します。',
     tier: 'general', applicableDomains: ['tea', 'herb'],
     sourceIds: ['pramudya-2018-green-tea-temperature-cata'],
-    limits: '日本緑茶での官能研究。ハーブティー等への適用は類推。',
+    limits: '韓国産の有機緑茶ティーバッグ1製品（抽出後に各温度で呈示）での研究で、抽出温度ではなく飲用温度の比較である。CATA は属性の選択頻度であり、強度の測定ではない。ハーブティー等への適用は類推。',
   },
   {
     id: 'extract-temp-bitter', parameter: 'extract-temp',
@@ -35,7 +35,7 @@ export const simulationTendencies: SimulationTendency[] = [
   },
   {
     id: 'extract-time-infusions', parameter: 'extract-time',
-    text: '浸出を繰り返すと香りや渋味などの官能属性は回数とともに弱まっていくことが、韓国緑茶の浸出回数研究で示されています。抽出時間の延長も、成分ごとに溶出の仕方が異なるため一様ではありません。なお、大紅袍・生プーアルでは2煎目前後にピークがあり、その後弱まる形が原著で示されている。',
+    text: '同じ茶葉で浸出を繰り返すと、1・2煎目は同程度の強さで、3・4煎目では香味・苦味・渋味が穏やかになることが、韓国緑茶6製品の浸出回数研究で示されています。抽出時間の延長も、成分ごとに溶出の仕方が異なるため一様ではありません。なお、大紅袍・生プーアルでは2煎目前後にピークがあり、その後弱まる形が原著で示されている。',
     tier: 'general', applicableDomains: ['tea', 'herb'],
     sourceIds: ['lee-2013-korean-green-tea-infusions', 'zhang-2020-dahongpao-infusions', 'li-2022-raw-puerh-infusions'],
     limits: '韓国緑茶での研究。抽出時間と浸出回数は同一の条件ではない。',

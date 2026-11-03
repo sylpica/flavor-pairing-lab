@@ -50,7 +50,7 @@ export const expansionInteractionRules: InteractionRule[] = [
     kind: 'aroma',
     conditionNote: 'クローブ（ユージノール）を含む素材をタンパク質食品とともに加熱するとき',
     trigger: { compoundId: 'eugenol' },
-    text: 'クローブのユージノールは、加熱タンパク質食品のモデル系で、含硫の加熱生成物である dimethyl trisulfide の生成を抑制した（Yu 2025 全文の知見）。加熱調理の文脈に限定した相互作用であり、生の素材同士の組み合わせの香り予測には使わない。',
+    text: 'クローブのユージノールは、加熱タンパク質食品のモデル系で、含硫の加熱生成物である dimethyl trisulfide の生成を抑制した（Qiang et al. 2025 全文の知見）。加熱調理の文脈に限定した相互作用であり、生の素材同士の組み合わせの香り予測には使わない。',
     level: 'exploratory',
     directStudy: false,
     sourceIds: ['yu-2025-clove-endowment'],
