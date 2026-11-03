@@ -1065,7 +1065,6 @@ function SimulationPanel({ material: m }: { material: Material }) {
   return (
     <div className="sim-panel">
       <h3>加工・抽出シミュレーション（定性的な傾向）</h3>
-      <p className="muted sim-intro">傾向は条件ごとに整理した文献の定性的知見です。設定値は下の「現在の条件」サマリーに反映されますが、傾向の本文は設定値で切り替わるものではなく、条件別の知見集として表示しています。</p>
       {m.roastable ? (
         <div>
           <h4>焙煎</h4>
@@ -1126,6 +1125,7 @@ function SimulationPanel({ material: m }: { material: Material }) {
       ) : <p className="muted">抽出：{ext.statusNote}</p>}
       {m.id === 'spice-ginger-fresh' && <GingerolModelBlock materialId={m.id} />}
       {CAPSAICIN_MODEL_MATERIAL_IDS.includes(m.id) && <CapsaicinModelBlock materialId={m.id} />}
+      <p className="muted sim-intro">傾向は条件ごとに整理した文献の定性的知見です。設定値は上の「現在の条件」サマリーに反映されますが、傾向の本文は設定値で切り替わるものではなく、条件別の知見集として表示しています。</p>
     </div>
   )
 }
