@@ -48,9 +48,9 @@ export const expansionInteractionRules: InteractionRule[] = [
   {
     id: 'clove-maillard-suppression',
     kind: 'aroma',
-    conditionNote: 'クローブ（ユージノール）を含む素材をタンパク質食品とともに加熱するとき',
+    conditionNote: 'クローブを含む素材をタンパク質食品とともに加熱するとき',
     trigger: { compoundId: 'eugenol' },
-    text: 'クローブのユージノールは、加熱タンパク質食品のモデル系で、含硫の加熱生成物である dimethyl trisulfide の生成を抑制した（Qiang et al. 2025 全文の知見）。加熱調理の文脈に限定した相互作用であり、生の素材同士の組み合わせの香り予測には使わない。',
+    text: 'クローブを加えて煮込んだ牛肉では、塩のみで煮込んだ対照に比べ、牛肉由来の含硫化合物 dimethyl trisulfide の FD が半減し（4096→2048）、硫黄様の臭気が低減しました。本文では、クローブのポリフェノールが Maillard／Strecker 分解を抑える機序が議論されています（Qiang et al. 2025 全文の知見）。加熱調理の文脈に限定した相互作用であり、生の素材同士の組み合わせの香り予測には使わない。',
     level: 'exploratory',
     directStudy: false,
     sourceIds: ['yu-2025-clove-endowment'],
@@ -67,7 +67,7 @@ export const expansionSimulationTendencies: SimulationTendency[] = [
   {
     id: 'roast-black-pepper-temp',
     parameter: 'roast-temp',
-    text: 'コショウの焙煎では、温度の上昇に伴いピペリンと揮発性香気成分の損失が進む傾向がある。検討された温度域は黒コショウで140–160℃、白コショウで100–140℃。',
+    text: 'コショウの焙煎への適応は品種で異なり、黒コショウは140–160℃の高温域でもピペリンを保持しやすく、白コショウは100–140℃の低温域で品質が良かったと報告されています。一方、煮沸・圧力調理のような湿熱処理ではピペリンの損失（16–34%）が実測されています。',
     tier: 'general',
     applicableDomains: ['spice'],
     applicableMaterialIds: ['spice-black-pepper', 'spice-white-pepper'],

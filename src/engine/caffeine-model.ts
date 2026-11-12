@@ -9,11 +9,16 @@
 //
 // パラメータ（公開情報で値を確認したものだけを使用し、創作値は入れない）:
 //   k(80 ℃) = 0.99 min⁻¹、Ea = 40.3 kJ/mol
-//   出典: 南アフリカ産紅茶（粒度 1.40–2.00 mm、水抽出、HPLC 測定）を対象とした
-//   温度依存の実測報告（Price WE & Spitzer JC 1993, Food Chemistry 46(2):133–136；
-//   抄録で値を確認。書誌は 2026-11-01 の監査修正フェーズで Crossref により確定し、
-//   出典レジストリへ price-spitzer-1993 として登録した。それまで著者名が
-//   「Price RD」と誤記され、書誌未同定として台帳未登録だった）。
+//   出典: Jaganyi D & Price RD 1999「Kinetics of tea infusion: the effect of
+//   the manufacturing process on the rate of extraction of caffeine」
+//   （Food Chemistry 64(1):27–31、DOI 10.1016/S0308-8146(98)00101-0）。
+//   南アフリカ産紅茶（粒度 1.40–2.00 mm）からのカフェイン抽出を HPLC で実測し、
+//   Spiro & Jago 1982 の定常状態モデルで k(80℃)=0.99 min⁻¹、Ea=40.3 kJ/mol を
+//   報告（抄録で全値を確認、2026-11-12 再監査で確定）。
+//   ※2026-11-01 の監査修正フェーズで Price WE & Spitzer JC 1993（Food Chemistry
+//   46(2):133–136、可溶成分全体の抽出速度・Ea 41 kJ/mol、オーストラリア産 CTC 茶）
+//   と取り違えられていたものを、2026-11-12 の再監査で抄録照合により訂正した。
+//   「Price RD」は誤記ではなく Jaganyi & Price の正しい著者表記である。
 // 相互照合: Jaganyi & Mdletshe 2000（アッサム紅茶、粒度 1.18–1.40 mm、蒸留水、
 //   Food Chemistry 70(2):163–165）は Ea = 45 ± 2 kJ/mol（ルース）を報告しており、
 //   Ea が 40–45 kJ/mol の範囲にあることは独立研究間で整合する。
@@ -28,7 +33,7 @@
 //   緑茶・烏龍茶・抹茶（粉末懸濁）には適用しない（画面側で紅茶素材に限定する）。
 
 /** パラメータ原著の出典 ID（出典レジストリに実在することをテストで検証する） */
-export const CAFFEINE_MODEL_SOURCE_ID = 'price-spitzer-1993'
+export const CAFFEINE_MODEL_SOURCE_ID = 'jaganyi-price-1999-caffeine-kinetics'
 /** 基準温度（℃）と、その温度での一次速度定数 k（min⁻¹） */
 export const CAFFEINE_MODEL_K_REF_PER_MIN = 0.99
 export const CAFFEINE_MODEL_T_REF_C = 80

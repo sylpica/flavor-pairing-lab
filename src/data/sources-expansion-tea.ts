@@ -88,7 +88,7 @@ export const expansionTeaSources: Source[] = [
   },
   {
     id: 'wen-2022-keemun-astringency', kind: 'original',
-    title: 'Identification of 4-O-p-coumaroylquinic acid as astringent compound of Keemun black tea',
+    title: 'Identification of 4-O-p-coumaroylquinic acid as astringent compound of Keemun black tea by efficient integrated approaches of mass spectrometry, turbidity analysis and sensory evaluation',
     authors: 'Wen M, et al.', year: 2022,
     journal: 'Food Chemistry 368: 130803',
     doi: '10.1016/j.foodchem.2021.130803',
@@ -105,8 +105,8 @@ export const expansionTeaSources: Source[] = [
     doi: '10.3390/foods15010158',
     url: 'https://doi.org/10.3390/foods15010158',
     scope: 'アッパーアッサム・北岸の紅茶32試料（オーソドックス・CTC 両方式）の ISO 法による組成実測。テアフラビン 4.88–15.54 mg/g、カフェイン 15.51–39.24 mg/g、テアニン 2.47–8.16 mg/g 等。',
-    limits: '組成実測のみ（香気・官能なし）。香気寄与の根拠にはならない。',
-    verified: 'abstract',
+    limits: '組成実測のみ（香気・官能なし）。香気寄与の根拠にはならない。2026-11-12 の再監査で PMC 全文を取得し、scope の数値が本文の文脈と一致することを確認。',
+    verified: 'full',
   },
   {
     id: 'wei-2024-yellow-tea', kind: 'original',
@@ -269,6 +269,7 @@ export const expansionTeaSources: Source[] = [
     title: 'Key floral-fruity aroma compounds in Sichuan Congou black tea: identification via MDGC-MS/O and sensory evaluation',
     authors: 'Wang S, Li L, Meng Q', year: 2025,
     journal: 'Frontiers in Nutrition 12: 1577302',
+    doi: '10.3389/fnut.2025.1577302',
     url: 'https://pubmed.ncbi.nlm.nih.gov/40386219/',
     scope: '四川工夫紅茶の MDGC-MS/O＋再構成・欠落・添加によるキー成分の検証。寄与順位はゲラニオール1位、リナロール2位、サリチル酸メチル3位、フェニルアセトアルデヒド4位、ベンズアルデヒドは最下位側（6位）。',
     limits: '四川工夫紅茶の試料の結果であり、「紅茶一般でベンズアルデヒドの寄与が弱い」という一般化はできない（試料・手法依存）。内容は pairing 記録に基づき、書誌・要旨は統合時に一次レコード（PMID 40386219）で確認した。',
@@ -315,8 +316,8 @@ export const expansionTeaSources: Source[] = [
     doi: '10.3390/molecules27175677',
     url: 'https://doi.org/10.3390/molecules27175677',
     scope: '緑茶浸出液を官能誘導型分画し、γ-Glu-Gln とグルタチオン（GSH）を主要なコク味成分と同定。L-テアニンにはコク味の増強効果があり、官能再構成で確認された。',
-    limits: '緑茶浸出液一般の研究であり、煎茶等への帰属は個別試料の実証ではない。コク味は本アプリの呈味区分に独立項目がない。',
-    verified: 'abstract',
+    limits: '緑茶浸出液一般の研究であり、煎茶等への帰属は個別試料の実証ではない。コク味は本アプリの呈味区分に独立項目がない。2026-11-12 第18ラウンド再監査で PMC 全文（主要コク味成分の同定とテアニンの増強効果・官能再構成での確認が本文の結論と一致）を文脈照合し確認。',
+    verified: 'full',
   },
   {
     id: 'spiro-jago-1982-tea-infusion-model', kind: 'original',
@@ -337,7 +338,7 @@ export const expansionTeaSources: Source[] = [
     doi: '10.1016/S0308-8146(99)00262-9',
     url: 'https://doi.org/10.1016/S0308-8146(99)00262-9',
     scope: 'アッサム紅茶（粒度 1.18–1.40 mm、蒸留水）から水へのカフェイン抽出の温度依存を測定。一次速度定数はティーバッグ入りでルースより約29%小さく、活性化エネルギーはルース 45±2 kJ/mol、ティーバッグ 43±2 kJ/mol。本アプリのモデルでは活性化エネルギーの相互照合に使う。',
-    limits: '本アプリのモデルの k 基準値と Ea は本論文の値ではなく、南アフリカ産紅茶の実測報告値（Price、抄録確認・書誌詳細未同定）を採用している。粒度・製法の異なる紅茶への直接適用はできない。',
+    limits: '本アプリのモデルの k 基準値と Ea は本論文の値ではなく、南アフリカ産紅茶の実測報告値（Jaganyi & Price 1999、抄録で値を確認）を採用している。粒度・製法の異なる紅茶への直接適用はできない。',
     verified: 'abstract',
   },
 ]

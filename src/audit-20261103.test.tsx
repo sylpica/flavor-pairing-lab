@@ -146,10 +146,10 @@ describe('画面（監査 2026-11-03 の修正）', () => {
     render(<App />)
     expect(screen.getAllByRole('button', { name: '均等に戻す' }).length).toBe(1)
   })
-  it('紅茶のカフェインモデルはパラメータ原著（Price & Spitzer 1993）へリンクする', () => {
+  it('紅茶のカフェインモデルはパラメータ原著（Jaganyi & Price 1999）へリンクする', () => {
     window.location.hash = '#/material/tea-black-general'
     render(<App />)
-    const s = sourceById('price-spitzer-1993')!
+    const s = sourceById('jaganyi-price-1999-caffeine-kinetics')!
     const links = screen.getAllByRole('link').filter((a) => a.getAttribute('href') === s.url)
     expect(links.length).toBeGreaterThan(0)
   })

@@ -41,7 +41,7 @@ export const expansionCacaoSources: Source[] = [
   },
   {
     id: 'boza-2014-ccn51-genetics', kind: 'original',
-    title: 'Genetic Characterization of the Cacao Cultivar CCN 51',
+    title: 'Genetic Characterization of the Cacao Cultivar CCN 51: Its Impact and Significance on Global Cacao Improvement and Production',
     authors: 'Boza EJ, et al.', year: 2014,
     journal: 'Journal of the American Society for Horticultural Science 139(2):219–229',
     doi: '10.21273/JASHS.139.2.219',

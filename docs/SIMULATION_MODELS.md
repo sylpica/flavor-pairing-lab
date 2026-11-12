@@ -40,12 +40,12 @@ Ct：時刻 t の抽出液中濃度、C∞：平衡濃度、k：一次速度定�
 
 | パラメータ | 値 | 出典 |
 |---|---|---|
-| k(80 ℃) | 0.99 min⁻¹ | 南アフリカ産紅茶（粒度 1.40–2.00 mm、水抽出、HPLC 測定）の温度依存の実測報告（Price WE & Spitzer JC 1993, *Food Chemistry* 46(2):133–136；抄録で値を確認） |
+| k(80 ℃) | 0.99 min⁻¹ | 南アフリカ産紅茶（粒度 1.40–2.00 mm、水抽出、HPLC 測定）の温度依存の実測報告（Jaganyi D & Price RD 1999, *Food Chemistry* 64(1):27–31、DOI 10.1016/S0308-8146(98)00101-0；抄録で値を確認） |
 | Ea | 40.3 kJ/mol | 同上（k と同一研究内で対になった値を 1 組として採用し、研究間の値を混ぜない） |
 | 式の出典 | — | Spiro & Jago 1982, *J. Chem. Soc., Faraday Trans. 1* 78(1):295–305（出典 ID: spiro-jago-1982-tea-infusion-model） |
 | 相互照合 | Ea = 45 ± 2 kJ/mol（ルース）、43 ± 2（ティーバッグ） | Jaganyi & Mdletshe 2000, *Food Chemistry* 70(2):163–165（アッサム紅茶、粒度 1.18–1.40 mm。出典 ID: jaganyi-mdletshe-2000-assam-caffeine-kinetics） |
 
-- Price & Spitzer 報告は抄録でパラメータ値を確認した。書誌詳細は当初未同定で出典台帳に登録していなかったが、2026-11-01 の監査修正フェーズで Crossref により確定したため、出典 ID: price-spitzer-1993 として出典レジストリに登録した（DOI 10.1016/0308-8146(93)90025-b）。それまで著者名が「Price RD」と誤記されていた点もあわせて修正した。
+- パラメータ出典は Jaganyi & Price 1999（出典 ID: jaganyi-price-1999-caffeine-kinetics）で、抄録で k・Ea の全値を確認した。2026-11-01 の監査修正フェーズでは Price WE & Spitzer JC 1993（*Food Chemistry* 46(2):133–136、DOI 10.1016/0308-8146(93)90025-b）と取り違えられていた（同論文はオーストラリア産 CTC 茶の可溶成分全体の抽出速度・Ea 41 kJ/mol の研究であり、カフェイン個別のパラメータではない）。2026-11-12 の再監査で両論文の抄録を照合し訂正した。「Price RD」は誤記ではなく Jaganyi & Price の正しい著者表記である。
 - ティーバッグ入りは k がルースより約 29% 小さい（Jaganyi & Mdletshe 2000）。本モデルはルース（砕けた葉）の条件を想定する。
 
 **適用範囲**

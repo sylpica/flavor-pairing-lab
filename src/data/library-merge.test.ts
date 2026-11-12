@@ -28,19 +28,17 @@ describe('文献画面の出典マージ（台帳と再確認済みの重複除�
     expect(m.ledgerKept.map((s) => s.id)).toEqual(['l2'])
   })
 
-  it('実データ：台帳と重複する14件が除去され、総数は798件になる', () => {
+  it('実データ：台帳と重複する14件が除去され、総数は800件になる', () => {
     const m = mergeLibrarySources(sources, pairingImportedSources)
-    // 第16ラウンド後の実測値（2026-11-01）：再確認済み340件（第15ラウンド後の335件に、
-    // 文献取り込み第2回で horie-2018-matcha-composition、unno-2026-green-tea-composition、
-    // zheng-2025-baimudan-cultivars、wang-2022-oolong-regions、wang-2025-ancient-ripe-puerh
-    // の5件を新規登録。あわせて zhang-2022-tea-organic-acids の verified 格上げ
-    // abstract→full を含むが件数は不変）。
+    // 第18ラウンド後の実測値（2026-11-12）：再確認済み342件（第16ラウンド後の340件に、
+    // 再監査で jaganyi-price-1999-caffeine-kinetics（カフェイン数値モデルの真の出典）と
+    // ravi-2013-cumin-aroma-active の2件を新規登録）。
     // 台帳472件（件数不変）。重複除去は14件のまま（新規登録した題名は台帳側と一致しない）。
-    // 総数 = 340 + 472 − 14 = 798。
-    expect(sources.length).toBe(340)
+    // 総数 = 342 + 472 − 14 = 800。
+    expect(sources.length).toBe(342)
     expect(pairingImportedSources.length).toBe(472)
     expect(m.removedCount).toBe(14)
-    expect(m.sources.length).toBe(798)
+    expect(m.sources.length).toBe(800)
     // 除去後は、台帳側に残った出典が再確認済みとタイトル＋年で重複していない
     const verifiedKeys = new Set(sources.map((s) => sourceMatchKey(s.title, s.year)))
     for (const s of m.ledgerKept) expect(verifiedKeys.has(sourceMatchKey(s.title, s.year))).toBe(false)

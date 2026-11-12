@@ -892,12 +892,12 @@ function CaffeineModelBlock({ tempC, seconds }: { tempC: number; seconds: number
         </>
       )}
       <p className="scope-note">
-        パラメータ：k（80℃）＝0.99 min⁻¹、活性化エネルギー 40.3 kJ/mol は、南アフリカ産紅茶（粒度 1.40–2.00 mm、水抽出、HPLC 測定）の実測報告値（Price &amp; Spitzer 1993）です。
+        パラメータ：k（80℃）＝0.99 min⁻¹、活性化エネルギー 40.3 kJ/mol は、南アフリカ産紅茶（粒度 1.40–2.00 mm、水抽出、HPLC 測定）の実測報告値（Jaganyi &amp; Price 1999）です。
         アッサム紅茶では活性化エネルギー 45±2 kJ/mol（ルース）と報告されており（Jaganyi &amp; Mdletshe 2000）、産地・粒度・製法の異なる紅茶への適用は目安です。
         ティーバッグでは速度定数が約29%小さいとの報告があります。適用温度範囲は {CAFFEINE_MODEL_TEMP_MIN_C}–{CAFFEINE_MODEL_TEMP_MAX_C}℃
         （基準温度 80℃の近傍に限定したもので、原著の実測温度範囲の詳細は未確認のため、80℃から離れるほど目安の度合いが強まります）。
       </p>
-      <SourceLinks ids={['price-spitzer-1993', 'spiro-jago-1982-tea-infusion-model', 'jaganyi-mdletshe-2000-assam-caffeine-kinetics']} />
+      <SourceLinks ids={['jaganyi-price-1999-caffeine-kinetics', 'spiro-jago-1982-tea-infusion-model', 'jaganyi-mdletshe-2000-assam-caffeine-kinetics']} />
     </div>
   )
 }

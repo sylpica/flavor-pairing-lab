@@ -37,7 +37,7 @@ export const expansionShLinkUpgrades: MaterialCompoundLink[] = [
 ]
 
 // 格上げしなかった主な既存ペア（判断記録）:
-// - spice-cumin×cuminaldehyde: Ravi 2013 の全文が未取得で寄与判定に使えないため composition のまま保留。
+// - spice-cumin×cuminaldehyde: Ravi 2013（ravi-2013-cumin-aroma-active）の要旨を確認したが化合物ごとの寄与順位がなく、全文も未取得のため composition のまま保留（2026-11-12 再監査で再確認）。
 // - herb-peppermint×menthol: 組成主成分だが、今回の調査で寄与実証は未確認のため据え置き。
 // - herb-oregano×thymol: Sádecká 2008 の AEDA 上位に現れず、composition が正しい。
 // - spice-nutmeg の既存ペア（myristicin、eugenol）・spice-cardamom の各化合物・spice-mace の各化合物: 素材単独の寄与研究が未発見のため据え置き（ナツメッグのサビネン等の新規リンクは Chatterjee 2015 の GC-O＋OAV に基づき contribution で別途追加）。

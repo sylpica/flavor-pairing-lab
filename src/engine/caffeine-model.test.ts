@@ -52,3 +52,23 @@ describe('紅茶カフェイン抽出モデル（Spiro & Jago 定常状態モデ
     expect(caffeineExtractionFraction(80, Number.NaN)).toBeNull()
   })
 })
+
+describe('パラメータ出典の帰属（2026-11-12 再監査 F-01 の回帰防止）', () => {
+  it('モデル出典は Jaganyi & Price 1999（DOI 10.1016/S0308-8146(98)00101-0）を指す', async () => {
+    const { CAFFEINE_MODEL_SOURCE_ID } = await import('./caffeine-model')
+    const { sourceById } = await import('../data/index')
+    const s = sourceById(CAFFEINE_MODEL_SOURCE_ID)
+    expect(s).toBeTruthy()
+    expect(s!.doi).toBe('10.1016/S0308-8146(98)00101-0')
+    expect(s!.authors).toContain('Jaganyi')
+    // パラメータ値がその出典の scope に明記されていること（取り違えの再発防止）
+    expect(s!.scope).toContain('0.99')
+    expect(s!.scope).toContain('40.3')
+  })
+  it('Price & Spitzer 1993 はカフェインモデルの出典と主張しない', async () => {
+    const { sourceById } = await import('../data/index')
+    const s = sourceById('price-spitzer-1993')!
+    expect(s.scope).not.toContain('本アプリの数値モデル')
+    expect(s.scope).toContain('Nerada')
+  })
+})
